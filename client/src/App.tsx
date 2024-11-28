@@ -7,6 +7,7 @@ import Furniture from "./components/Tabs/Furniture";
 import Kitchen from "./components/Tabs/Kitchen";
 import Misc from "./components/Tabs/Misc";
 import Navbar from "./components/Navbar";
+import Homepage from "./components/Homepage";
 import School from "./components/Tabs/School";
 import {
   SignedIn,
@@ -36,6 +37,7 @@ function App() {
         <Router>
           <Navbar />
           <Routes>
+            <Route path="/" element={<Homepage />} />
             <Route path="/clothes" element={<Clothes />} />
             <Route path="/tech" element={<Tech />} />
             <Route path="/bathroom" element={<Bathroom />} />

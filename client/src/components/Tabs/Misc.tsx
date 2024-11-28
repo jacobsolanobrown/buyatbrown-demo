@@ -1,7 +1,14 @@
+import React from 'react';
+import FilterBar from '../FilterBar'; // Adjust the import path as needed
+
 export default function Misc() {
-    return (
-      <h1 className="text-3xl font-bold underline">
-        Misc
-      </h1>
-    )
-  }
+  const clothesFilters = ["Outerwear", "Tops", "Sweaters", "Pants", "Dresses & Skirts", "Shoes", "Bags", "Accessories", "Other"];
+  const conditionFilters = ["New", "Like New", "Used", "Good"];
+
+  return (
+    <div>
+
+      <FilterBar title="Misc" filters={clothesFilters} conditionFilters={conditionFilters} />
+    </div>
+  );
+}
