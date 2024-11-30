@@ -10,7 +10,9 @@ import {
         <div className="flex justify-between items-center px-6 py-3">
           <div className="text-2xl font-bold text-white">Buy@Brown</div>
           <div className="flex items-center space-x-4">
-            <span className="text-white">username</span>
+            <Link to="/yourListings" className="text-white underline">
+              username
+            </Link>
             <SignOutButton />
           </div>
         </div>

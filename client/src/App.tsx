@@ -9,6 +9,10 @@ import Misc from "./components/Tabs/Misc";
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import School from "./components/Tabs/School";
+import UserFavorites from "./components/UserPages/UserFavorites";
+import UserListings from "./components/UserPages/UserListings";
+import UserMessages from "./components/UserPages/UserMessages";
+import UserSettings from "./components/UserPages/UserSettings";
 import {
   SignedIn,
   SignedOut,
@@ -45,6 +49,10 @@ function App() {
             <Route path="/misc" element={<Misc />} />
             <Route path="/school" element={<School />} />
             <Route path="/furniture" element={<Furniture />} />
+            <Route path="/favorites" element={<UserFavorites />} />
+            <Route path="/yourlistings" element={<UserListings />} />
+            <Route path="/messages" element={<UserMessages />} />
+            <Route path="/settings" element={<UserSettings />} />
           </Routes>
         </Router>
       </SignedIn>
