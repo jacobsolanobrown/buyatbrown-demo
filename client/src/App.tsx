@@ -28,7 +28,7 @@ initializeApp(firebaseConfig);
 function App() {
   return (
     <div className="App">
-      <SignedOut>
+      <SignedOut class>
         <SignInButton />
       </SignedOut>
 
