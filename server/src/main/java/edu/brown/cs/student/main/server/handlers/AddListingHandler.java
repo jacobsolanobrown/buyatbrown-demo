@@ -1,15 +1,15 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/** Class for adding a marker to the database */
-public class AddMarkerHandler implements Route {
+/** Class for adding a listing to the database */
+public class AddListingHandler implements Route {
 
   public StorageInterface storageHandler;
 
@@ -30,9 +30,13 @@ public class AddMarkerHandler implements Route {
     try {
       // collect parameters from the request
       String uid = request.queryParams("uid");
-      String latitude = request.queryParams("lat");
-      String longitude = request.queryParams("long");
-      List<String> latLong = List.of(latitude, longitude);
+      String username = request.queryParams("username");
+      String imageUrl = request.queryParams("imageUrl");
+      String price = request.queryParams("price");
+      String title = request.queryParams("title");
+      String description = request.queryParams("description");
+      
+      // List<String> latLong = List.of(latitude, longitude);
 
       Map<String, Object> data = new HashMap<>();
       data.put("latLong", latLong);

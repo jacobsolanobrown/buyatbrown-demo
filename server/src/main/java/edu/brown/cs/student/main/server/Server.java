@@ -29,7 +29,8 @@ public class Server {
       //      firebaseUtils = new FirebaseUtilities();
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
       GeoMapCollection geoMapCollection = myDataSource.getData();
-      Spark.get("filter-items", new FilterItemsHandler(firebaseUtils));
+      Spark.get("add-listings", new FilterItemsHandler(firebaseUtils));
+      Spark.get("filter-listings", new FilterItemsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
