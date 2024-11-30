@@ -36,31 +36,33 @@ public class AddListingHandler implements Route {
       String title = request.queryParams("title");
       String description = request.queryParams("description");
       
-      // List<String> latLong = List.of(latitude, longitude);
+      // create new listing with collected parameters
+      Listing listing = new Listing(username, title, imageUrl, price, description)
 
       Map<String, Object> data = new HashMap<>();
-      data.put("latLong", latLong);
+      data.put("listings", listing);
 
       System.out.println(
-          "adding marker at: "
-              + latitude
-              + ", "
-              + longitude
-              + ", storing in database as: "
-              + latLong
-              + ", for user: "
-              + uid);
+          "addded listing for username: " + listing.username
+              + ", title: " + listing.title
+              + ", imageUrl: " + listing.imageUrl
+              + ", price: " + listing.price
+              + ", description: " + listing.description
+              + ", for user: " + uid);
 
       // get the current word count to make a unique word_id by index.
-      int markerCount = this.storageHandler.getCollection(uid, "markers").size();
-      String markerId = "marker-" + markerCount;
+      int markerCount = this.storageHandler.getCollection(uid, "listings").size();
+      String listingId = "listing-" + markerCount;
 
       // use the storage handler to add the document to the database
-      this.storageHandler.addDocument(uid, "markers", markerId, data);
+      this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       responseMap.put("response_type", "success");
-      responseMap.put("lat", latitude);
-      responseMap.put("long", longitude);
+      responseMap.put("title", title);
+      responseMap.put("imageUrl", imageUrl);
+      responseMap.put("price", price);
+      responseMap.put("description", description);
+      responseMap.put("username", username);
       responseMap.put("uid", uid);
     } catch (Exception e) {
       // error likely occurred in the storage handler
