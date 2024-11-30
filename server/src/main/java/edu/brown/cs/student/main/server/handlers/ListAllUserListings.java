@@ -8,11 +8,12 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ListMarkersHandler implements Route {
+/** Class for the ListAllUserListings route, which lists all listings for all users */
+public class ListAllUserListings implements Route {
 
   public StorageInterface storageHandler;
 
-  public ListMarkersHandler(StorageInterface storageHandler) {
+  public ListAllUserListings(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -25,23 +26,13 @@ public class ListMarkersHandler implements Route {
    */
   @Override
   public Object handle(Request request, Response response) {
+
     Map<String, Object> responseMap = new HashMap<>();
     try {
-      String uid = request.queryParams("uid");
-
-      System.out.println("listing markers for user: " + uid);
-
-      // get all the markers for the user
-      List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "markers");
-
-      // convert the key,value map to just a list of the markers.
-      List<String> markers =
-          vals.stream().map(latLong -> latLong.get("latLong").toString()).toList();
-      System.out.println(markers);
-      System.out.println(vals.stream().map(latLong -> latLong.get("latLong")));
-
+      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
+      System.out.println("printing all user listings: " + allListings);
       responseMap.put("response_type", "success");
-      responseMap.put("markers", markers);
+      responseMap.put("listings", allListings);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

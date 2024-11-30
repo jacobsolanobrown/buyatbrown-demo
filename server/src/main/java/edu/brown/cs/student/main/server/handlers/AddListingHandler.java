@@ -1,9 +1,7 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-// import java.util.HashMap;
-// import java.util.List;
-// import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -13,7 +11,7 @@ public class AddListingHandler implements Route {
 
   public StorageInterface storageHandler;
 
-  public AddMarkerHandler(StorageInterface storageHandler) {
+  public AddListingHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -35,24 +33,30 @@ public class AddListingHandler implements Route {
       String price = request.queryParams("price");
       String title = request.queryParams("title");
       String description = request.queryParams("description");
-      
-      // create new listing with collected parameters
-      Listing listing = new Listing(username, title, imageUrl, price, description)
 
-      Map<String, Object> data = new HashMap<>();
-      data.put("listings", listing);
+      // create new listing with collected parameters
+      Listing listing = new Listing(username, title, imageUrl, price, description);
+
+      Map<String, Listing> data = new HashMap<>();
+      data.put("item", listing);
 
       System.out.println(
-          "addded listing for username: " + listing.username
-              + ", title: " + listing.title
-              + ", imageUrl: " + listing.imageUrl
-              + ", price: " + listing.price
-              + ", description: " + listing.description
-              + ", for user: " + uid);
+          "addded listing for username: "
+              + listing.username
+              + ", title: "
+              + listing.title
+              + ", imageUrl: "
+              + listing.imageUrl
+              + ", price: "
+              + listing.price
+              + ", description: "
+              + listing.description
+              + ", for user: "
+              + uid);
 
       // get the current word count to make a unique word_id by index.
-      int markerCount = this.storageHandler.getCollection(uid, "listings").size();
-      String listingId = "listing-" + markerCount;
+      int listingCount = this.storageHandler.getCollection(uid, "listings").size();
+      String listingId = "listing-" + listingCount;
 
       // use the storage handler to add the document to the database
       this.storageHandler.addDocument(uid, "listings", listingId, data);

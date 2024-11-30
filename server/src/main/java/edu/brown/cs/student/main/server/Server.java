@@ -1,8 +1,10 @@
 package edu.brown.cs.student.main.server;
+
 import static spark.Spark.after;
-// import edu.brown.cs.student.main.server.parserParameterizedTypes.GeoMapCollection.GeoMapCollection;
-import edu.brown.cs.student.main.server.parserParameterizedTypes.JSONParser;
-import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+
+import edu.brown.cs.student.main.server.handlers.AddListingHandler;
+import edu.brown.cs.student.main.server.handlers.ListListingsHandler;
+import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,12 +27,13 @@ public class Server {
 
     StorageInterface firebaseUtils;
     try {
-      firebaseUtils = new MockedFirebaseUtilities();
-      //      firebaseUtils = new FirebaseUtilities();
+      //      firebaseUtils = new MockedFirebaseUtilities();
+      firebaseUtils = new FirebaseUtilities();
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
-      GeoMapCollection geoMapCollection = myDataSource.getData();
-      Spark.get("add-listings", new FilterItemsHandler(firebaseUtils));
-      Spark.get("filter-listings", new FilterItemsHandler(firebaseUtils));
+      //      GeoMapCollection geoMapCollection = myDataSource.getData();
+      Spark.get("add-listings", new AddListingHandler(firebaseUtils));
+      //      Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
+      Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {

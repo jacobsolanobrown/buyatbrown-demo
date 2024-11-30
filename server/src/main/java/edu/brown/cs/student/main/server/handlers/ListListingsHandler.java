@@ -2,16 +2,17 @@ package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class AddWordHandler implements Route {
+public class ListListingsHandler implements Route {
 
   public StorageInterface storageHandler;
 
-  public AddWordHandler(StorageInterface storageHandler) {
+  public ListListingsHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -26,24 +27,20 @@ public class AddWordHandler implements Route {
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
     try {
-      // collect parameters from the request
       String uid = request.queryParams("uid");
-      String word = request.queryParams("word");
 
-      Map<String, Object> data = new HashMap<>();
-      data.put("word", word);
+      System.out.println("listing listings for user: " + uid);
 
-      System.out.println("adding word: " + word + " for user: " + uid);
+      // get all the listings for the user
+      List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "listings");
 
-      // get the current word count to make a unique word_id by index.
-      int wordCount = this.storageHandler.getCollection(uid, "words").size();
-      String wordId = "word-" + wordCount;
-
-      // use the storage handler to add the document to the database
-      this.storageHandler.addDocument(uid, "words", wordId, data);
+      // convert the key,value map to just a list of the listings.
+      List<String> listings = vals.stream().map(items -> items.get("listing").toString()).toList();
+      System.out.println(listings);
+      System.out.println(vals.stream().map(listing -> listing.get("listing")));
 
       responseMap.put("response_type", "success");
-      responseMap.put("word", word);
+      responseMap.put("listings", listings);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

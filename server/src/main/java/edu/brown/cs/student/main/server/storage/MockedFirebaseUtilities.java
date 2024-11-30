@@ -1,5 +1,6 @@
 package edu.brown.cs.student.main.server.storage;
 
+import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class MockedFirebaseUtilities implements StorageInterface {
   // Adding a document
   @Override
   public void addDocument(
-      String uid, String collection_id, String doc_id, Map<String, Object> data) {
+      String uid, String collection_id, String doc_id, Map<String, Listing> data) {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
@@ -69,23 +70,24 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public List<Map<String, Object>> getAllUsersMarkers() {
-    List<Map<String, Object>> allMarkers = new ArrayList<>();
+  public List<Map<String, Object>> getAllUsersListings() {
+    List<Map<String, Object>> allListings = new ArrayList<>();
     // Simulate fetching all markers for all users
+    // all listings -> listings for one user -> one listing one user -> map from listing to listing
     for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry :
         database.entrySet()) {
       String uid = userEntry.getKey();
       Map<String, Map<String, Map<String, Object>>> collections = userEntry.getValue();
-      Map<String, Map<String, Object>> markers =
-          collections.getOrDefault("markers", Collections.emptyMap());
+      Map<String, Map<String, Object>> listings =
+          collections.getOrDefault("listing", Collections.emptyMap());
       // Add uid to each marker data
-      for (Map<String, Object> marker : markers.values()) {
+      for (Map<String, Object> listing : listings.values()) {
         // Add uid to the marker data
-        Map<String, Object> markerWithUid = new HashMap<>(marker);
-        markerWithUid.put("uid", uid);
-        allMarkers.add(markerWithUid);
+        Map<String, Object> listingWithUid = new HashMap<>(listing);
+        listingWithUid.put("uid", uid);
+        allListings.add(listingWithUid);
       }
     }
-    return allMarkers;
+    return allListings;
   }
 }

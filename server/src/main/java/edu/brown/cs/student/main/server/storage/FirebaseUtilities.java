@@ -10,6 +10,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -68,7 +69,8 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
+  public void addDocument(
+      String uid, String collection_id, String doc_id, Map<String, Listing> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(
@@ -108,35 +110,35 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  // gets all markers for all users
+  // gets all listings for all users
   @Override
-  public List<Map<String, Object>> getAllUsersMarkers()
+  public List<Map<String, Object>> getAllUsersListings()
       throws InterruptedException, ExecutionException {
-    // gets all markers for all users
+    // gets all listings for all users
     Firestore db = FirestoreClient.getFirestore();
     // 1: Get a ref to the users collection
     CollectionReference usersRef = db.collection("users");
-    // Create a list to store all the markers
+    // Create a list to store all the listings
     List<Map<String, Object>> allListings = new ArrayList<>();
 
     // 2: Get all user documents
     for (DocumentReference userDoc : usersRef.listDocuments()) {
       // 3: Get all listing documents for each user
-      CollectionReference markersRef = userDoc.collection("listings");
+      CollectionReference listingsRef = userDoc.collection("listings");
       // 4: Get all listing documents queries for each user
-      QuerySnapshot markersQuery = markersRef.get().get();
+      QuerySnapshot listingsQuery = listingsRef.get().get();
       // 5: Get data from document queries
-      for (QueryDocumentSnapshot markerDoc : markersQuery.getDocuments()) {
-        // 6: Add the marker data to the list
-        Map<String, Object> listingData = markerDoc.getData();
-        System.out.println(markerData);
-        // add the user id to the marker data
-        markerData.put("uid", userDoc.getId());
-        // add the marker id to the marker data
-        allMarkers.add(markerData);
+      for (QueryDocumentSnapshot listingsDoc : listingsQuery.getDocuments()) {
+        // 6: Add the listing data to the list
+        Map<String, Object> listingData = listingsDoc.getData();
+        System.out.println(listingData);
+        // add the user id to the listing data
+        listingData.put("uid", userDoc.getId());
+        // add the listing id to the listing data
+        allListings.add(listingData);
       }
     }
-    return allMarkers;
+    return allListings;
   }
 
   private void deleteDocument(DocumentReference doc) {

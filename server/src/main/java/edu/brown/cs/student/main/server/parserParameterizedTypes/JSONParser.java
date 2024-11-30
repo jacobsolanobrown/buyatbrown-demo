@@ -1,13 +1,13 @@
 package edu.brown.cs.student.main.server.parserParameterizedTypes;
 
-import edu.brown.cs.student.main.server.parserParameterizedTypes.GeoMapCollection.GeoMapCollection;
+import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.ListingsCollection;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class JSONParser {
-  private GeoMapCollection data;
+  private ListingsCollection data;
 
   public JSONParser(String filePath) throws FileNotFoundException {
     try {
@@ -23,7 +23,7 @@ public class JSONParser {
       jsonReader.close();
 
       // ****************** CREATING THE ADAPTER ***********
-      GeoMapAdapter myadapter = new GeoMapAdapter();
+      ListingAdapter myadapter = new ListingAdapter();
       this.data = myadapter.fromJson(fileString);
 
     } catch (IOException e) {
@@ -31,7 +31,7 @@ public class JSONParser {
     }
   }
 
-  public GeoMapCollection getData() {
+  public ListingsCollection getData() {
     return this.data;
   }
 }
