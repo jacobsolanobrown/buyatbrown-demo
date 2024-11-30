@@ -1,7 +1,13 @@
+import React from 'react';
+import FilterBar from '../FilterBar'; // Adjust the import path as needed
+
 export default function School() {
-    return (
-      <h1 className="text-3xl font-bold underline">
-        School
-      </h1>
-    )
-  }
+  const clothesFilters = ["Outerwear", "Tops", "Sweaters", "Pants", "Dresses & Skirts", "Shoes", "Bags", "Accessories", "Other"];
+  const conditionFilters = ["New", "Like New", "Used", "Good"];
+
+  return (
+    <div>
+      <FilterBar title="School" filters={clothesFilters} conditionFilters={conditionFilters} />
+    </div>
+  );
+}
