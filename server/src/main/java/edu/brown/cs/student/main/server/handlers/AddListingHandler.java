@@ -2,6 +2,8 @@ package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.HashMap;
+import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -37,20 +39,26 @@ public class AddListingHandler implements Route {
       // create new listing with collected parameters
       Listing listing = new Listing(username, title, imageUrl, price, description);
 
-      Map<String, Listing> data = new HashMap<>();
-      data.put("item", listing);
+      Map<String, Object> data = new HashMap<>();
+//      data.put("item", listing);
+      data.put("uid", uid);
+      data.put("username", username);
+      data.put("imageUrl", imageUrl);
+      data.put("price", price);
+      data.put("title", title);
+      data.put("description", description);
 
       System.out.println(
           "addded listing for username: "
-              + listing.username
+              + username
               + ", title: "
-              + listing.title
+              + title
               + ", imageUrl: "
-              + listing.imageUrl
+              + imageUrl
               + ", price: "
-              + listing.price
+              + price
               + ", description: "
-              + listing.description
+              + description
               + ", for user: "
               + uid);
 

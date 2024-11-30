@@ -35,9 +35,13 @@ public class ListListingsHandler implements Route {
       List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "listings");
 
       // convert the key,value map to just a list of the listings.
-      List<String> listings = vals.stream().map(items -> items.get("listing").toString()).toList();
-      System.out.println(listings);
-      System.out.println(vals.stream().map(listing -> listing.get("listing")));
+      System.out.println(vals);
+      List<String> listings = vals.stream().map(items -> items.get("item"))
+        .filter(item -> item != null && !item.toString().contains("null")) // Filter out incomplete items
+        .map(Object::toString)
+        .toList();
+      System.out.println("listings: " + listings);
+//      System.out.println(vals.stream().map(listing -> listing.get("item")));
 
       responseMap.put("response_type", "success");
       responseMap.put("listings", listings);

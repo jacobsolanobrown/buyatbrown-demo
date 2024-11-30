@@ -70,7 +70,7 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   public void addDocument(
-      String uid, String collection_id, String doc_id, Map<String, Listing> data)
+      String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(

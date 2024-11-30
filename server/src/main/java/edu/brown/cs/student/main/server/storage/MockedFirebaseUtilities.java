@@ -24,7 +24,7 @@ public class MockedFirebaseUtilities implements StorageInterface {
   // Adding a document
   @Override
   public void addDocument(
-      String uid, String collection_id, String doc_id, Map<String, Listing> data) {
+      String uid, String collection_id, String doc_id, Map<String, Object> data) {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
