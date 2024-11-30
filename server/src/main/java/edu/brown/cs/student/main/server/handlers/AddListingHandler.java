@@ -40,27 +40,34 @@ public class AddListingHandler implements Route {
       Listing listing = new Listing(username, title, imageUrl, price, description);
 
       Map<String, Object> data = new HashMap<>();
-//      data.put("item", listing);
-      data.put("uid", uid);
-      data.put("username", username);
-      data.put("imageUrl", imageUrl);
-      data.put("price", price);
-      data.put("title", title);
-      data.put("description", description);
 
-      System.out.println(
+      if (uid != null && username != null && imageUrl != null && price != null && title != null && description != null) {
+        data.put("uid", uid);
+        data.put("username", username);
+        data.put("imageUrl", imageUrl);
+        data.put("price", price);
+        data.put("title", title);
+        data.put("description", description);
+
+        System.out.println(
           "addded listing for username: "
-              + username
-              + ", title: "
-              + title
-              + ", imageUrl: "
-              + imageUrl
-              + ", price: "
-              + price
-              + ", description: "
-              + description
-              + ", for user: "
-              + uid);
+            + username
+            + ", title: "
+            + title
+            + ", imageUrl: "
+            + imageUrl
+            + ", price: "
+            + price
+            + ", description: "
+            + description
+            + ", for user: "
+            + uid);
+      } else {
+        System.err.println("Skipping incomplete entry: " + listing);
+        throw new IllegalArgumentException("All listings arguments are required (uid, username, title, price, imageUrl, price, title, description)");
+      }
+//      data.put("item", listing);
+
 
       // get the current word count to make a unique word_id by index.
       int listingCount = this.storageHandler.getCollection(uid, "listings").size();

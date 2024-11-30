@@ -36,10 +36,8 @@ public class ListListingsHandler implements Route {
 
       // convert the key,value map to just a list of the listings.
       System.out.println(vals);
-      List<String> listings = vals.stream().map(items -> items.get("item"))
-        .filter(item -> item != null && !item.toString().contains("null")) // Filter out incomplete items
-        .map(Object::toString)
-        .toList();
+      List<String> listings = vals.stream().map(Object::toString).toList();
+//      List<String> listings = vals.stream().map(items -> items.get("listings").toString()).toList();
       System.out.println("listings: " + listings);
 //      System.out.println(vals.stream().map(listing -> listing.get("item")));
 
