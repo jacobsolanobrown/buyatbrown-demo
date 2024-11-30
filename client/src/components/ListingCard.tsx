@@ -5,10 +5,11 @@ interface CardProps {
   title: string;
   price: string;
   username: string;
+  description: string;
   onClick: () => void;
 }
 
-const ListingCard: React.FC<CardProps> = ({ imageUrl, title, price, username, onClick }) => {
+const ListingCard: React.FC<CardProps> = ({ imageUrl, title, price, username, description, onClick }) => {
   return (
     <div
       onClick={onClick}

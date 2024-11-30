@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Clothes from "./components/Tabs/Clothes";
 import Tech from "./components/Tabs/Tech";
@@ -24,7 +25,9 @@ const firebaseConfig = {
   appId: process.env.APP_ID,
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+export default db;
 
 function App() {
   return (
