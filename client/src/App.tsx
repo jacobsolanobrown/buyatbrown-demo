@@ -9,11 +9,8 @@ import Misc from "./components/Tabs/Misc";
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import School from "./components/Tabs/School";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-} from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
+import "./index.css";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -29,13 +26,30 @@ initializeApp(firebaseConfig);
 function App() {
   return (
     <div className="App">
-      <SignedOut class>
-        <SignInButton />
+      <SignedOut>
+        <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100">
+          <h1 className="p-4 text-red-600	text-6xl font-kodchasan font-semibold">
+            BUY @ BROWN
+          </h1>
+
+          <h2 className="p-4 text-2xl">
+            Buy & Sell Exclusively at Brown By Students, For Students
+          </h2>
+
+          <SignInButton>
+            <button className="p-4 text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-bold py-4 px-8 rounded-lg">
+              Sign in with Clerk
+            </button>
+          </SignInButton>
+        </div>
       </SignedOut>
 
       <SignedIn>
         <Router>
           <Navbar />
+          <p className="text-center text-2xl font-bold text-red-600">
+            Welcome to Buy@Brown
+          </p>
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/clothes" element={<Clothes />} />
@@ -53,5 +67,3 @@ function App() {
 }
 
 export default App;
-
-
