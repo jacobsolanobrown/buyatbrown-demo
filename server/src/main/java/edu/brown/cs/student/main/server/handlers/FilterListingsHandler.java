@@ -44,16 +44,14 @@ public class FilterListingsHandler implements Route {
       List<Map<String, Object>> conditionFilteredListings = allListings.stream().filter(listing ->
         (listing.get("condition").toString().toLowerCase().contains(condition.toLowerCase()) ||
           condition.equalsIgnoreCase("ignore"))).toList();
-      List<Map<String, Object>> descriptionFilteredListings = allListings.stream().filter(listing ->
+      List<Map<String, Object>> descriptionFilteredListings = conditionFilteredListings.stream().filter(listing ->
         (listing.get("description").toString().toLowerCase().contains(description.toLowerCase()) ||
           description.equalsIgnoreCase("ignore"))).toList();
+      List<Map<String, Object>> tagFilteredListings = descriptionFilteredListings.stream().filter(listing ->
+        (listing.get("tags").toString().toLowerCase().contains(tag.toLowerCase()) ||
+          tag.equalsIgnoreCase("ignore"))).toList();
 
-//          .filter(listing ->
-//          (condition == null || condition.equalsIgnoreCase((String) listing.get("condition"))) &&
-//            (tag == null || (listing.get("tags") != null && ((List<String>) listing.get("tags")).contains(tag))) &&
-//            (keyword == null || ((String) listing.get("description")).toLowerCase().contains(keyword.toLowerCase()))
-//        )
-        .collect(Collectors.toList());
+      List<Map<String, Object>> filteredListings = tagFilteredListings;
 
       responseMap.put("response_type", "success");
       responseMap.put("filtered_listings", filteredListings);
