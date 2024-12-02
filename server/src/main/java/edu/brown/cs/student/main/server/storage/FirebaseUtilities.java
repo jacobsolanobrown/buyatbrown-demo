@@ -62,6 +62,7 @@ public class FirebaseUtilities implements StorageInterface {
     // 3: Get data from document queries
     List<Map<String, Object>> data = new ArrayList<>();
     for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
+//      System.out.print(doc);
       data.add(doc.getData());
     }
 
@@ -109,6 +110,32 @@ public class FirebaseUtilities implements StorageInterface {
       // Delete the document
       docRef.delete();
 
+  }
+  @Override
+  public Map<String, Object> getListingForUser(String uid, String listingId) throws InterruptedException, ExecutionException {
+    Firestore db = FirestoreClient.getFirestore();
+
+    // 1. Get a reference to the user's document
+    DocumentReference userRef = db.collection("users").document(uid);
+
+    // 2. Get the user's listings collection
+    CollectionReference listingsRef = userRef.collection("listings");
+
+    // 3. Fetch all listings for the user
+    ApiFuture<QuerySnapshot> future = listingsRef.get();
+
+    // 4. Retrieve the query result (list of listings)
+    QuerySnapshot querySnapshot = future.get();
+
+    // 5. Search for the listing with the specified listingId
+    Map<String, Object> listing = querySnapshot.getDocuments().stream()
+        .filter(doc -> doc.getId().equalsIgnoreCase(listingId))  // Match based on listingId
+        .map(DocumentSnapshot::getData)  // Convert to Map<String, Object>
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + listingId));
+
+    // 6. Return the listing data
+    return listing;
   }
 
 

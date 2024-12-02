@@ -44,6 +44,8 @@ public class Server {
       Spark.get("create-user", new CreateUserHandler(firebaseUtils));
 
 //uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&description=sandals
+      //uid=bibif&title=slippers&price=30.99&description=new-sandals
+
       Spark.notFound(
           (request, response) -> {
             response.status(404); // Not Found

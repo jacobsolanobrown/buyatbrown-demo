@@ -66,12 +66,23 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
+  public Map<String, Object> getListingForUser(String uid, String listingId)
+      throws InterruptedException, ExecutionException {
+    return Map.of();
+  }
+
+  @Override
   public void clearUser(String uid) {
     if (uid == null) {
       throw new IllegalArgumentException("clearUser: uid cannot be null");
     }
     // Simulate clearing all user data
     database.remove(uid);
+  }
+
+  @Override
+  public List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException {
+    return List.of();
   }
 
   @Override

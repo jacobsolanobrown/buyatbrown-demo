@@ -14,6 +14,9 @@ public interface StorageInterface {
 
   void removeDocument(String uid, String collection_id, String doc_id);
 
+  Map<String, Object> getListingForUser(String uid,
+      String listingId) throws InterruptedException, ExecutionException;
+
   void clearUser(String uid) throws InterruptedException, ExecutionException;
 
   List<Map<String, Object>> getAllUsers()

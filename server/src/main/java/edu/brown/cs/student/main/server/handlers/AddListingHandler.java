@@ -77,6 +77,7 @@ public class AddListingHandler implements Route {
       this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       responseMap.put("response_type", "success");
+      responseMap.put("listingId", listingId);
       responseMap.put("title", title);
       responseMap.put("imageUrl", imageUrl);
       responseMap.put("price", price);

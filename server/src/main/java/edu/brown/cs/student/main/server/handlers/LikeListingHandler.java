@@ -34,13 +34,15 @@ public class LikeListingHandler implements Route {
       if (uid == null || listingId == null) {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
-      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
+      Map<String, Object> listing = this.storageHandler.getListingForUser(uid, listingId);
 
-      Map<String, Object> listing = allListings.stream()
-          .filter(listingMap -> listingMap.get("listingId").toString().equalsIgnoreCase(listingId)
-              || listingId.equalsIgnoreCase("ignore"))
-          .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + listingId));
+//      List<Map<String, Object>> allListings = this.storageHandler.getAllUsers();
+//
+//      Map<String, Object> listing = allListings.stream()
+//          .filter(listingMap -> listingMap.get("uid").toString().equalsIgnoreCase(uid)
+//              || uid.equalsIgnoreCase("ignore"))
+//          .findFirst()
+//          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + uid));
 
   // Add the listing to the user's liked listings
       String likedListingId = "liked-" + listingId;

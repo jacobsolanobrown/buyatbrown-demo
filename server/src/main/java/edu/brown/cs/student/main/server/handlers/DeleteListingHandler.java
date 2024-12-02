@@ -36,14 +36,22 @@ public class DeleteListingHandler implements Route {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
 
+      // Retrieve the user's listings from the database
       List<Map<String, Object>> collection = this.storageHandler.getCollection(uid, "listings");
-      if (!collection.contains(listingId)) {
+      System.out.println(collection);
+
+// Check if the listing with the specified listingId exists in the user's listings
+      boolean listingExists = collection.stream()
+          .anyMatch(listing -> listing.get("listingId").equals(listingId));  // Assuming the listingId is stored in the "listingId" key
+
+      if (!listingExists) {
         throw new IllegalArgumentException("Listing with ID " + listingId + " does not exist.");
       }
-      // Remove the listing from the database
+
+// Remove the listing from the database
       this.storageHandler.removeDocument(uid, "listings", listingId);
 
-      // Log success
+// Log success
       System.out.println("Deleted listing with ID: " + listingId + " for user: " + uid);
 
       // Prepare the success response
