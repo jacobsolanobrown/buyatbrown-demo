@@ -4,13 +4,13 @@ import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -91,6 +91,28 @@ public class FirebaseUtilities implements StorageInterface {
     docRef.set(data);
   }
 
+  @Override
+  public void removeDocument(String uid, String collection_id, String doc_id)  throws IllegalArgumentException {
+    if (uid == null || collection_id == null || doc_id == null) {
+      throw new IllegalArgumentException(
+          "removeDocument: uid, collection_id, or doc_id cannot be null");
+    }
+
+    // Log operation for debugging purposes
+    System.out.println("Attempting to delete document: " + doc_id + " from collection: " + collection_id + " for user: " + uid);
+      // Initialize Firestore instance
+      Firestore db = FirestoreClient.getFirestore();
+
+      // Get reference to the document
+      DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
+
+      // Delete the document
+      docRef.delete();
+
+  }
+
+
+
   // clears the collections inside of a specific user.
   @Override
   public void clearUser(String uid) throws IllegalArgumentException {
@@ -108,6 +130,32 @@ public class FirebaseUtilities implements StorageInterface {
       System.err.println("Error removing user : " + uid);
       System.err.println(e.getMessage());
     }
+  }
+
+  @Override
+  public List<Map<String, Object>> getAllUsers()
+      throws InterruptedException, ExecutionException {
+    // gets all listings for all users
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+// 2: Fetch all documents from the users collection
+    ApiFuture<QuerySnapshot> future = usersRef.get();
+
+    // 3: Retrieve the query results (documents)
+    QuerySnapshot querySnapshot = future.get();
+
+    // 4: Create a list to hold all users
+    List<Map<String, Object>> allUsers = new ArrayList<>();
+
+    // 5: Loop through each document in the query result and add it to the list
+    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+      // Convert each document to a Map and add it to the list
+      allUsers.add(document.getData());
+    }
+
+    // Return the list of users
+    return allUsers;
   }
 
   // gets all listings for all users

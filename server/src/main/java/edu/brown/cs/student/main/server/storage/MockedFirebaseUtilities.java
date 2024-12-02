@@ -61,6 +61,11 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
+  public void removeDocument(String uid, String collection_id, String doc_id) {
+
+  }
+
+  @Override
   public void clearUser(String uid) {
     if (uid == null) {
       throw new IllegalArgumentException("clearUser: uid cannot be null");

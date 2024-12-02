@@ -12,7 +12,12 @@ public interface StorageInterface {
   List<Map<String, Object>> getCollection(String uid, String collection_id)
       throws InterruptedException, ExecutionException;
 
+  void removeDocument(String uid, String collection_id, String doc_id);
+
   void clearUser(String uid) throws InterruptedException, ExecutionException;
+
+  List<Map<String, Object>> getAllUsers()
+      throws InterruptedException, ExecutionException;
 
   List<Map<String, Object>> getAllUsersListings() throws InterruptedException, ExecutionException;
 }
