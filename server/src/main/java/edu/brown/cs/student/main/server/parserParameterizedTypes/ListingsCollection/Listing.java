@@ -6,7 +6,8 @@ public class Listing {
   public String imageUrl;
   public String price;
   public String description;
+  public String listingId;
 
   public Listing(
-      String username, String title, String imageUrl, String price, String description) {}
+      String username, String title, String imageUrl, String price, String description, String listingId) {}
 }

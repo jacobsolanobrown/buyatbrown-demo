@@ -31,21 +31,27 @@ public class CreateUserHandler implements Route {
       String username = request.queryParams("username");
       String email = request.queryParams("email");
 
-
-
       // Validate required parameters
       if (uid == null || username == null) {
         throw new IllegalArgumentException("Both 'uid' and 'username' are required.");
       }
 
-      // Check if user already exists
-      List<Map<String, Object>> allUsers = this.storageHandler.getAllUsers();
+      // Check if the user already exists
+      List<Map<String, Object>> allUsers = this.storageHandler.getAllUsersListings();
+      System.out.println(allUsers);
 
-      Map<String, Object> user = allUsers.stream()
-          .filter(listingMap -> listingMap.get("username").toString().equalsIgnoreCase(username)
-              || username.equalsIgnoreCase("ignore"))
-          .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + username));
+      boolean userExists = allUsers.stream()
+          .anyMatch(userMap -> {
+            Object existingUsername = userMap.get("username");
+            return existingUsername != null && existingUsername.toString().equalsIgnoreCase(username);
+          });
+
+      if (userExists) {
+        // User already exists, send an error response
+        responseMap.put("response_type", "failure");
+        responseMap.put("error", "User with the username \"" + username + "\" already exists.");
+        return Utils.toMoshiJson(responseMap);
+      }
 
       // Create user data
       Map<String, Object> userData = new HashMap<>();

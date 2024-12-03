@@ -37,7 +37,7 @@ public class AddListingHandler implements Route {
       String description = request.queryParams("description");
 
       // create new listing with collected parameters
-      Listing listing = new Listing(username, title, imageUrl, price, description);
+//      Listing listing = new Listing(username, title, imageUrl, price, description);
 
       Map<String, Object> data = new HashMap<>();
 
@@ -63,7 +63,7 @@ public class AddListingHandler implements Route {
             + ", for user: "
             + uid);
       } else {
-        System.err.println("Skipping incomplete entry: " + listing);
+//        System.err.println("Skipping incomplete entry: " + listing);
         throw new IllegalArgumentException("All listings arguments are required (uid, username, title, price, imageUrl, price, title, description)");
       }
 //      data.put("item", listing);
@@ -72,6 +72,9 @@ public class AddListingHandler implements Route {
       // get the current word count to make a unique word_id by index.
       int listingCount = this.storageHandler.getCollection(uid, "listings").size();
       String listingId = "listing-" + listingCount;
+
+      data.put("listingId", listingId);
+      Listing listing = new Listing(username, title, imageUrl, price, description, listingId);
 
       // use the storage handler to add the document to the database
       this.storageHandler.addDocument(uid, "listings", listingId, data);
