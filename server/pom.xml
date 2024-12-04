@@ -43,14 +43,14 @@
       <version>1.13.0</version>
     </dependency>
 
-  <!--
+    <!--
       Javatuples is added to use Tuples in our code (eg. Pair<> in FilterListingsHandler).
   -->
     <dependency>
       <groupId>org.javatuples</groupId>
       <artifactId>javatuples</artifactId>
       <version>1.2</version>
-  </dependency>
+    </dependency>
 
     <!--
            Spark is a lightweight framework for creating web applications.

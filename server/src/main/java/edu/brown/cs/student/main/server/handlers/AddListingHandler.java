@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+// import org.
 /** Class for adding a listing to the database */
 public class AddListingHandler implements Route {
 
@@ -21,8 +23,8 @@ public class AddListingHandler implements Route {
   }
 
   /**
-   * Count the number of words between commas
-   * (used to validate filterByTags input (i.e. if the number of words per tag <= 2)
+   * Count the number of words between commas (used to validate filterByTags input (i.e. if the
+   * number of words per tag <= 2)
    *
    * @param text A String input of word(s) separated by commas
    * @return An int representing the number of words between commas
@@ -45,16 +47,16 @@ public class AddListingHandler implements Route {
   }
 
   /**
-   * Checks for duplicate entries in a String that represents a list of strings
-   * (used to validate filterByTags input (i.e. there are no duplicate tags)
+   * Checks for duplicate entries in a String that represents a list of strings (used to validate
+   * filterByTags input (i.e. there are no duplicate tags)
    *
    * @param text A String input of word(s) separated by commas
    * @return A Boolean representing if there are duplicateEntries
    */
   public static boolean noDuplicateEntries(String text) {
-    HashSet<String> noDuplicateEntries =new HashSet<String>(Arrays.asList(text.split(",")));
+    HashSet<String> noDuplicateEntries = new HashSet<String>(Arrays.asList(text.split(",")));
     System.out.println(noDuplicateEntries.size());
-    ArrayList<String> duplicateEntries =new ArrayList<String>(Arrays.asList(text.split(",")));
+    ArrayList<String> duplicateEntries = new ArrayList<String>(Arrays.asList(text.split(",")));
     System.out.println(duplicateEntries.size());
     System.out.println(noDuplicateEntries.size() == duplicateEntries.size());
     return (noDuplicateEntries.size() == duplicateEntries.size());
@@ -86,12 +88,20 @@ public class AddListingHandler implements Route {
 
       Map<String, Object> data = new HashMap<>();
       System.out.println("Validating parameter values for search");
-      if (uid == null || username == null || imageUrl == null || price == null ||
-        condition == null || description == null || title == null || tags == null) {
-        System.out.println("All listings arguments are required "
-          + "(uid, username, title, tags, price, imageUrl, condition, description)");
-        throw new IllegalArgumentException("All listings arguments are required "
-          + "(uid, username, title, tags, price, imageUrl, condition, description)");
+      if (uid == null
+          || username == null
+          || imageUrl == null
+          || price == null
+          || condition == null
+          || description == null
+          || title == null
+          || tags == null) {
+        System.out.println(
+            "All listings arguments are required "
+                + "(uid, username, title, tags, price, imageUrl, condition, description)");
+        throw new IllegalArgumentException(
+            "All listings arguments are required "
+                + "(uid, username, title, tags, price, imageUrl, condition, description)");
       }
 
       // check if title is less than 40 characters
@@ -109,15 +119,19 @@ public class AddListingHandler implements Route {
       // check if condition option is one of the three valid options
       condition = condition.toLowerCase();
       if (!(condition.equals("new") || condition.equals("like new") || condition.equals("used"))) {
-        System.out.println("Please choose from valid condition inputs (i.e. new, like new, or used");
-        throw new IllegalArgumentException("Please choose from valid condition inputs (i.e. New, Like New, or Used");
+        System.out.println(
+            "Please choose from valid condition inputs (i.e. new, like new, or used");
+        throw new IllegalArgumentException(
+            "Please choose from valid condition inputs (i.e. New, Like New, or Used");
       }
 
-
       // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
-      if (tags.length()- tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length() > 0) {
-        System.out.println("Each tag should only have ONE space between words and non before and after commas");
-        throw new IllegalArgumentException("Each tag should only have ONE space between words and non before and after commas");
+      if (tags.length() - tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length()
+          > 0) {
+        System.out.println(
+            "Each tag should only have ONE space between words and non before and after commas");
+        throw new IllegalArgumentException(
+            "Each tag should only have ONE space between words and non before and after commas");
       }
 
       if (countWordsBetweenCommas(tags) > 2) {
@@ -126,7 +140,7 @@ public class AddListingHandler implements Route {
       }
 
       // tags are in the form "tag1,tag2,tag3, two wordtag"
-      if (tags.length()- tags.replace(",,", "").replace(", ,", "").length() > 0) {
+      if (tags.length() - tags.replace(",,", "").replace(", ,", "").length() > 0) {
         System.out.println("Each tag should have a value");
         throw new IllegalArgumentException("Each tag should have a value");
       }
@@ -154,8 +168,12 @@ public class AddListingHandler implements Route {
       data.put("description", description);
 
       // get the current word count to make a unique word_id by index.
+      LocalDateTime now = LocalDateTime.now();
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      String formattedDateTime = now.format(formatter);
+
       int listingCount = this.storageHandler.getCollection(uid, "listings").size();
-      String listingId = "listing-" + listingCount;
+      String listingId = "listing-" + listingCount + formattedDateTime;
 
       // WHAT IF WE DELEte LISTING1 OUT OF 5 LISTINGS? THEN LISTING COUNT IS LOWER BUT
       // THERE ARE STILL 5 LISTINGS?
@@ -165,20 +183,20 @@ public class AddListingHandler implements Route {
       this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       System.out.println(
-        "addded listing for username: "
-          + username
-          + ", title: "
-          + condition
-          + ", tags: "
-          + tags
-          + ", imageUrl: "
-          + imageUrl
-          + ", price: "
-          + price
-          + ", description: "
-          + description
-          + ", for user: "
-          + uid);
+          "addded listing for username: "
+              + username
+              + ", title: "
+              + condition
+              + ", tags: "
+              + tags
+              + ", imageUrl: "
+              + imageUrl
+              + ", price: "
+              + price
+              + ", description: "
+              + description
+              + ", for user: "
+              + uid);
 
       responseMap.put("response_type", "success");
       responseMap.put("title", condition);

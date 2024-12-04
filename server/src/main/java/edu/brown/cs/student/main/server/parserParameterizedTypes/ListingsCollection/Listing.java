@@ -10,6 +10,11 @@ public class Listing {
   public String condition;
 
   public Listing(
-    String username, String title, String tags, String imageUrl, String price, String description,
-    String condition) {}
+      String username,
+      String title,
+      String tags,
+      String imageUrl,
+      String price,
+      String description,
+      String condition) {}
 }

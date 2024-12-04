@@ -1,10 +1,10 @@
-//package edu.brown.cs.student.main.server.handlers;
+// package edu.brown.cs.student.main.server.handlers;
 //
-//public enum ListingFields {
+// public enum ListingFields {
 //  TITLE,
 //  USERNAME,
 //  UID,
 //  CONDITION,
 //  DESCRIPTION,
 //  TAGS
-//}
+// }

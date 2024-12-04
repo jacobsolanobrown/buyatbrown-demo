@@ -1,14 +1,14 @@
-//package edu.brown.cs.student.main.server.handlers;
+// package edu.brown.cs.student.main.server.handlers;
 //
-//import edu.brown.cs.student.main.server.storage.StorageInterface;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import spark.Request;
-//import spark.Response;
-//import spark.Route;
+// import edu.brown.cs.student.main.server.storage.StorageInterface;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
+// import spark.Request;
+// import spark.Response;
+// import spark.Route;
 //
-//public class FilterListingsHandlerOld implements Route {
+// public class FilterListingsHandlerOld implements Route {
 //
 //  private final StorageInterface storageHandler;
 //
@@ -51,10 +51,13 @@
 //      List<Map<String, Object>> conditionFilteredListings = allListings.stream().filter(listing ->
 //        (listing.get("condition").toString().toLowerCase().contains(condition.toLowerCase()) ||
 //          condition.equalsIgnoreCase("ignore"))).toList();
-//      List<Map<String, Object>> descriptionFilteredListings = conditionFilteredListings.stream().filter(listing ->
-//        (listing.get("description").toString().toLowerCase().contains(description.toLowerCase()) ||
+//      List<Map<String, Object>> descriptionFilteredListings =
+// conditionFilteredListings.stream().filter(listing ->
+//        (listing.get("description").toString().toLowerCase().contains(description.toLowerCase())
+// ||
 //          description.equalsIgnoreCase("ignore"))).toList();
-//      List<Map<String, Object>> tagFilteredListings = descriptionFilteredListings.stream().filter(listing ->
+//      List<Map<String, Object>> tagFilteredListings =
+// descriptionFilteredListings.stream().filter(listing ->
 //        (listing.get("tags").toString().toLowerCase().contains(tag.toLowerCase()) ||
 //          tag.equalsIgnoreCase("ignore"))).toList();
 //
@@ -70,4 +73,4 @@
 //
 //    return Utils.toMoshiJson(responseMap);
 //  }
-//}
+// }

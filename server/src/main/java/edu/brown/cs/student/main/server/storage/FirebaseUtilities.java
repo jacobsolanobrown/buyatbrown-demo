@@ -10,7 +10,6 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -69,8 +68,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void addDocument(
-      String uid, String collection_id, String doc_id, Map<String, Object> data)
+  public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(
