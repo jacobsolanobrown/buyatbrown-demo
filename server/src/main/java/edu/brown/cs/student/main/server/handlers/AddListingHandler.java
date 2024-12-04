@@ -100,10 +100,10 @@ public class AddListingHandler implements Route {
         throw new IllegalArgumentException("Title must be less than or equal to 40 characters");
       }
 
-      // check if title is greater than or equal to 40
-      if (Double.parseDouble(price) <= 0) {
-        System.out.println("Price must be greater than or equal to 0");
-        throw new IllegalArgumentException("Price must be greater than or equal to 0");
+      // check if price is negative value
+      if (Double.parseDouble(price) < 0) {
+        System.out.println("Price cannot be negative");
+        throw new IllegalArgumentException("Price cannot be negative");
       }
 
       // check if condition option is one of the three valid options
@@ -114,9 +114,21 @@ public class AddListingHandler implements Route {
       }
 
 
+      // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
+      if (tags.length()- tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length() > 0) {
+        System.out.println("Each tag should only have ONE space between words and non before and after commas");
+        throw new IllegalArgumentException("Each tag should only have ONE space between words and non before and after commas");
+      }
+
       if (countWordsBetweenCommas(tags) > 2) {
         System.out.println("Each tag should be less than or equal to 2 words");
         throw new IllegalArgumentException("Each tag should be less than or equal to 2 words");
+      }
+
+      // tags are in the form "tag1,tag2,tag3, two wordtag"
+      if (tags.length()- tags.replace(",,", "").replace(", ,", "").length() > 0) {
+        System.out.println("Each tag should have a value");
+        throw new IllegalArgumentException("Each tag should have a value");
       }
 
       // if there are more than 5 tags, error
@@ -141,6 +153,17 @@ public class AddListingHandler implements Route {
       data.put("title", condition);
       data.put("description", description);
 
+      // get the current word count to make a unique word_id by index.
+      int listingCount = this.storageHandler.getCollection(uid, "listings").size();
+      String listingId = "listing-" + listingCount;
+
+      // WHAT IF WE DELEte LISTING1 OUT OF 5 LISTINGS? THEN LISTING COUNT IS LOWER BUT
+      // THERE ARE STILL 5 LISTINGS?
+      // INSTEAD... IS THERE A WAY TO ATOMICALLY ADD TO THE LISTING WITHOUT HAVINF DUPLICATES?
+
+      // use the storage handler to add the document to the database
+      this.storageHandler.addDocument(uid, "listings", listingId, data);
+
       System.out.println(
         "addded listing for username: "
           + username
@@ -156,13 +179,6 @@ public class AddListingHandler implements Route {
           + description
           + ", for user: "
           + uid);
-
-      // get the current word count to make a unique word_id by index.
-      int listingCount = this.storageHandler.getCollection(uid, "listings").size();
-      String listingId = "listing-" + listingCount;
-
-      // use the storage handler to add the document to the database
-      this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       responseMap.put("response_type", "success");
       responseMap.put("title", condition);
