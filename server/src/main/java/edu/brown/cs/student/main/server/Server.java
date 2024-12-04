@@ -3,6 +3,8 @@ package edu.brown.cs.student.main.server;
 import static spark.Spark.after;
 
 import edu.brown.cs.student.main.server.handlers.AddListingHandler;
+import edu.brown.cs.student.main.server.handlers.FilterListingsHandler;
+import edu.brown.cs.student.main.server.handlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.ListListingsHandler;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
@@ -32,8 +34,9 @@ public class Server {
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
       //      GeoMapCollection geoMapCollection = myDataSource.getData();
       Spark.get("add-listings", new AddListingHandler(firebaseUtils));
-      //      Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
+      Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
       Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
+      Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
