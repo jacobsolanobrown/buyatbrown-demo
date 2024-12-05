@@ -9,11 +9,11 @@ import spark.Response;
 import spark.Route;
 
 /** Class for the ListAllUserListings route, which lists all listings for all users */
-public class ListAllUserListings implements Route {
+public class ListAllUserListingsHandler implements Route {
 
   public StorageInterface storageHandler;
 
-  public ListAllUserListings(StorageInterface storageHandler) {
+  public ListAllUserListingsHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 

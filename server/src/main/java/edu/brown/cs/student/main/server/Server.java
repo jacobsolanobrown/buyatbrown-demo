@@ -3,11 +3,9 @@ package edu.brown.cs.student.main.server;
 import static spark.Spark.after;
 
 import edu.brown.cs.student.main.server.handlers.AddListingHandler;
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
-import edu.brown.cs.student.main.server.handlers.DeleteListingHandler;
-import edu.brown.cs.student.main.server.handlers.LikeListingHandler;
+import edu.brown.cs.student.main.server.handlers.FilterListingsHandler;
+import edu.brown.cs.student.main.server.handlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.ListListingsHandler;
-import edu.brown.cs.student.main.server.handlers.UpdateListingHandler;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.FileNotFoundException;
@@ -36,15 +34,9 @@ public class Server {
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
       //      GeoMapCollection geoMapCollection = myDataSource.getData();
       Spark.get("add-listings", new AddListingHandler(firebaseUtils));
-      //      Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
+      Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
       Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
-      Spark.get("delete-listings", new DeleteListingHandler(firebaseUtils));
-      Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
-      Spark.get("update-listings", new UpdateListingHandler(firebaseUtils));
-      Spark.get("create-user", new CreateUserHandler(firebaseUtils));
-
-//uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&description=sandals
-      //uid=bibif&title=slippers&price=30.99&description=new-sandals
+      Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
