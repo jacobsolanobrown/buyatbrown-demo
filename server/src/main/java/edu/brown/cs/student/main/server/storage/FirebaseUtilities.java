@@ -70,6 +70,11 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
+  public void addListing(Map<String, Object> listing) {
+
+  }
+
+  @Override
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
@@ -89,6 +94,8 @@ public class FirebaseUtilities implements StorageInterface {
         db.collection("users").document(uid).collection(collection_id).document(doc_id);
     // 2: Write data to the collection ref
     docRef.set(data);
+//    System.out.println("addDocument called with uid: " + uid + ", collection_id: " + collection_id + ", doc_id: " + doc_id + ", data: " + data);
+
   }
 
   @Override
@@ -159,7 +166,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public List<Map<String, Object>> getAllUsers()
+  public List<Map<String,Object>> getAllUsers()
       throws InterruptedException, ExecutionException {
     // gets all listings for all users
     Firestore db = FirestoreClient.getFirestore();
@@ -214,6 +221,33 @@ public class FirebaseUtilities implements StorageInterface {
     }
     return allListings;
   }
+  @Override
+  public Map<String, Object> getDocument(String uid, String collectionId, String docId) throws IllegalArgumentException, ExecutionException, InterruptedException {
+    if (uid == null || collectionId == null || docId == null) {
+      throw new IllegalArgumentException("getDocument: uid, collectionId, and docId cannot be null");
+    }
+
+    Firestore db = FirestoreClient.getFirestore();
+
+    System.out.println("Fetching document for UID: " + uid);
+    System.out.println("Collection ID: " + collectionId);
+    System.out.println("Document ID: " + docId);
+
+    DocumentReference docRef = db.collection("users").document(uid).collection(collectionId).document(docId);
+
+    DocumentSnapshot documentSnapshot = docRef.get().get();
+
+    if (!documentSnapshot.exists()) {
+      System.out.println("No document found with ID: " + docId);
+      throw new IllegalArgumentException("No document found with ID: " + docId);
+    }
+
+    System.out.println("Document Data: " + documentSnapshot.getData());
+
+    return documentSnapshot.getData();
+  }
+
+
 
   private void deleteDocument(DocumentReference doc) {
     // for each subcollection, run deleteCollection()

@@ -164,7 +164,7 @@ public class AddListingHandler implements Route {
       data.put("tags", tags);
       data.put("condition", condition);
       data.put("price", price);
-      data.put("title", condition);
+      data.put("title", title);
       data.put("description", description);
 
       // get the current word count to make a unique word_id by index.
@@ -199,14 +199,16 @@ public class AddListingHandler implements Route {
               + uid);
 
       responseMap.put("response_type", "success");
-      responseMap.put("title", condition);
-      responseMap.put("imageUrl", imageUrl);
-      responseMap.put("tags", tags);
-      responseMap.put("price", price);
-      responseMap.put("description", description);
-      responseMap.put("username", username);
-      responseMap.put("condition", condition);
-      responseMap.put("uid", uid);
+      responseMap.putAll(data);
+      responseMap.put("listingId", listingId);
+//      responseMap.put("title", condition);
+//      responseMap.put("imageUrl", imageUrl);
+//      responseMap.put("tags", tags);
+//      responseMap.put("price", price);
+//      responseMap.put("description", description);
+//      responseMap.put("username", username);
+//      responseMap.put("condition", condition);
+//      responseMap.put("uid", uid);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

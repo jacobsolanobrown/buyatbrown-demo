@@ -32,18 +32,30 @@ public class CreateUserHandler implements Route {
       String email = request.queryParams("email");
 
       // Validate required parameters
-      if (uid == null || username == null) {
+      if (uid == null || username == null || email == null) {
         throw new IllegalArgumentException("Both 'uid' and 'username' are required.");
       }
 
       // Check if the user already exists
-      List<Map<String, Object>> allUsers = this.storageHandler.getAllUsersListings();
+      List<Map<String, Object>> allUsers = this.storageHandler.getAllUsers();
       System.out.println(allUsers);
 
       boolean userExists = allUsers.stream()
           .anyMatch(userMap -> {
-            Object existingUsername = userMap.get("username");
-            return existingUsername != null && existingUsername.toString().equalsIgnoreCase(username);
+            // Navigate through the nested structure
+            Map<String, Object> collections = (Map<String, Object>) userMap.get("collections");
+            if (collections != null) {
+              Map<String, Object> users = (Map<String, Object>) collections.get("users");
+              if (users != null) {
+                return users.values().stream()
+                    .anyMatch(userDetails -> {
+                      Map<String, Object> userDetailsMap = (Map<String, Object>) userDetails;
+                      Object existingUsername = userDetailsMap.get("username");
+                      return existingUsername != null && existingUsername.toString().equalsIgnoreCase(username);
+                    });
+              }
+            }
+            return false;
           });
 
       if (userExists) {
@@ -52,6 +64,7 @@ public class CreateUserHandler implements Route {
         responseMap.put("error", "User with the username \"" + username + "\" already exists.");
         return Utils.toMoshiJson(responseMap);
       }
+
 
       // Create user data
       Map<String, Object> userData = new HashMap<>();

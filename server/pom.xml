@@ -57,11 +57,11 @@
            Spark is most commonly used to create APIs and websites.
     -->
 
-    <!--    <dependency>-->
-    <!--      <groupId>com.sparkjava</groupId>-->
-    <!--      <artifactId>spark-core</artifactId>-->
-    <!--      <version>2.9.3</version>-->
-    <!--    </dependency>-->
+        <dependency>
+          <groupId>com.sparkjava</groupId>
+          <artifactId>spark-core</artifactId>
+          <version>2.9.3</version>
+        </dependency>
 
     <dependency>
       <groupId>com.sparkjava</groupId>
