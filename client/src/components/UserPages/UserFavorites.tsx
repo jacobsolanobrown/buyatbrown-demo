@@ -79,6 +79,7 @@ export default function UserFavorites() {
               title="Brown Uni Sweatshirt"
               price="$10.99"
               username="username.meow"
+              description=""
               onClick={handleCardClick}
             />
             <ListingCard
@@ -86,6 +87,7 @@ export default function UserFavorites() {
               title="Brown Uni Sweatshirt"
               price="$10.99"
               username="username.meow"
+              description=""
               onClick={handleCardClick}
             />
             <ListingCard
@@ -93,6 +95,7 @@ export default function UserFavorites() {
               title="Brown Uni Sweatshirt"
               price="$10.99"
               username="username.meow"
+              description=""
               onClick={handleCardClick}
             />
             <ListingCard
@@ -100,6 +103,7 @@ export default function UserFavorites() {
               title="Brown Uni Sweatshirt"
               price="$10.99"
               username="username.meow"
+              description=""
               onClick={handleCardClick}
             />
           </div>
