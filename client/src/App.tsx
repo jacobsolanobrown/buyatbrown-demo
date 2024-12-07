@@ -15,6 +15,10 @@ import Misc from "./components/Tabs/Misc";
 import Navbar from "./components/Navbar";
 import Homepage from "./components/Homepage";
 import School from "./components/Tabs/School";
+import UserFavorites from "./components/UserPages/UserFavorites";
+import UserListings from "./components/UserPages/UserListings";
+import UserMessages from "./components/UserPages/UserMessages";
+import UserSettings from "./components/UserPages/UserSettings";
 import SignInPage from "./components/SignInPage";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import "./index.css";
@@ -28,7 +32,9 @@ const firebaseConfig = {
   appId: process.env.APP_ID,
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+// const db = getFirestore(app);
+// export default db;
 
 function App() {
   const { user } = useUser();
@@ -96,6 +102,7 @@ function App() {
             <h1 className="text-center text-2xl font-bold text-red-600"
             >THIS IS THE USER'S USERNAME: {username} </h1>
             <Routes>
+            <Route path="/" element={<Homepage />} />
               <Route path="/" element={<Homepage />} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
@@ -104,6 +111,10 @@ function App() {
               <Route path="/misc" element={<Misc />} />
               <Route path="/school" element={<School />} />
               <Route path="/furniture" element={<Furniture />} />
+            <Route path="/favorites" element={<UserFavorites />} />
+            <Route path="/yourlistings" element={<UserListings />} />
+            <Route path="/messages" element={<UserMessages />} />
+            <Route path="/settings" element={<UserSettings />} />
             </Routes>
           </div>
         )}

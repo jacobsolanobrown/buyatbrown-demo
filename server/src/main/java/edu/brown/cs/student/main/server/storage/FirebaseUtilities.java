@@ -1,0 +1,282 @@
+package edu.brown.cs.student.main.server.storage;
+
+import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+public class FirebaseUtilities implements StorageInterface {
+
+  public FirebaseUtilities() throws IOException {
+    // TODO: FIRESTORE PART 0:
+    // Create /resources/ folder with firebase_config.json and
+    // add your admin SDK from Firebase. see:
+    // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
+    String workingDirectory = System.getProperty("user.dir");
+    Path firebaseConfigPath = Paths.get(workingDirectory, "resources", "firebase_config.json");
+
+    // ^-- if your /resources/firebase_config.json exists but is not found,
+    // try printing workingDirectory and messing around with this path.
+
+    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+
+    FirebaseOptions options =
+        new FirebaseOptions.Builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .build();
+
+    FirebaseApp.initializeApp(options);
+  }
+
+  @Override
+  public List<Map<String, Object>> getCollection(String uid, String collection_id)
+      throws InterruptedException, ExecutionException, IllegalArgumentException {
+    if (uid == null || collection_id == null) {
+      throw new IllegalArgumentException("getCollection: uid and/or collection_id cannot be null");
+    }
+
+    // gets all documents in the collection 'collection_id' for user 'uid'
+
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Make the data payload to add to your collection
+    CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
+
+    // 2: Get pin documents
+    QuerySnapshot dataQuery = dataRef.get().get();
+
+    // 3: Get data from document queries
+    List<Map<String, Object>> data = new ArrayList<>();
+    for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
+//      System.out.print(doc);
+      data.add(doc.getData());
+    }
+
+    return data;
+  }
+
+  @Override
+  public void addListing(Map<String, Object> listing) {
+
+  }
+
+  @Override
+  public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
+      throws IllegalArgumentException {
+    if (uid == null || collection_id == null || doc_id == null || data == null) {
+      throw new IllegalArgumentException(
+          "addDocument: uid, collection_id, doc_id, or data cannot be null");
+    }
+    // adds a new document 'doc_name' to colleciton 'collection_id' for user 'uid'
+    // with data payload 'data'.
+
+    // TODO: FIRESTORE PART 1:
+    // use the guide below to implement this handler
+    // - https://firebase.google.com/docs/firestore/quickstart#add_data
+
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the collection that you created
+    DocumentReference docRef =
+        db.collection("users").document(uid).collection(collection_id).document(doc_id);
+    // 2: Write data to the collection ref
+    docRef.set(data);
+//    System.out.println("addDocument called with uid: " + uid + ", collection_id: " + collection_id + ", doc_id: " + doc_id + ", data: " + data);
+
+  }
+
+  @Override
+  public void removeDocument(String uid, String collection_id, String doc_id)  throws IllegalArgumentException {
+    if (uid == null || collection_id == null || doc_id == null) {
+      throw new IllegalArgumentException(
+          "removeDocument: uid, collection_id, or doc_id cannot be null");
+    }
+
+    // Log operation for debugging purposes
+    System.out.println("Attempting to delete document: " + doc_id + " from collection: " + collection_id + " for user: " + uid);
+      // Initialize Firestore instance
+      Firestore db = FirestoreClient.getFirestore();
+
+      // Get reference to the document
+      DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
+
+      // Delete the document
+      docRef.delete();
+
+  }
+  @Override
+  public Map<String, Object> getListingForUser(String uid, String listingId) throws InterruptedException, ExecutionException {
+    Firestore db = FirestoreClient.getFirestore();
+
+    // 1. Get a reference to the user's document
+    DocumentReference userRef = db.collection("users").document(uid);
+
+    // 2. Get the user's listings collection
+    CollectionReference listingsRef = userRef.collection("listings");
+
+    // 3. Fetch all listings for the user
+    ApiFuture<QuerySnapshot> future = listingsRef.get();
+
+    // 4. Retrieve the query result (list of listings)
+    QuerySnapshot querySnapshot = future.get();
+
+    // 5. Search for the listing with the specified listingId
+    Map<String, Object> listing = querySnapshot.getDocuments().stream()
+        .filter(doc -> doc.getId().equalsIgnoreCase(listingId))  // Match based on listingId
+        .map(DocumentSnapshot::getData)  // Convert to Map<String, Object>
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + listingId));
+
+    // 6. Return the listing data
+    return listing;
+  }
+
+
+
+  // clears the collections inside of a specific user.
+  @Override
+  public void clearUser(String uid) throws IllegalArgumentException {
+    if (uid == null) {
+      throw new IllegalArgumentException("removeUser: uid cannot be null");
+    }
+    try {
+      // removes all data for user 'uid'
+      Firestore db = FirestoreClient.getFirestore();
+      // 1: Get a ref to the user document
+      DocumentReference userDoc = db.collection("users").document(uid);
+      // 2: Delete the user document
+      deleteDocument(userDoc);
+    } catch (Exception e) {
+      System.err.println("Error removing user : " + uid);
+      System.err.println(e.getMessage());
+    }
+  }
+
+  @Override
+  public List<Map<String,Object>> getAllUsers()
+      throws InterruptedException, ExecutionException {
+    // gets all listings for all users
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+// 2: Fetch all documents from the users collection
+    ApiFuture<QuerySnapshot> future = usersRef.get();
+
+    // 3: Retrieve the query results (documents)
+    QuerySnapshot querySnapshot = future.get();
+
+    // 4: Create a list to hold all users
+    List<Map<String, Object>> allUsers = new ArrayList<>();
+
+    // 5: Loop through each document in the query result and add it to the list
+    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+      // Convert each document to a Map and add it to the list
+      allUsers.add(document.getData());
+    }
+
+    // Return the list of users
+    return allUsers;
+  }
+
+  // gets all listings for all users
+  @Override
+  public List<Map<String, Object>> getAllUsersListings()
+      throws InterruptedException, ExecutionException {
+    // gets all listings for all users
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+    // Create a list to store all the listings
+    List<Map<String, Object>> allListings = new ArrayList<>();
+
+    // 2: Get all user documents
+    for (DocumentReference userDoc : usersRef.listDocuments()) {
+      // 3: Get all listing documents for each user
+      CollectionReference listingsRef = userDoc.collection("listings");
+      // 4: Get all listing documents queries for each user
+      QuerySnapshot listingsQuery = listingsRef.get().get();
+      // 5: Get data from document queries
+      for (QueryDocumentSnapshot listingsDoc : listingsQuery.getDocuments()) {
+        // 6: Add the listing data to the list
+        Map<String, Object> listingData = listingsDoc.getData();
+        System.out.println(listingData);
+        // add the user id to the listing data
+        listingData.put("uid", userDoc.getId());
+        // add the listing id to the listing data
+        allListings.add(listingData);
+      }
+    }
+    return allListings;
+  }
+  @Override
+  public Map<String, Object> getDocument(String uid, String collectionId, String docId) throws IllegalArgumentException, ExecutionException, InterruptedException {
+    if (uid == null || collectionId == null || docId == null) {
+      throw new IllegalArgumentException("getDocument: uid, collectionId, and docId cannot be null");
+    }
+
+    Firestore db = FirestoreClient.getFirestore();
+
+    System.out.println("Fetching document for UID: " + uid);
+    System.out.println("Collection ID: " + collectionId);
+    System.out.println("Document ID: " + docId);
+
+    DocumentReference docRef = db.collection("users").document(uid).collection(collectionId).document(docId);
+
+    DocumentSnapshot documentSnapshot = docRef.get().get();
+
+    if (!documentSnapshot.exists()) {
+      System.out.println("No document found with ID: " + docId);
+      throw new IllegalArgumentException("No document found with ID: " + docId);
+    }
+
+    System.out.println("Document Data: " + documentSnapshot.getData());
+
+    return documentSnapshot.getData();
+  }
+
+
+
+  private void deleteDocument(DocumentReference doc) {
+    // for each subcollection, run deleteCollection()
+    Iterable<CollectionReference> collections = doc.listCollections();
+    for (CollectionReference collection : collections) {
+      deleteCollection(collection);
+    }
+    // then delete the document
+    doc.delete();
+  }
+
+  // recursively removes all the documents and collections inside a collection
+  // https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
+  private void deleteCollection(CollectionReference collection) {
+    try {
+
+      // get all documents in the collection
+      ApiFuture<QuerySnapshot> future = collection.get();
+      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+      // delete each document
+      for (QueryDocumentSnapshot doc : documents) {
+        doc.getReference().delete();
+      }
+
+      // NOTE: the query to documents may be arbitrarily large. A more robust
+      // solution would involve batching the collection.get() call.
+    } catch (Exception e) {
+      System.err.println("Error deleting collection : " + e.getMessage());
+    }
+  }
+}
