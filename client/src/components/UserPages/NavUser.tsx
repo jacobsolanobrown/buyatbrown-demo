@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 export default function NavUser() {
   return (
-    <div className="bg-red-500 text-white w-48 rounded-3xl shadow-lg p-4 mt-8 ml-8 space-y-6 ">
+    <div className="bg-red-500 text-white w-48 rounded-3xl shadow-lg p-4 mt-8 ml-8 space-y-6">
       <Link
         to="/"
-        className="flex items-center justify-center space-x-2 text-sm font-medium hover:underline"
+        className="flex  justify-center space-x-2 text-sm font-medium hover:underline"
       >
         <span className="text-xl">←</span>
         <span>Back</span>
@@ -29,4 +29,5 @@ export default function NavUser() {
     </div>
   );
 }
+
 
