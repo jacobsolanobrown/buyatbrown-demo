@@ -13,6 +13,7 @@ function Homepage() {
         title="Item 1"
         price="$10"
         username="user1"
+        description="description"
         onClick={handleCardClick}
       />
       <ListingCard
@@ -20,6 +21,7 @@ function Homepage() {
         title="item 2"
         price="$40"
         username="user2"
+        description="description"
         onClick={handleCardClick}
       />
     </div>

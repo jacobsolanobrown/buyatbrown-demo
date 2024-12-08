@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.server.storage;
 
-import com.google.cloud.firestore.DocumentReference;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -24,10 +23,14 @@ public interface StorageInterface {
   List<Map<String, Object>> getAllUsers()
       throws InterruptedException, ExecutionException;
 
+  List<Map<String, Object>> getAllUserDataMaps()
+    throws ExecutionException, InterruptedException;
+
   List<Map<String, Object>> getAllUsersListings() throws InterruptedException, ExecutionException;
 
   Map<String, Object> getDocument(String uid, String collectionId,
       String docId) throws IllegalArgumentException, ExecutionException, InterruptedException;
+
 }
 
 

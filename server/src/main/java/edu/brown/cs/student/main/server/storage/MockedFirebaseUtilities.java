@@ -188,6 +188,18 @@ public class MockedFirebaseUtilities implements StorageInterface {
     return userIdList;
   }
 
+  /**
+   * TODO: THIS IS NOT IMPLEMENTED YET
+   * @return
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @Override
+  public List<Map<String, Object>> getAllUserDataMaps()
+    throws ExecutionException, InterruptedException {
+    return List.of();
+  }
+
 
   @Override
   public List<Map<String, Object>> getAllUsersListings() {
