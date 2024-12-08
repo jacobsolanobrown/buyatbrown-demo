@@ -15,21 +15,11 @@ async function queryAPI(
   return response.json();
 }
 
-export async function addWord(uid: string, word: string) {
-  return await queryAPI("add-word", {
+// This function is used to create a new user in the database using the server's createUser handler
+export async function createUser(uid: string, username: string, email: string) {
+  return await queryAPI("create-user", {
     uid: uid,
-    word: word,
-  });
-}
-
-export async function getWords(uid: string) {
-  return await queryAPI("list-words", {
-    uid: uid,
-  });
-}
-
-export async function clearUser(uid: string) {
-  return await queryAPI("clear-user", {
-    uid: uid,
+    username: username,
+    email: email,
   });
 }

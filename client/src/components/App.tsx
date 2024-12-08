@@ -6,22 +6,23 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
-import Clothes from "./components/Tabs/Clothes";
-import Tech from "./components/Tabs/Tech";
-import Bathroom from "./components/Tabs/Bathroom";
-import Furniture from "./components/Tabs/Furniture";
-import Kitchen from "./components/Tabs/Kitchen";
-import Misc from "./components/Tabs/Misc";
-import Navbar from "./components/Navbar";
-import Homepage from "./components/Homepage";
-import School from "./components/Tabs/School";
-import UserFavorites from "./components/UserPages/UserFavorites";
-import UserListings from "./components/UserPages/UserListings";
-import UserMessages from "./components/UserPages/UserMessages";
-import UserSettings from "./components/UserPages/UserSettings";
-import SignInPage from "./components/SignInPage";
+import Clothes from "./Tabs/Clothes";
+import Tech from "./Tabs/Tech";
+import Bathroom from "./Tabs/Bathroom";
+import Furniture from "./Tabs/Furniture";
+import Kitchen from "./Tabs/Kitchen";
+import Misc from "./Tabs/Misc";
+import Navbar from "./Navbar";
+import Homepage from "./Homepage";
+import School from "./Tabs/School";
+import UserFavorites from "./UserPages/UserFavorites";
+import UserListings from "./UserPages/UserListings";
+import UserMessages from "./UserPages/UserMessages";
+import UserSettings from "./UserPages/UserSettings";
+import SignInPage from "./SignInPage";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
-import "./index.css";
+import { createUser } from "../utils/api";
+import "/src/index.css";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -63,6 +64,41 @@ function App() {
     }
   };
 
+  const handleUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username && user) {
+      console.log("Username submitted:", username);
+      console.log("User ID:", user);
+      console.log("User Email:", user.emailAddresses[0].emailAddress);
+      await createUser(user.id, username, user.emailAddresses[0].emailAddress)
+        .then((data) => {
+          console.log("before parsing ALL markers: ", data);
+          if (data.response_type === "success") {
+            // remap the markers to the lat and long
+            const markers = data.markers.map((marker: any) => ({
+              lat: parseFloat(marker.latLong[0]),
+              long: parseFloat(marker.latLong[1]),
+              uid: marker.uid,
+            }));
+            console.log("after parsing ALL markers: ", markers);
+            setAllMarkers(markers);
+          } else {
+            console.error("Failed to fetch all markers:", data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching all markers:", error);
+        });
+    }
+    setIsUsernameSet(true);
+    navigate("/");
+  }
+
+  //TODO: call the create user api function here
+  const addUser = async (uid: string, username: string, email: string) => {
+    await createUser(uid, username, email);
+  };
+
   return (
     <div className="App ">
       <SignedOut>
@@ -70,10 +106,9 @@ function App() {
       </SignedOut>
       <SignedIn>
         {!isUsernameSet ? (
-
           // If the user is set, then we go to the homepage, otherwise we go to the createusername page
           <div className="username-form">
-            <form onSubmit={handleUsernameSubmit}>
+            <form onSubmit={handleUserSubmit}>
               <label htmlFor="username" className="block text-lg font-medium">
                 Enter your username:
               </label>
@@ -94,15 +129,13 @@ function App() {
             </form>
           </div>
         ) : (
-          // <p className="text-center text-2xl font-bold text-red-600">
-          //   Welcome to Buy@Brown
-          // </p>
           <div>
             <Navbar />
-            <h1 className="text-center text-2xl font-bold text-red-600"
-            >THIS IS THE USER'S USERNAME: {username} </h1>
+            <h1 className="text-center text-2xl font-bold text-red-600">
+              THIS IS THE USER'S USERNAME: {username}{" "}
+            </h1>
             <Routes>
-            <Route path="/" element={<Homepage />} />
+              <Route path="/" element={<Homepage />} />
               <Route path="/" element={<Homepage />} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
@@ -111,10 +144,10 @@ function App() {
               <Route path="/misc" element={<Misc />} />
               <Route path="/school" element={<School />} />
               <Route path="/furniture" element={<Furniture />} />
-            <Route path="/favorites" element={<UserFavorites />} />
-            <Route path="/yourlistings" element={<UserListings />} />
-            <Route path="/messages" element={<UserMessages />} />
-            <Route path="/settings" element={<UserSettings />} />
+              <Route path="/favorites" element={<UserFavorites />} />
+              <Route path="/yourlistings" element={<UserListings />} />
+              <Route path="/messages" element={<UserMessages />} />
+              <Route path="/settings" element={<UserSettings />} />
             </Routes>
           </div>
         )}

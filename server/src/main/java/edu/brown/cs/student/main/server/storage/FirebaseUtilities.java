@@ -172,12 +172,10 @@ public class FirebaseUtilities implements StorageInterface {
     Firestore db = FirestoreClient.getFirestore();
     // 1: Get a ref to the users collection
     CollectionReference usersRef = db.collection("users");
-// 2: Fetch all documents from the users collection
+    // 2: Fetch all documents from the users collection
     ApiFuture<QuerySnapshot> future = usersRef.get();
-
     // 3: Retrieve the query results (documents)
     QuerySnapshot querySnapshot = future.get();
-
     // 4: Create a list to hold all users
     List<Map<String, Object>> allUsers = new ArrayList<>();
 
@@ -186,8 +184,37 @@ public class FirebaseUtilities implements StorageInterface {
       // Convert each document to a Map and add it to the list
       allUsers.add(document.getData());
     }
-
     // Return the list of users
+    return allUsers;
+  }
+
+  public List<Map<String, Object>> getAllUserDataMaps()
+    throws ExecutionException, InterruptedException {
+    // gets all users in our database
+    Firestore db = FirestoreClient.getFirestore();
+
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+
+    // Create a list to store all the markers
+    List<Map<String, Object>> allUsers = new ArrayList<>();
+    // 2: Get all user documents (goes into the user subcollection) - nested tier 2
+    for (DocumentReference userDoc : usersRef.listDocuments()) {
+      // 3: Get all user documents for each user
+      CollectionReference nestedUserRef = userDoc.collection("users"); // each user only has one document - user
+      // 4: Get all user documents queries for each user
+      QuerySnapshot usersQuery = nestedUserRef.get().get();
+
+      // 5: Get data from the user's document queries (e.g. uid, username, email)
+      for (QueryDocumentSnapshot nestedUserDoc : usersQuery.getDocuments()) {
+        // 6: Add the user data to the list
+        Map<String, Object> userData = nestedUserDoc.getData();
+        // TODO: get only the user id and add to the list of all users ? or return the user data with all 3 fields (uid, username, email)
+        String userId = nestedUserDoc.getId();
+        // add the marker id to the marker data
+        allUsers.add(userData);
+      }
+    }
     return allUsers;
   }
 
@@ -221,6 +248,7 @@ public class FirebaseUtilities implements StorageInterface {
     }
     return allListings;
   }
+
   @Override
   public Map<String, Object> getDocument(String uid, String collectionId, String docId) throws IllegalArgumentException, ExecutionException, InterruptedException {
     if (uid == null || collectionId == null || docId == null) {
