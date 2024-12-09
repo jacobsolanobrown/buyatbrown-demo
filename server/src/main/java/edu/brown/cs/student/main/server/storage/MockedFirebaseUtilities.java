@@ -31,11 +31,12 @@ public class MockedFirebaseUtilities implements StorageInterface {
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
     // Simulate adding a document to Firestore
-//    database
-//        .computeIfAbsent(uid, k -> new HashMap<>())
-//        .computeIfAbsent(collection_id, k -> new HashMap<>())
-//        .put(doc_id, new HashMap<>(data));
-    database.computeIfAbsent(uid, k -> new HashMap<>())
+    //    database
+    //        .computeIfAbsent(uid, k -> new HashMap<>())
+    //        .computeIfAbsent(collection_id, k -> new HashMap<>())
+    //        .put(doc_id, new HashMap<>(data));
+    database
+        .computeIfAbsent(uid, k -> new HashMap<>())
         .computeIfAbsent(collection_id, k -> new HashMap<>())
         .put(doc_id, data);
   }
@@ -71,12 +72,10 @@ public class MockedFirebaseUtilities implements StorageInterface {
 
     // Create nested structure if it doesn't exist
     database.putIfAbsent(uid, new HashMap<>());
-    Map<String, Map<String, Map<String, Object>>> userCollections =
-        database.get(uid);
+    Map<String, Map<String, Map<String, Object>>> userCollections = database.get(uid);
 
     userCollections.putIfAbsent("listing", new HashMap<>());
-    Map<String, Map<String, Object>> userListings =
-        userCollections.get("listing");
+    Map<String, Map<String, Object>> userListings = userCollections.get("listing");
 
     // Add the listing with a unique key (you might want to generate a unique ID)
     String listingId = UUID.randomUUID().toString(); // or use another unique ID generation method
@@ -116,16 +115,16 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   // Add helper methods for tests
-  public void addListing(String uid, String collection, String listingId,
-      Map<String, Object> listing) {
+  public void addListing(
+      String uid, String collection, String listingId, Map<String, Object> listing) {
     // Ensure the user exists
-    database.computeIfAbsent(uid, k -> new HashMap<>())
+    database
+        .computeIfAbsent(uid, k -> new HashMap<>())
         // Ensure the collection exists for the user
         .computeIfAbsent(collection, k -> new HashMap<>())
         // Add or update the listing
         .put(listingId, listing);
   }
-
 
   @Override
   public Map<String, Object> getListingForUser(String uid, String listingId)
@@ -144,37 +143,38 @@ public class MockedFirebaseUtilities implements StorageInterface {
 
   @Override
   public List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException {
-//    List<String> userIds = new ArrayList<>();
-//    List<String> collectionIds = new ArrayList<>();
-//    List<String> documentIds = new ArrayList<>();
-//    List<String> dataKeys = new ArrayList<>();
-//
-//    for (String userId : database.keySet()) {
-//      userIds.add(userId);
-//      Map<String, Map<String, Map<String, Object>>> collections = database.get(userId);
-//
-//      for (String collectionId : collections.keySet()) {
-//        collectionIds.add(collectionId);
-//        Map<String, Map<String, Object>> documents = collections.get(collectionId);
-//
-//        for (String documentId : documents.keySet()) {
-//          documentIds.add(documentId);
-//          Map<String, Object> documentData = documents.get(documentId);
-//
-//          dataKeys.addAll(documentData.keySet());
-//        }
-//      }
-//    }
+    //    List<String> userIds = new ArrayList<>();
+    //    List<String> collectionIds = new ArrayList<>();
+    //    List<String> documentIds = new ArrayList<>();
+    //    List<String> dataKeys = new ArrayList<>();
+    //
+    //    for (String userId : database.keySet()) {
+    //      userIds.add(userId);
+    //      Map<String, Map<String, Map<String, Object>>> collections = database.get(userId);
+    //
+    //      for (String collectionId : collections.keySet()) {
+    //        collectionIds.add(collectionId);
+    //        Map<String, Map<String, Object>> documents = collections.get(collectionId);
+    //
+    //        for (String documentId : documents.keySet()) {
+    //          documentIds.add(documentId);
+    //          Map<String, Object> documentData = documents.get(documentId);
+    //
+    //          dataKeys.addAll(documentData.keySet());
+    //        }
+    //      }
+    //    }
 
-//    // Print or return the lists as needed
-//    System.out.println("User IDs: " + userIds);
-//    System.out.println("Collection IDs: " + collectionIds);
-//    System.out.println("Document IDs: " + documentIds);
-//    System.out.println("Data Keys: " + dataKeys);
-//  return List.of("User IDs", userIds);
+    //    // Print or return the lists as needed
+    //    System.out.println("User IDs: " + userIds);
+    //    System.out.println("Collection IDs: " + collectionIds);
+    //    System.out.println("Document IDs: " + documentIds);
+    //    System.out.println("Data Keys: " + dataKeys);
+    //  return List.of("User IDs", userIds);
     List<Map<String, Object>> userIdList = new ArrayList<>();
 
-    for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry : database.entrySet()) {
+    for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry :
+        database.entrySet()) {
       String userId = userEntry.getKey();
       Map<String, Map<String, Map<String, Object>>> collections = userEntry.getValue();
 
@@ -190,16 +190,19 @@ public class MockedFirebaseUtilities implements StorageInterface {
 
   /**
    * TODO: THIS IS NOT IMPLEMENTED YET
+   *
    * @return
    * @throws ExecutionException
    * @throws InterruptedException
    */
   @Override
-  public List<Map<String, Object>> getAllUserDataMaps() throws ExecutionException, InterruptedException {
+  public List<Map<String, Object>> getAllUserDataMaps()
+      throws ExecutionException, InterruptedException {
     List<Map<String, Object>> usersList = new ArrayList<>();
 
     // Iterate through all users in the database
-    for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry : database.entrySet()) {
+    for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry :
+        database.entrySet()) {
       Map<String, Map<String, Map<String, Object>>> collections = userEntry.getValue();
 
       // Check for 'users' collection
@@ -215,9 +218,7 @@ public class MockedFirebaseUtilities implements StorageInterface {
     System.out.println("Users: " + usersList);
 
     return usersList;
-
   }
-
 
   @Override
   public List<Map<String, Object>> getAllUsersListings() {
@@ -247,4 +248,3 @@ public class MockedFirebaseUtilities implements StorageInterface {
     return Map.of();
   }
 }
-
