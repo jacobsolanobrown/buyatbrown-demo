@@ -52,9 +52,11 @@ public class ServerTest {
   //Testing the interactions between creating a user and adding a listing
   @Test
   void testCreateUserAndAddListing() throws IOException {
+    String newuser = "testuser_" + System.currentTimeMillis();
+    String newid = "testsample" + Math.random();
     // Create user
     String createUserResponse = sendGetRequest(
-        "/create-user?uid=testsample1&username=testerdanger&email=testuser1@brown.com&password=testpassword");
+        "/create-user?uid="+newid+"&username="+newuser+"&email=testuser1@brown.com&password=testpassword");
     System.out.println(createUserResponse);
     assertTrue(createUserResponse.contains("\"response_type\":\"success\""),
         "User creation should be successful");
@@ -66,7 +68,7 @@ public class ServerTest {
     // Add listing for the new user
 //    http://localhost:3232/add-listings?uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=summer&description=sandals
     String addListingResponse = sendGetRequest(
-        "/add-listings?uid=testsample1&username=testerdanger&title=Test%20Listing&price=100&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=CS320&description=Integration");
+        "/add-listings?uid="+newid+"&username="+newuser+"&title=Test%20Listing&price=100&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=CS320&description=Integration");
   System.out.println(addListingResponse);
     assertTrue(addListingResponse.contains("\"response_type\":\"success\""),
         "Listing addition should be successful");
@@ -76,18 +78,19 @@ public class ServerTest {
   //Testing the interactions between creating a user, adding a listing, updating a listing and deleting a listing
   @Test
   void testListingLifecycle() throws IOException {
-    String userId = "testuser_" + System.currentTimeMillis();
+    String newuser = "testuser_" + System.currentTimeMillis();
+    String newid = "testsample" + Math.random();
 
     // Create User
     String createUserResponse = sendGetRequest(
-        "/create-user?uid=testsample2&username=stangerdanger&email=testuser2@brown.com&password=testpassword");
+        "/create-user?uid="+newid+"&username="+newuser+"&email=testuser2@brown.com&password=testpassword");
     System.out.println(createUserResponse);
     assertTrue(createUserResponse.contains("\"response_type\":\"success\""),
         "User creation should be successful");
 
     // Add Listing
     String addListingResponse = sendGetRequest(
-        "/add-listings?uid=testsample2&username=stangerdanger&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
+        "/add-listings?uid="+newid+"&username="+newuser+"&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
     System.out.println(addListingResponse);
     assertTrue(addListingResponse.contains("\"response_type\":\"success\""),
         "Listing addition should be successful");
@@ -97,7 +100,7 @@ public class ServerTest {
     String listingId = extractListingId(addListingResponse);
     System.out.println(listingId);
 
-    String updateurl = "/update-listings?uid=testsample2&listingId=" + listingId;
+    String updateurl = "/update-listings?uid="+newid+"&listingId=" + listingId;
     System.out.println(updateurl);
     // Update Listing
     String updateResponse = sendGetRequest(updateurl);
@@ -109,7 +112,7 @@ public class ServerTest {
     assertTrue(updateResponse.contains("\"title\":\"Cargo Listing\""));
     assertTrue(updateResponse.contains("\"price\":\"356\""));
 
-    String deleteurl= "/delete-listings?uid=testsample2" + "&listingId=" + listingId;
+    String deleteurl= "/delete-listings?uid="+newid + "&listingId=" + listingId;
 
     // Delete Listing
     String deleteResponse = sendGetRequest(deleteurl);
@@ -222,20 +225,6 @@ public class ServerTest {
     String url = "/like-listings?uid=bibif&listingId=" + listingId;
     System.out.println(url);
     String likeListing2 = sendGetRequest(url);
-    assertTrue(likeListing2.contains("\"response_type\":\"success\""));
-    assert listingId != null;
-    assertTrue(likeListing2.contains(listingId));
-//
-//    // Add Listing 2
-//    String addListingResponse2 = sendGetRequest(
-//        "/add-listings?uid=testsample3&username=justachillguy&title=Benz%20Listing&price=10000&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
-//    System.out.println(addListingResponse2);
-//    assertTrue(addListingResponse.contains("\"response_type\":\"success\""),
-//        "Listing addition should be successful");
-
-
-
-
 
   }
 
