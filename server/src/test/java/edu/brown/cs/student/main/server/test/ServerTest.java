@@ -52,10 +52,19 @@ public class ServerTest {
   // Testing the interactions between creating a user and adding a listing
   @Test
   void testCreateUserAndAddListing() throws IOException {
+    String newuser = "testuser_" + System.currentTimeMillis();
+    String newid = "testsample" + Math.random();
     // Create user
     String createUserResponse =
         sendGetRequest(
             "/create-user?uid=testsample1&username=testerdanger&email=testuser1@brown.com&password=testpassword");
+    String createUserResponse =
+        sendGetRequest(
+            "/create-user?uid="
+                + newid
+                + "&username="
+                + newuser
+                + "&email=testuser1@brown.com&password=testpassword");
     System.out.println(createUserResponse);
     assertTrue(
         createUserResponse.contains("\"response_type\":\"success\""),
@@ -74,6 +83,18 @@ public class ServerTest {
     System.out.println(addListingResponse);
     assertTrue(
         addListingResponse.contains("\"response_type\":\"success\""),
+    //
+    // http://localhost:3232/add-listings?uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=summer&description=sandals
+    String addListingResponse =
+        sendGetRequest(
+            "/add-listings?uid="
+                + newid
+                + "&username="
+                + newuser
+                + "&title=Test%20Listing&price=100&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=CS320&description=Integration");
+    System.out.println(addListingResponse);
+    assertTrue(
+        addListingResponse.contains("\"response_type\":\"success\""),
         "Listing addition should be successful");
     assertTrue(
         addListingResponse.contains("\"title\":\"Test Listing\""),
@@ -84,12 +105,20 @@ public class ServerTest {
   // deleting a listing
   @Test
   void testListingLifecycle() throws IOException {
-    String userId = "testuser_" + System.currentTimeMillis();
+    String newuser = "testuser_" + System.currentTimeMillis();
+    String newid = "testsample" + Math.random();
 
     // Create User
     String createUserResponse =
         sendGetRequest(
             "/create-user?uid=testsample2&username=stangerdanger&email=testuser2@brown.com&password=testpassword");
+    String createUserResponse =
+        sendGetRequest(
+            "/create-user?uid="
+                + newid
+                + "&username="
+                + newuser
+                + "&email=testuser2@brown.com&password=testpassword");
     System.out.println(createUserResponse);
     assertTrue(
         createUserResponse.contains("\"response_type\":\"success\""),
@@ -99,6 +128,13 @@ public class ServerTest {
     String addListingResponse =
         sendGetRequest(
             "/add-listings?uid=testsample2&username=stangerdanger&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
+    String addListingResponse =
+        sendGetRequest(
+            "/add-listings?uid="
+                + newid
+                + "&username="
+                + newuser
+                + "&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
     System.out.println(addListingResponse);
     assertTrue(
         addListingResponse.contains("\"response_type\":\"success\""),
@@ -108,7 +144,7 @@ public class ServerTest {
     String listingId = extractListingId(addListingResponse);
     System.out.println(listingId);
 
-    String updateurl = "/update-listings?uid=testsample2&listingId=" + listingId;
+    String updateurl = "/update-listings?uid=" + newid + "&listingId=" + listingId;
     System.out.println(updateurl);
     // Update Listing
     String updateResponse = sendGetRequest(updateurl);
@@ -119,6 +155,7 @@ public class ServerTest {
     assertTrue(updateResponse.contains("\"price\":\"356\""));
 
     String deleteurl = "/delete-listings?uid=testsample2" + "&listingId=" + listingId;
+    String deleteurl = "/delete-listings?uid=" + newid + "&listingId=" + listingId;
 
     // Delete Listing
     String deleteResponse = sendGetRequest(deleteurl);
@@ -254,6 +291,10 @@ public class ServerTest {
     //    assertTrue(addListingResponse.contains("\"response_type\":\"success\""),
     //        "Listing addition should be successful");
 
+  }
+
+  // Testing the interactions for filtering-listing
+  @Test
   }
 
   // Testing the interactions for filtering-listing

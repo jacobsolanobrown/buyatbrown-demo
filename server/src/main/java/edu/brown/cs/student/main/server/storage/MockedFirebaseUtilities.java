@@ -31,11 +31,12 @@ public class MockedFirebaseUtilities implements StorageInterface {
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
     // Simulate adding a document to Firestore
-    //    database
-    //        .computeIfAbsent(uid, k -> new HashMap<>())
-    //        .computeIfAbsent(collection_id, k -> new HashMap<>())
-    //        .put(doc_id, new HashMap<>(data));
+        //    database
+        //        .computeIfAbsent(uid, k -> new HashMap<>())
+        //        .computeIfAbsent(collection_id, k -> new HashMap<>())
+        //        .put(doc_id, new HashMap<>(data));
     database
+        
         .computeIfAbsent(uid, k -> new HashMap<>())
         .computeIfAbsent(collection_id, k -> new HashMap<>())
         .put(doc_id, data);
@@ -198,7 +199,26 @@ public class MockedFirebaseUtilities implements StorageInterface {
   @Override
   public List<Map<String, Object>> getAllUserDataMaps()
       throws ExecutionException, InterruptedException {
-    return List.of();
+    List<Map<String, Object>> usersList = new ArrayList<>();
+
+    // Iterate through all users in the database
+    for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry :
+        database.entrySet()) {
+      Map<String, Map<String, Map<String, Object>>> collections = userEntry.getValue();
+
+      // Check for 'users' collection
+      Map<String, Map<String, Object>> usersCollection = collections.get("users");
+      if (usersCollection != null) {
+        // Add all user documents to the list
+        usersList.addAll(usersCollection.values());
+      }
+    }
+
+    // Debug print
+    System.out.println("Getting all users. Count: " + usersList.size());
+    System.out.println("Users: " + usersList);
+
+    return usersList;
   }
 
   @Override

@@ -71,9 +71,24 @@ public class CreateUserHandlerMockedFirebaseTest {
             "uid", "mocker-1",
             "username", "mockuser1",
             "email", "mockuser@brown.edu"));
+    // First, add user to mock database
+    Map<String, Object> existingUser =
+        Map.of(
+            "uid", "mocker-1",
+            "username", "mockuser1",
+            "email", "mockuser@brown.edu");
 
-    // Simulate HTTP request with duplicate username
-    Request mockRequest = createMockRequest("mocker-1", "mockuser1", "mock101@brown.edu");
+    // Add the existing user to the mock storage
+    // Ensure you're using "users" as the collection name
+    mockedFirebaseStorage.addDocument("mocker-1", "users", "mocker-1", existingUser);
+
+    // Debugging: Print out all users after adding
+    List<Map<String, Object>> allUsers = mockedFirebaseStorage.getAllUserDataMaps();
+    System.out.println("DEBUG: All users after adding: " + allUsers);
+    System.out.println("DEBUG: User count: " + allUsers.size());
+
+    // Attempt to create a user with the same username
+    Request mockRequest = createMockRequest("mocker-new-id", "mockuser1", "mock101@brown.edu");
     Response mockResponse = createMockResponse();
 
     // Execute handler
@@ -107,6 +122,9 @@ public class CreateUserHandlerMockedFirebaseTest {
     // Verify the response
     assertEquals(
         "{\"response_type\":\"failure\",\"error\":\"Both 'uid' and 'username' are required.\"}",
+        resultJson);
+    assertEquals(
+        "{\"response_type\":\"failure\",\"error\":\"Both 'uid', 'username', and 'email' are required.\"}",
         resultJson);
   }
 
