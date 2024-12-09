@@ -1,6 +1,8 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,8 +11,6 @@ import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 // import org.
 /** Class for adding a listing to the database */
@@ -201,14 +201,14 @@ public class AddListingHandler implements Route {
       responseMap.put("response_type", "success");
       responseMap.putAll(data);
       responseMap.put("listingId", listingId);
-//      responseMap.put("title", condition);
-//      responseMap.put("imageUrl", imageUrl);
-//      responseMap.put("tags", tags);
-//      responseMap.put("price", price);
-//      responseMap.put("description", description);
-//      responseMap.put("username", username);
-//      responseMap.put("condition", condition);
-//      responseMap.put("uid", uid);
+      //      responseMap.put("title", condition);
+      //      responseMap.put("imageUrl", imageUrl);
+      //      responseMap.put("tags", tags);
+      //      responseMap.put("price", price);
+      //      responseMap.put("description", description);
+      //      responseMap.put("username", username);
+      //      responseMap.put("condition", condition);
+      //      responseMap.put("uid", uid);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

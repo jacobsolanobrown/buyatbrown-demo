@@ -1,21 +1,18 @@
 package edu.brown.cs.student.main.server.test;
 
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import edu.brown.cs.student.main.server.handlers.DeleteListingHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spark.Request;
 import spark.Response;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import org.junit.jupiter.api.Test;
 
 public class DeleteListingsHandlerTest {
   private StorageInterface mockStorage;
@@ -37,13 +34,15 @@ public class DeleteListingsHandlerTest {
     mockStorage.addDocument("user123", "listings", "listing-0", listing);
     System.out.print("this is in storage" + mockStorage.getCollection("user123", "listings"));
   }
-  //Mocked test: testing success case
+
+  // Mocked test: testing success case
   @Test
   void testDeleteListing_Success() throws Exception {
-    Request mockRequest = createMockRequest(Map.of(
-        "uid", "user123",
-        "listingId", "listing-0"
-    ));
+    Request mockRequest =
+        createMockRequest(
+            Map.of(
+                "uid", "user123",
+                "listingId", "listing-0"));
     Response mockResponse = createMockResponse();
 
     String response = (String) deleteListingHandler.handle(mockRequest, mockResponse);
@@ -56,13 +55,15 @@ public class DeleteListingsHandlerTest {
     System.out.println("Listing: " + listing);
     System.out.print("this is still in storage" + mockStorage.getCollection("user123", "listings"));
   }
-  //Mocked test: testing invalid lisitng (edge case)
+
+  // Mocked test: testing invalid lisitng (edge case)
   @Test
   void testDeleteListing_Failure_InvalidListingId() throws Exception {
-    Request mockRequest = createMockRequest(Map.of(
-        "uid", "user123",
-        "listingId", "invalid-listing-id"
-    ));
+    Request mockRequest =
+        createMockRequest(
+            Map.of(
+                "uid", "user123",
+                "listingId", "invalid-listing-id"));
     Response mockResponse = createMockResponse();
 
     String response = (String) deleteListingHandler.handle(mockRequest, mockResponse);
@@ -71,13 +72,16 @@ public class DeleteListingsHandlerTest {
     assertTrue(response.contains("\"response_type\":\"failure\""));
     assertTrue(response.contains("Listing with ID invalid-listing-id does not exist"));
   }
-  //Mocked test: testing missing params (edge case)
+
+  // Mocked test: testing missing params (edge case)
   @Test
   void testDeleteListing_Failure_MissingParams() throws Exception {
-    Request mockRequest = createMockRequest(Map.of(
-        "uid", "user123"
-        // Missing "listingId"
-    ));
+    Request mockRequest =
+        createMockRequest(
+            Map.of(
+                "uid", "user123"
+                // Missing "listingId"
+                ));
     Response mockResponse = createMockResponse();
 
     String response = (String) deleteListingHandler.handle(mockRequest, mockResponse);
@@ -102,4 +106,3 @@ public class DeleteListingsHandlerTest {
     };
   }
 }
-

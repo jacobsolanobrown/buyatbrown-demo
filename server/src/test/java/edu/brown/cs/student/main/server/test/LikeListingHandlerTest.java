@@ -1,27 +1,17 @@
 package edu.brown.cs.student.main.server.test;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
+import static org.junit.jupiter.api.Assertions.*;
+
 import edu.brown.cs.student.main.server.handlers.LikeListingHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
-import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
 import spark.Request;
 import spark.Response;
-
-import java.util.Map;
-
-//import static jdk.internal.org.jline.reader.impl.LineReaderImpl.CompletionType.List;
-import static org.junit.jupiter.api.Assertions.*;
-
-
 
 public class LikeListingHandlerTest {
   private LikeListingHandler handler;
@@ -34,7 +24,7 @@ public class LikeListingHandlerTest {
     handler = new LikeListingHandler(mockStorage);
   }
 
-  //Mocked test: testing like listing successfully to database
+  // Mocked test: testing like listing successfully to database
   @Test
   public void testSuccessfulLikeListing() throws InterruptedException, ExecutionException {
     // Arrange
@@ -70,20 +60,25 @@ public class LikeListingHandlerTest {
     assertFalse(likedListings.isEmpty());
 
     // Safely check for the liked listing
-    boolean foundLikedListing = likedListings.stream()
-        .anyMatch(listing -> {
-          // Check that the original listing data is contained in the stored listing
-          return mockListing.entrySet().stream().allMatch(entry ->
-              listing.containsKey(entry.getKey()) &&
-                  listing.get(entry.getKey()).equals(entry.getValue())
-          ) ||
-              // Also check using the doc_id naming convention
-              ("liked-" + listingId).equals(listing.get("doc_id"));
-        });
+    boolean foundLikedListing =
+        likedListings.stream()
+            .anyMatch(
+                listing -> {
+                  // Check that the original listing data is contained in the stored listing
+                  return mockListing.entrySet().stream()
+                          .allMatch(
+                              entry ->
+                                  listing.containsKey(entry.getKey())
+                                      && listing.get(entry.getKey()).equals(entry.getValue()))
+                      ||
+                      // Also check using the doc_id naming convention
+                      ("liked-" + listingId).equals(listing.get("doc_id"));
+                });
 
     assertTrue(foundLikedListing, "Liked listing not found in liked_listings");
   }
-  //Mocked test: testing missing parameters
+
+  // Mocked test: testing missing parameters
   @Test
   public void testMissingUid() {
     // Arrange
@@ -106,7 +101,7 @@ public class LikeListingHandlerTest {
     assertTrue(jsonResponse.contains("Both 'uid' and 'listingId' are required"));
   }
 
-  //Mocked test: testing missing params (edge case)
+  // Mocked test: testing missing params (edge case)
   @Test
   public void testMissingListingId() {
     // Arrange
@@ -138,7 +133,8 @@ public class LikeListingHandlerTest {
       }
     };
   }
-//
+
+  //
   // Helper method to create a mock response
   private Response createMockResponse() {
     return new Response() {

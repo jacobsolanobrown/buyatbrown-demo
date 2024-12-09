@@ -1,15 +1,13 @@
 package edu.brown.cs.student.main.server.handlers;
-import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
+
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 /** Class for deleting a listing from the database */
-
 public class DeleteListingHandler implements Route {
   public StorageInterface storageHandler;
 
@@ -41,16 +39,15 @@ public class DeleteListingHandler implements Route {
       Map<String, Object> listing = this.storageHandler.getListingForUser(uid, listingId);
       System.out.println("Retrieved listing: " + listing);
 
-//// Check if the listing exists
+      //// Check if the listing exists
       if (listing == null) {
         throw new IllegalArgumentException("Listing with ID " + listingId + " does not exist.");
       }
 
-
-// Remove the listing from the database
+      // Remove the listing from the database
       this.storageHandler.removeDocument(uid, "listings", listingId);
 
-// Log success
+      // Log success
       System.out.println("Deleted listing with ID: " + listingId + " for user: " + uid);
 
       // Prepare the success response

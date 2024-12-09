@@ -1,19 +1,17 @@
 package edu.brown.cs.student.main.server.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities; // Assuming this exists
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Request;
 import spark.Response;
-
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CreateUserHandlerMockedFirebaseTest {
 
@@ -26,7 +24,8 @@ public class CreateUserHandlerMockedFirebaseTest {
     mockedFirebaseStorage = new MockedFirebaseUtilities();
     createUserHandler = new CreateUserHandler(mockedFirebaseStorage);
   }
-  //Mocked test: testing success case
+
+  // Mocked test: testing success case
   @Test
   void testHandle_SuccessfulUserCreation() throws ExecutionException, InterruptedException {
     // Simulate HTTP request
@@ -37,28 +36,47 @@ public class CreateUserHandlerMockedFirebaseTest {
     String resultJson = (String) createUserHandler.handle(mockRequest, mockResponse);
 
     // Verify the data stored in MockedFirebaseUtilities
-    List<Map<String, Object>> storedUsers = mockedFirebaseStorage.getCollection("mocker-1", "users");
-    Map<String, Object> storedUser = storedUsers.stream()
-        .filter(user -> "mocker-1".equals(user.get("uid")))
-        .findFirst()
-        .orElseThrow(() -> new AssertionError("User not found"));
+    List<Map<String, Object>> storedUsers =
+        mockedFirebaseStorage.getCollection("mocker-1", "users");
+    Map<String, Object> storedUser =
+        storedUsers.stream()
+            .filter(user -> "mocker-1".equals(user.get("uid")))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("User not found"));
 
     assertEquals("mockuser1", storedUser.get("username"));
     assertEquals("mockuser@brown.edu", storedUser.get("email"));
 
     // Verify the JSON response
-    assertEquals("{\"uid\":\"mocker-1\",\"response_type\":\"success\",\"username\":\"mockuser1\"}", resultJson);
+    assertEquals(
+        "{\"uid\":\"mocker-1\",\"response_type\":\"success\",\"username\":\"mockuser1\"}",
+        resultJson);
   }
 
-  //Mocked test: testing existing user (edge case)
+  // Mocked test: testing existing user (edge case)
   @Test
   void testHandle_ExistingUser() throws ExecutionException, InterruptedException {
+    Request mockRequest1 = createMockRequest("mocker-1", "mockuser1", "mockuser@brown.edu");
+    Response mockResponse1 = createMockResponse();
+
+    // Execute handler
+    String res1 = (String) createUserHandler.handle(mockRequest1, mockResponse1);
+    // Prepopulate the mock database
+    System.out.println("users are " + mockedFirebaseStorage.getAllUsers());
+    mockedFirebaseStorage.addDocument(
+        "mocker-1",
+        "users",
+        "12345",
+        Map.of(
+            "uid", "mocker-1",
+            "username", "mockuser1",
+            "email", "mockuser@brown.edu"));
     // First, add user to mock database
-    Map<String, Object> existingUser = Map.of(
-        "uid", "mocker-1",
-        "username", "mockuser1",
-        "email", "mockuser@brown.edu"
-    );
+    Map<String, Object> existingUser =
+        Map.of(
+            "uid", "mocker-1",
+            "username", "mockuser1",
+            "email", "mockuser@brown.edu");
 
     // Add the existing user to the mock storage
     // Ensure you're using "users" as the collection name
@@ -79,30 +97,36 @@ public class CreateUserHandlerMockedFirebaseTest {
     // Verify the response
     assertEquals(
         "{\"response_type\":\"failure\",\"error\":\"User with the username \\\"mockuser1\\\" already exists.\"}",
-        resultJson
-    );
+        resultJson);
   }
 
-  //Mocked test: testing invalid params (edge case)
+  // Mocked test: testing invalid params (edge case)
   @Test
   void testinvalidparams() throws ExecutionException, InterruptedException {
     Request mockRequest = createMockRequest("mocker-3", null, null);
     Response mockResponse = createMockResponse();
 
     System.out.println("users are " + mockedFirebaseStorage.getAllUsers());
-    mockedFirebaseStorage.addDocument("mocker-1", "users", "12345", Map.of(
-        "uid", "mocker-1",
-        "username", "mockuser1",
-        "email", "mockuser@brown.edu"
-    ));
+    mockedFirebaseStorage.addDocument(
+        "mocker-1",
+        "users",
+        "12345",
+        Map.of(
+            "uid", "mocker-1",
+            "username", "mockuser1",
+            "email", "mockuser@brown.edu"));
 
     // Execute handler
     String resultJson = (String) createUserHandler.handle(mockRequest, mockResponse);
 
     // Verify the response
-    assertEquals("{\"response_type\":\"failure\",\"error\":\"Both 'uid', 'username', and 'email' are required.\"}", resultJson);
+    assertEquals(
+        "{\"response_type\":\"failure\",\"error\":\"Both 'uid' and 'username' are required.\"}",
+        resultJson);
+    assertEquals(
+        "{\"response_type\":\"failure\",\"error\":\"Both 'uid', 'username', and 'email' are required.\"}",
+        resultJson);
   }
-
 
   private Request createMockRequest(String uid, String username, String email) {
     return new Request() {
