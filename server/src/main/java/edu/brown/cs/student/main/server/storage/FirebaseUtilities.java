@@ -62,7 +62,7 @@ public class FirebaseUtilities implements StorageInterface {
     // 3: Get data from document queries
     List<Map<String, Object>> data = new ArrayList<>();
     for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
-//      System.out.print(doc);
+      //      System.out.print(doc);
       data.add(doc.getData());
     }
 
@@ -70,9 +70,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void addListing(Map<String, Object> listing) {
-
-  }
+  public void addListing(Map<String, Object> listing) {}
 
   @Override
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
@@ -94,31 +92,41 @@ public class FirebaseUtilities implements StorageInterface {
         db.collection("users").document(uid).collection(collection_id).document(doc_id);
     // 2: Write data to the collection ref
     docRef.set(data);
-//    System.out.println("addDocument called with uid: " + uid + ", collection_id: " + collection_id + ", doc_id: " + doc_id + ", data: " + data);
+    //    System.out.println("addDocument called with uid: " + uid + ", collection_id: " +
+    // collection_id + ", doc_id: " + doc_id + ", data: " + data);
 
   }
 
   @Override
-  public void removeDocument(String uid, String collection_id, String doc_id)  throws IllegalArgumentException {
+  public void removeDocument(String uid, String collection_id, String doc_id)
+      throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null) {
       throw new IllegalArgumentException(
           "removeDocument: uid, collection_id, or doc_id cannot be null");
     }
 
     // Log operation for debugging purposes
-    System.out.println("Attempting to delete document: " + doc_id + " from collection: " + collection_id + " for user: " + uid);
-      // Initialize Firestore instance
-      Firestore db = FirestoreClient.getFirestore();
+    System.out.println(
+        "Attempting to delete document: "
+            + doc_id
+            + " from collection: "
+            + collection_id
+            + " for user: "
+            + uid);
+    // Initialize Firestore instance
+    Firestore db = FirestoreClient.getFirestore();
 
-      // Get reference to the document
-      DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
+    // Get reference to the document
+    DocumentReference docRef =
+        db.collection("users").document(uid).collection(collection_id).document(doc_id);
 
-      // Delete the document
-      docRef.delete();
-
+    // Delete the document
+    docRef.delete();
   }
+
   @Override
-  public Map<String, Object> getListingForUser(String uid, String listingId) throws InterruptedException, ExecutionException {
+  public Map<String, Object> getListingForUser(String uid, String listingId)
+      throws InterruptedException, ExecutionException {
     Firestore db = FirestoreClient.getFirestore();
 
     // 1. Get a reference to the user's document
@@ -134,17 +142,19 @@ public class FirebaseUtilities implements StorageInterface {
     QuerySnapshot querySnapshot = future.get();
 
     // 5. Search for the listing with the specified listingId
-    Map<String, Object> listing = querySnapshot.getDocuments().stream()
-        .filter(doc -> doc.getId().equalsIgnoreCase(listingId))  // Match based on listingId
-        .map(DocumentSnapshot::getData)  // Convert to Map<String, Object>
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + listingId));
+    Map<String, Object> listing =
+        querySnapshot.getDocuments().stream()
+            .filter(doc -> doc.getId().equalsIgnoreCase(listingId)) // Match based on listingId
+            .map(DocumentSnapshot::getData) // Convert to Map<String, Object>
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "No listing found with the given ID: " + listingId));
 
     // 6. Return the listing data
     return listing;
   }
-
-
 
   // clears the collections inside of a specific user.
   @Override
@@ -166,8 +176,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public List<Map<String,Object>> getAllUsers()
-      throws InterruptedException, ExecutionException {
+  public List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException {
     // gets all listings for all users
     Firestore db = FirestoreClient.getFirestore();
     // 1: Get a ref to the users collection
@@ -189,7 +198,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   public List<Map<String, Object>> getAllUserDataMaps()
-    throws ExecutionException, InterruptedException {
+      throws ExecutionException, InterruptedException {
     // gets all users in our database
     Firestore db = FirestoreClient.getFirestore();
 
@@ -201,7 +210,8 @@ public class FirebaseUtilities implements StorageInterface {
     // 2: Get all user documents (goes into the user subcollection) - nested tier 2
     for (DocumentReference userDoc : usersRef.listDocuments()) {
       // 3: Get all user documents for each user
-      CollectionReference nestedUserRef = userDoc.collection("users"); // each user only has one document - user
+      CollectionReference nestedUserRef =
+          userDoc.collection("users"); // each user only has one document - user
       // 4: Get all user documents queries for each user
       QuerySnapshot usersQuery = nestedUserRef.get().get();
 
@@ -209,7 +219,8 @@ public class FirebaseUtilities implements StorageInterface {
       for (QueryDocumentSnapshot nestedUserDoc : usersQuery.getDocuments()) {
         // 6: Add the user data to the list
         Map<String, Object> userData = nestedUserDoc.getData();
-        // TODO: get only the user id and add to the list of all users ? or return the user data with all 3 fields (uid, username, email)
+        // TODO: get only the user id and add to the list of all users ? or return the user data
+        // with all 3 fields (uid, username, email)
         String userId = nestedUserDoc.getId();
         // add the marker id to the marker data
         allUsers.add(userData);
@@ -250,9 +261,11 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public Map<String, Object> getDocument(String uid, String collectionId, String docId) throws IllegalArgumentException, ExecutionException, InterruptedException {
+  public Map<String, Object> getDocument(String uid, String collectionId, String docId)
+      throws IllegalArgumentException, ExecutionException, InterruptedException {
     if (uid == null || collectionId == null || docId == null) {
-      throw new IllegalArgumentException("getDocument: uid, collectionId, and docId cannot be null");
+      throw new IllegalArgumentException(
+          "getDocument: uid, collectionId, and docId cannot be null");
     }
 
     Firestore db = FirestoreClient.getFirestore();
@@ -261,7 +274,8 @@ public class FirebaseUtilities implements StorageInterface {
     System.out.println("Collection ID: " + collectionId);
     System.out.println("Document ID: " + docId);
 
-    DocumentReference docRef = db.collection("users").document(uid).collection(collectionId).document(docId);
+    DocumentReference docRef =
+        db.collection("users").document(uid).collection(collectionId).document(docId);
 
     DocumentSnapshot documentSnapshot = docRef.get().get();
 
@@ -274,8 +288,6 @@ public class FirebaseUtilities implements StorageInterface {
 
     return documentSnapshot.getData();
   }
-
-
 
   private void deleteDocument(DocumentReference doc) {
     // for each subcollection, run deleteCollection()

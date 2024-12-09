@@ -41,62 +41,57 @@ function App() {
   const { user } = useUser();
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      const userUsername = user.publicMetadata.username;
-      if (userUsername) {
-        setIsUsernameSet(true);
-      }
-    }
-  }, [user]);
+    if (checkingUsername) {
+      console.log("LOADING?: ", checkingUsername);
+  }}, []);
 
-  const handleUsernameSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username) {
-      await user?.update({
-        unsafeMetadata: { username: username },
-      });
-      setIsUsernameSet(true);
-      console.log("Username submitted:", username);
-      navigate("/");
-    }
-  };
-
+  /**
+   * This function is used to create a new user in the database using the server's createUser handler.
+   * On success it returns the userID and the username of the newly created user.
+   *
+   * @param e This is the event from submitting the form
+   */
   const handleUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    setCheckingUsername(true);
+    e.preventDefault(); // prevent the page from refreshing
+    console.log("Checking Username Availability");
+    console.log("LOADING?: ", checkingUsername); 
+    setLoading(true);
+    console.log("LOADING?: ", loading);
     if (username && user) {
-      console.log("Username submitted:", username);
-      console.log("User ID:", user);
-      console.log("User Email:", user.emailAddresses[0].emailAddress);
       await createUser(user.id, username, user.emailAddresses[0].emailAddress)
         .then((data) => {
-          console.log("before parsing ALL markers: ", data);
           if (data.response_type === "success") {
+            setCheckingUsername(false);
+            console.log("LOADING?: ", checkingUsername); /// TODO
             // remap the markers to the lat and long
-            const markers = data.markers.map((marker: any) => ({
-              lat: parseFloat(marker.latLong[0]),
-              long: parseFloat(marker.latLong[1]),
-              uid: marker.uid,
-            }));
-            console.log("after parsing ALL markers: ", markers);
-            setAllMarkers(markers);
+            setIsUsernameSet(true);
+            navigate("/");
           } else {
-            console.error("Failed to fetch all markers:", data.error);
+            // for username already taken
+            console.error("Failed to create username: ", data.error);
+            setErrorMessage(
+              "Username is already taken. Please try another one."
+            );
+            // alert("Failed to create username " + data.error);
           }
         })
+        // general api error catching
         .catch((error) => {
-          console.error("Error fetching all markers:", error);
+          setCheckingUsername(false);
+          console.log("LOADING?: ", checkingUsername);
+          console.error("Error creating user: ", error);
+          setErrorMessage(
+            "Error creating user. Please try again. (Error:  " + error + ")"
+          );
         });
     }
-    setIsUsernameSet(true);
-    navigate("/");
-  }
-
-  //TODO: call the create user api function here
-  const addUser = async (uid: string, username: string, email: string) => {
-    await createUser(uid, username, email);
   };
 
   return (
@@ -107,26 +102,47 @@ function App() {
       <SignedIn>
         {!isUsernameSet ? (
           // If the user is set, then we go to the homepage, otherwise we go to the createusername page
-          <div className="username-form">
-            <form onSubmit={handleUserSubmit}>
-              <label htmlFor="username" className="block text-lg font-medium">
-                Enter your username:
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="mt-2 p-2 border rounded"
-                required
+          <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
+            <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
+              <img
+                src="src/assets/brown-university-logo-transparent.png"
+                alt="Brown University Logo"
+                className="h-48"
               />
-              <button
-                type="submit"
-                className="ml-2 p-2 bg-blue-500 text-white rounded"
+              <h1 className="p-4 text-red-600	text-6xl font-kodchasan font-semibold">
+                BUY @ BROWN
+              </h1>
+              <h2 className="p-4 text-3xl font-ibm-plex-sans text-center">
+                Create a username to start selling now!
+                <br />
+                (Other users will see this username on listings)
+              </h2>
+              <form
+                onSubmit={handleUserSubmit}
+                className="flex flex-col items-center rounded-3xl space-y-8"
               >
-                Submit
-              </button>
-            </form>
+                <input
+                  placeholder="Type your username..."
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="text-2xl font-ibm-plex-sans py-4 px-12 rounded-3xl"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-10 rounded-3xl"
+                >
+                  Submit
+                </button>
+              </form>
+              {errorMessage && (
+                <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+                  {errorMessage}
+                </p>
+              )}
+            </div>
           </div>
         ) : (
           <div>
@@ -153,30 +169,6 @@ function App() {
         )}
       </SignedIn>
     </div>
-
-    // <div className="App">
-    //   <SignedOut>
-    //     <SignInPage />
-    //   </SignedOut>
-    //   <SignedIn>
-    //     <Router>
-    //       <Navbar />
-    //       <p className="text-center text-2xl font-bold text-red-600">
-    //         Welcome to Buy@Brown
-    //       </p>
-    //       <Routes>
-    //         <Route path="/" element={<Homepage />} />
-    //         <Route path="/clothes" element={<Clothes />} />
-    //         <Route path="/tech" element={<Tech />} />
-    //         <Route path="/bathroom" element={<Bathroom />} />
-    //         <Route path="/kitchen" element={<Kitchen />} />
-    //         <Route path="/misc" element={<Misc />} />
-    //         <Route path="/school" element={<School />} />
-    //         <Route path="/furniture" element={<Furniture />} />
-    //       </Routes>
-    //     </Router>
-    //   </SignedIn>
-    // </div>
   );
 }
 

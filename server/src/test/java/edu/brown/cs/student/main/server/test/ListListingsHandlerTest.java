@@ -1,27 +1,18 @@
 package edu.brown.cs.student.main.server.test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi.Builder;
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.handlers.ListListingsHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
-import edu.brown.cs.student.main.server.storage.StorageInterface;
-import org.junit.jupiter.api.BeforeEach;
-import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
-import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Request;
 import spark.Response;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 
 public class ListListingsHandlerTest {
   private ListListingsHandler handler;
@@ -71,7 +62,8 @@ public class ListListingsHandlerTest {
     Map<String, Object> listing = createMockListing("user123", "listing1");
     mockedStorageHandler.addListing(listing);
   }
-  //Mocked test: testing success in user listing
+
+  // Mocked test: testing success in user listing
   @Test
   public void testSuccessfulListingsRetrieval() throws Exception {
     // Arrange
@@ -84,9 +76,9 @@ public class ListListingsHandlerTest {
     System.out.println("Listing to be added: " + listing);
 
     // Add listing
-//    mockedStorageHandler.addListing(listing);
-    mockedStorageHandler.addListing(testUid, "listings", listing.get("listingId").toString(), listing);
-
+    //    mockedStorageHandler.addListing(listing);
+    mockedStorageHandler.addListing(
+        testUid, "listings", listing.get("listingId").toString(), listing);
 
     // Debug: Inspect internal database structure
     printDatabaseStructure(mockedStorageHandler);
@@ -105,37 +97,40 @@ public class ListListingsHandlerTest {
 
     System.out.println("JSON Result: " + jsonResult);
 
-    assertTrue(jsonResult.contains("\"response_type\":\"success\""), "Response should indicate success");
+    assertTrue(
+        jsonResult.contains("\"response_type\":\"success\""), "Response should indicate success");
     assertTrue(jsonResult.contains("\"listings\":["), "Should have a listings array");
     assertTrue(jsonResult.contains("Test Listing"), "Should contain the test listing title");
   }
 
-//    // Retrieve listings for specific user
-//    List<Map<String, Object>> userListings = mockedStorageHandler.getCollection(testUid, "listing");
-//    System.out.println("User Listings after retrieval: " + userListings);
-//
-//    // Get all users' listings
-//    List<Map<String, Object>> allListings = mockedStorageHandler.getAllUsersListings();
-//    System.out.println("All Users Listings: " + allListings);
-//
-//    Map<String, String> params = new HashMap<>();
-//    params.put("uid", testUid);
-//    Request mockRequest = createMockRequest(params);
-//    Response mockResponse = createMockResponse();
-//
-//    // Act
-//    Object result = handler.handle(mockRequest, mockResponse);
-//
-//    // Assert
-//    assertNotNull(result);
-//    assertTrue(result instanceof String);
-//    String jsonResult = (String) result;
-//    System.out.println("JSON Result: " + jsonResult);
-//
-//    assertTrue(jsonResult.contains("\"response_type\":\"success\""), "Response should indicate success");
-//    assertTrue(jsonResult.contains("\"listings\":["), "Should have a listings array");
-//    assertTrue(jsonResult.contains("Test Listing"), "Should contain the test listing title");
-//  }
+  //    // Retrieve listings for specific user
+  //    List<Map<String, Object>> userListings = mockedStorageHandler.getCollection(testUid,
+  // "listing");
+  //    System.out.println("User Listings after retrieval: " + userListings);
+  //
+  //    // Get all users' listings
+  //    List<Map<String, Object>> allListings = mockedStorageHandler.getAllUsersListings();
+  //    System.out.println("All Users Listings: " + allListings);
+  //
+  //    Map<String, String> params = new HashMap<>();
+  //    params.put("uid", testUid);
+  //    Request mockRequest = createMockRequest(params);
+  //    Response mockResponse = createMockResponse();
+  //
+  //    // Act
+  //    Object result = handler.handle(mockRequest, mockResponse);
+  //
+  //    // Assert
+  //    assertNotNull(result);
+  //    assertTrue(result instanceof String);
+  //    String jsonResult = (String) result;
+  //    System.out.println("JSON Result: " + jsonResult);
+  //
+  //    assertTrue(jsonResult.contains("\"response_type\":\"success\""), "Response should indicate
+  // success");
+  //    assertTrue(jsonResult.contains("\"listings\":["), "Should have a listings array");
+  //    assertTrue(jsonResult.contains("Test Listing"), "Should contain the test listing title");
+  //  }
 
   // Helper method to print out the internal database structure
   private void printDatabaseStructure(MockedFirebaseUtilities storage) {
@@ -144,7 +139,8 @@ public class ListListingsHandlerTest {
 
     // If you have access to the private database field, you could use reflection to print it
     try {
-      java.lang.reflect.Field databaseField = MockedFirebaseUtilities.class.getDeclaredField("database");
+      java.lang.reflect.Field databaseField =
+          MockedFirebaseUtilities.class.getDeclaredField("database");
       databaseField.setAccessible(true);
       Map<String, ?> database = (Map<String, ?>) databaseField.get(storage);
       System.out.println("Detailed Database Contents: " + database);
@@ -152,7 +148,8 @@ public class ListListingsHandlerTest {
       System.out.println("Could not access database field: " + e.getMessage());
     }
   }
-  //Mocked test: testing no listing but user (edge case)
+
+  // Mocked test: testing no listing but user (edge case)
   @Test
   public void testUserWithNoListings() throws Exception {
     // Arrange
@@ -172,7 +169,8 @@ public class ListListingsHandlerTest {
     assertTrue(jsonResult.contains("\"response_type\":\"success\""));
     assertTrue(jsonResult.contains("\"listings\":[]"));
   }
-  //Mocked test: testing invalid params (edge case)
+
+  // Mocked test: testing invalid params (edge case)
   @Test
   public void testMissingUidParameter() {
     // Arrange
@@ -189,7 +187,8 @@ public class ListListingsHandlerTest {
     assertTrue(jsonResult.contains("\"response_type\":\"failure\""));
     assertTrue(jsonResult.contains("\"error\""));
   }
-  //Mocked test: testing success multiple listings
+
+  // Mocked test: testing success multiple listings
   @Test
   public void testMultipleListingsRetrieval() throws Exception {
     String testUid = "user789";
@@ -219,17 +218,18 @@ public class ListListingsHandlerTest {
     assertEquals(5, listings.size(), "Should contain 5 listings");
 
     // Verify each listing contains expected content
-    listings.forEach(listing -> {
-      assertTrue(listing.contains("Test Listing"), "Each listing should contain the title");
-      assertTrue(listing.contains("listing"), "Each listing should have a listingId");
-      assertTrue(listing.contains("doc_id"), "Each listing should have a document ID");
-    });
+    listings.forEach(
+        listing -> {
+          assertTrue(listing.contains("Test Listing"), "Each listing should contain the title");
+          assertTrue(listing.contains("listing"), "Each listing should have a listingId");
+          assertTrue(listing.contains("doc_id"), "Each listing should have a document ID");
+        });
   }
-//Helper method to parse response
+
+  // Helper method to parse response
   private Map<String, Object> parseJsonResponse(String jsonString) {
     // Parse JSON string using Moshi or any other JSON library
-    JsonAdapter<Map> adapter =
-        new Builder().build().adapter(Map.class);
+    JsonAdapter<Map> adapter = new Builder().build().adapter(Map.class);
 
     try {
       return adapter.fromJson(jsonString);
@@ -237,5 +237,4 @@ public class ListListingsHandlerTest {
       throw new RuntimeException("Failed to parse JSON", e);
     }
   }
-
 }

@@ -2,27 +2,15 @@ package edu.brown.cs.student.main.server.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.handlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-
-
-
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 import spark.Request;
 import spark.Response;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 public class ListAllUserListingsHandlerTest {
   private StorageInterface mockStorage;
@@ -34,7 +22,8 @@ public class ListAllUserListingsHandlerTest {
     mockStorage = new MockedFirebaseUtilities();
     handler = new ListAllUserListingsHandler(mockStorage);
   }
-  //Mocked test: testing success all listings
+
+  // Mocked test: testing success all listings
   @Test
   public void testSuccessfulListingsRetrieval() throws Exception {
     // Prepare and add mock listings for multiple users
@@ -57,7 +46,8 @@ public class ListAllUserListingsHandlerTest {
     assertTrue(jsonResponse.contains("\"uid\":\"user1\""));
     assertTrue(jsonResponse.contains("\"uid\":\"user2\""));
   }
-  //Mocked test: testing success empty listings
+
+  // Mocked test: testing success empty listings
   @Test
   public void testEmptyListingsRetrieval() throws Exception {
     // Create mock request and response
@@ -71,7 +61,8 @@ public class ListAllUserListingsHandlerTest {
     assertTrue(jsonResponse.contains("\"response_type\":\"success\""));
     assertTrue(jsonResponse.contains("\"listings\":[]"));
   }
-  //Mocked test: testing invalid params (edge case)
+
+  // Mocked test: testing invalid params (edge case)
   @Test
   public void testListingsWithMissingFields() throws Exception {
     // Create listings with incomplete data
@@ -92,7 +83,8 @@ public class ListAllUserListingsHandlerTest {
     assertTrue(jsonResponse.contains("\"response_type\":\"success\""));
     assertTrue(jsonResponse.contains("\"listings\":["));
   }
-  //Mocked test: testing empty params (edge case)
+
+  // Mocked test: testing empty params (edge case)
   @Test
   public void testListingsWithNullValues() throws Exception {
     Map<String, Object> nullValueListing = new HashMap<>();
@@ -100,7 +92,7 @@ public class ListAllUserListingsHandlerTest {
     nullValueListing.put("listingId", null);
     nullValueListing.put("title", null);
 
-    mockStorage.addListing( nullValueListing);
+    mockStorage.addListing(nullValueListing);
 
     Request mockRequest = createMockRequest(new HashMap<>());
     Response mockResponse = createMockResponse();
@@ -111,8 +103,6 @@ public class ListAllUserListingsHandlerTest {
     assertTrue(jsonResponse.contains("\"response_type\":\"success\""));
     assertTrue(jsonResponse.contains("\"listings\":[{}]"));
   }
-
-
 
   // Helper method to create a mock request
   private Request createMockRequest(Map<String, String> params) {

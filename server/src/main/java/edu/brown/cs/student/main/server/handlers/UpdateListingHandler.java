@@ -1,15 +1,15 @@
 package edu.brown.cs.student.main.server.handlers;
-import edu.brown.cs.student.main.server.parserParameterizedTypes.ListingsCollection.Listing;
+
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
 public class UpdateListingHandler implements Route {
 
   private final StorageInterface storageHandler;
@@ -17,6 +17,7 @@ public class UpdateListingHandler implements Route {
   public UpdateListingHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
+
   /**
    * Count the number of words between commas (used to validate filterByTags input (i.e. if the
    * number of words per tag <= 2)
@@ -60,7 +61,7 @@ public class UpdateListingHandler implements Route {
   /**
    * Handles the request to update an existing listing.
    *
-   * @param request  The HTTP request object
+   * @param request The HTTP request object
    * @param response The HTTP response object
    * @return A JSON response indicating success or failure
    */
@@ -75,16 +76,18 @@ public class UpdateListingHandler implements Route {
       if (uid == null || listingId == null) {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
-//      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
-//
-//      Map<String, Object> listing = allListings.stream()
-//          .filter(listingMap -> listingMap.get("listingId").toString().equalsIgnoreCase(listingId)
-//              || listingId.equalsIgnoreCase("ignore"))
-//          .findFirst()
-//          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given ID: " + listingId));
+      //      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
+      //
+      //      Map<String, Object> listing = allListings.stream()
+      //          .filter(listingMap ->
+      // listingMap.get("listingId").toString().equalsIgnoreCase(listingId)
+      //              || listingId.equalsIgnoreCase("ignore"))
+      //          .findFirst()
+      //          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given
+      // ID: " + listingId));
 
-//    System.out.println(listing);
-//      System.out.println(allListings);
+      //    System.out.println(listing);
+      //      System.out.println(allListings);
       Map<String, Object> listing = this.storageHandler.getListingForUser(uid, listingId);
       // Collect new parameters to update
       String title = request.queryParams("title");
@@ -95,7 +98,7 @@ public class UpdateListingHandler implements Route {
       String tags = request.queryParams("tags");
 
       // Update the fields only if new values are provided
-//      if (title != null) listing.put("title", title);
+      //      if (title != null) listing.put("title", title);
       if (title != null) {
         if (title.length() > 40) {
           System.out.println("Title must be less than or equal to 40 characters");
@@ -112,16 +115,15 @@ public class UpdateListingHandler implements Route {
         listing.put("price", price);
       }
       ;
-      if (description != null)
-        listing.put("description", description);
-      if (imageUrl != null)
-        listing.put("imageUrl", imageUrl);
+      if (description != null) listing.put("description", description);
+      if (imageUrl != null) listing.put("imageUrl", imageUrl);
 
       if (condition != null) {
         // check if condition option is one of the three valid options
         condition = condition.toLowerCase();
-        if (!(condition.equals("new") || condition.equals("like new") || condition.equals(
-            "used"))) {
+        if (!(condition.equals("new")
+            || condition.equals("like new")
+            || condition.equals("used"))) {
           System.out.println(
               "Please choose from valid condition inputs (i.e. new, like new, or used");
           throw new IllegalArgumentException(
@@ -129,7 +131,7 @@ public class UpdateListingHandler implements Route {
         }
         listing.put("condition", condition);
       }
-      if (tags != null){
+      if (tags != null) {
         // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
         if (tags.length() - tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length()
             > 0) {
@@ -162,10 +164,7 @@ public class UpdateListingHandler implements Route {
           throw new IllegalArgumentException("Please make sure all tags are unique");
         }
         listing.put("tags", tags);
-    }
-
-
-
+      }
 
       // Save the updated listing back to the storage
       storageHandler.addDocument(uid, "listings", listingId, listing);

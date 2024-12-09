@@ -15,23 +15,17 @@ public interface StorageInterface {
 
   void removeDocument(String uid, String collection_id, String doc_id);
 
-  Map<String, Object> getListingForUser(String uid,
-      String listingId) throws InterruptedException, ExecutionException;
+  Map<String, Object> getListingForUser(String uid, String listingId)
+      throws InterruptedException, ExecutionException;
 
   void clearUser(String uid) throws InterruptedException, ExecutionException;
 
-  List<Map<String, Object>> getAllUsers()
-      throws InterruptedException, ExecutionException;
+  List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException;
 
-  List<Map<String, Object>> getAllUserDataMaps()
-    throws ExecutionException, InterruptedException;
+  List<Map<String, Object>> getAllUserDataMaps() throws ExecutionException, InterruptedException;
 
   List<Map<String, Object>> getAllUsersListings() throws InterruptedException, ExecutionException;
 
-  Map<String, Object> getDocument(String uid, String collectionId,
-      String docId) throws IllegalArgumentException, ExecutionException, InterruptedException;
-
+  Map<String, Object> getDocument(String uid, String collectionId, String docId)
+      throws IllegalArgumentException, ExecutionException, InterruptedException;
 }
-
-
-
