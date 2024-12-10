@@ -15,6 +15,7 @@ import UserListings from "./UserPages/UserListings";
 import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
+import ListingForm from "../components/ListingForm.tsx"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
@@ -37,10 +38,7 @@ function App() {
   const { user } = useUser();
 
 //   if (!user) {
-//     console.log("USER .. Loading...");
 
-//     return
-    
 // ]  }
 
   const [username, setUsername] = useState("");
@@ -66,6 +64,7 @@ function App() {
             setIsUsernameSet(true);
             setUsername(fetchedUsername);
           } else {
+            // the username has not been set
             setIsUsernameSet(false);
           }
         } else {
@@ -98,19 +97,11 @@ function App() {
    * @param e This is the event from submitting the form
    */
   const handleUserSubmit = async (e: React.FormEvent) => {
-    setCheckingUsername(true);
     e.preventDefault(); // prevent the page from refreshing
-    console.log("Checking Username Availability");
-    console.log("LOADING?: ", checkingUsername);
-    setLoading(true);
-    console.log("LOADING?: ", loading);
     if (username && user) {
       await createUser(user.id, username, user.emailAddresses[0].emailAddress)
         .then((data) => {
           if (data.response_type === "success") {
-            setCheckingUsername(false);
-            console.log("LOADING?: ", checkingUsername); /// TODO
-            // remap the markers to the lat and long
             setIsUsernameSet(true);
             navigate("/");
           } else {
@@ -119,13 +110,10 @@ function App() {
             setErrorMessage(
               "Username is already taken. Please try another one."
             );
-            // alert("Failed to create username " + data.error);
           }
         })
         // general api error catching
         .catch((error) => {
-          setCheckingUsername(false);
-          console.log("LOADING?: ", checkingUsername);
           console.error("Error creating user: ", error);
           setErrorMessage(
             "Error creating user. Please try again. (Error:  " + error + ")"
@@ -153,6 +141,7 @@ function App() {
             </div>
           </div>
         ) : !isUsernameSet ? (
+          //TODO add loading state to checking username availability (when the api is called (create/edit user), have a loading state saying checking username availability!)
           // If the user is set, then we go to the homepage, otherwise we go to the createusername page
           <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
             <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
@@ -197,10 +186,11 @@ function App() {
             </div>
           </div>
         ) : (
-          <div>
-            < Navbar usernamename={username} />
+          <div className="font-ibm-plex-sans">
+            <Navbar username={username} />
             <Routes>
               <Route path="/" element={<Homepage />} />
+              <Route path="/listing-form" element={<ListingForm />} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
               <Route path="/bathroom" element={<Bathroom />} />
@@ -208,10 +198,22 @@ function App() {
               <Route path="/misc" element={<Misc />} />
               <Route path="/school" element={<School />} />
               <Route path="/furniture" element={<Furniture />} />
-              <Route path="/favorites" element={<UserFavorites />} />
-              <Route path="/yourlistings" element={<UserListings />} />
-              <Route path="/messages" element={<UserMessages />} />
-              <Route path="/settings" element={<UserSettings />} />
+              <Route
+                path="/favorites"
+                element={<UserFavorites username={username} />}
+              />
+              <Route
+                path="/yourlistings"
+                element={<UserListings username={username} />}
+              />
+              <Route
+                path="/messages"
+                element={<UserMessages username={username} />}
+              />
+              <Route
+                path="/settings"
+                element={<UserSettings username={username} />}
+              />
             </Routes>
           </div>
         )}
