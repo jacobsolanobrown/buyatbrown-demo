@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import { useRef } from "react";
 
-export default function Navbar({ usernamename }: { usernamename: string }) {
+export default function Navbar({ username }: { username: string }) {
   const navScrollRef = useRef<HTMLDivElement | null>(null);
-  console.log("USERNAME: ", usernamename);
+  console.log("USERNAME: ", username);
   const scrollNav = (direction: "left" | "right") => {
     if (navScrollRef.current) {
       const scrollAmount = 150; // Adjust the scroll amount
@@ -28,18 +28,18 @@ export default function Navbar({ usernamename }: { usernamename: string }) {
       <div className="flex justify-between items-center px-6 py-3">
         <Link
           to="/"
-          className="text-2xl font-bold text-white font-kodchasan font-semibold"
+          className="text-2xl text-white font-kodchasan font-semibold"
         >
           {" "}
           BUY@BROWN
         </Link>
         <div className="flex items-center space-x-4">
-          <p className="text-white">Account: </p>
+          {/* <p className="text-white">Account: </p> */}
           <Link to="/yourListings" className="text-white underline">
-            {usernamename}
+            Account: {username}
           </Link>
           <div className="text-white underline">
-            <SignOutButton className="text-white underline" />
+            <SignOutButton />
           </div>
         </div>
       </div>
