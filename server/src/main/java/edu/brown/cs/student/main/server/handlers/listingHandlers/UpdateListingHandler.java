@@ -95,6 +95,7 @@ public class UpdateListingHandler implements Route {
       String price = request.queryParams("price");
       String description = request.queryParams("description");
       String imageUrl = request.queryParams("imageUrl");
+      String category = request.queryParams("category");
       String condition = request.queryParams("condition");
       String tags = request.queryParams("tags");
 
@@ -123,23 +124,34 @@ public class UpdateListingHandler implements Route {
         // check if condition option is one of the three valid options
         condition = condition.toLowerCase();
         if (!(condition.equals("new")
-            || condition.equals("like new")
-            || condition.equals("used"))) {
+          || condition.equals("like new")
+          || condition.equals("used"))) {
           System.out.println(
-              "Please choose from valid condition inputs (i.e. new, like new, or used");
+            "Please choose from valid condition inputs (i.e. new, like new, or used");
           throw new IllegalArgumentException(
-              "Please choose from valid condition inputs (i.e. New, Like New, or Used");
+            "Please choose from valid condition inputs (i.e. New, Like New, or Used");
         }
         listing.put("condition", condition);
       }
+
+      if (category != null) {
+        if (category.contains(",")) {
+          System.out.println(
+            "Category can only have one value (i.e.value  must not contain commas)");
+          throw new IllegalArgumentException(
+            "Category can only have one value (i.e.value  must not contain commas)");
+        }
+        listing.put("category", category);
+      }
+
       if (tags != null) {
         // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
         if (tags.length() - tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length()
-            > 0) {
+          > 0) {
           System.out.println(
-              "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas");
           throw new IllegalArgumentException(
-              "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas");
         }
 
         if (countWordsBetweenCommas(tags) > 2) {
