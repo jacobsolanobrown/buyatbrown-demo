@@ -29,3 +29,15 @@ export async function getAllListings() {
   return await queryAPI("list-all-listings", {
   });
 }
+
+// This function is used to filter through all the listings by keyword, title, condition, tag, category, or description
+export async function filterListings(keyword: string, title: string, condition: string, tag: string, description: string, category: string) {
+  return await queryAPI("filter-listings", {
+    keyword: keyword,
+    title: title, 
+    condition: condition, 
+    tag:tag,
+    description: description, 
+    category: category,
+  });
+}

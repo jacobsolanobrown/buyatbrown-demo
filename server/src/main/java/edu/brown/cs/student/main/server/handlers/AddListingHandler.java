@@ -82,6 +82,7 @@ public class AddListingHandler implements Route {
       String tags = request.queryParams("tags");
       String condition = request.queryParams("condition");
       String description = request.queryParams("description");
+      String category = request.queryParams("category");
 
       // create new listing with collected parameters
       // Listing listing = new Listing(username, title, imageUrl, price, description);
@@ -95,13 +96,14 @@ public class AddListingHandler implements Route {
           || condition == null
           || description == null
           || title == null
-          || tags == null) {
+          || tags == null
+          || category == null) {
         System.out.println(
             "All listings arguments are required "
-                + "(uid, username, title, tags, price, imageUrl, condition, description)");
+                + "(uid, username, title, tags, price, imageUrl, condition, description, category)");
         throw new IllegalArgumentException(
             "All listings arguments are required "
-                + "(uid, username, title, tags, price, imageUrl, condition, description)");
+                + "(uid, username, title, tags, price, imageUrl, condition, description, category)");
       }
 
       // check if title is less than 40 characters
@@ -166,6 +168,7 @@ public class AddListingHandler implements Route {
       data.put("price", price);
       data.put("title", title);
       data.put("description", description);
+      data.put("category", category);
 
       // get the current word count to make a unique word_id by index.
       LocalDateTime now = LocalDateTime.now();
