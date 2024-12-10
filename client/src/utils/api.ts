@@ -29,3 +29,9 @@ export async function createUser(uid: string, username: string, email: string) {
 export async function getUser(userID: string) {
   return await queryAPI("query-username", { uid: userID });
 }
+
+// This function is used to get all the user listings using the server's listAllUserListings handler
+export async function getAllListings() {
+  return await queryAPI("list-all-listings", {
+  });
+}

@@ -18,6 +18,7 @@ import SignInPage from "./SignInPage";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
+import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -34,6 +35,14 @@ const app = initializeApp(firebaseConfig);
 
 function App() {
   const { user } = useUser();
+
+//   if (!user) {
+//     console.log("USER .. Loading...");
+
+//     return
+    
+// ]  }
+
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -189,7 +198,7 @@ function App() {
           </div>
         ) : (
           <div>
-            <Navbar username={username} />
+            < Navbar usernamename={username} />
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/clothes" element={<Clothes />} />

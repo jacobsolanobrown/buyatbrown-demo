@@ -10,9 +10,9 @@ import spark.Response;
 import spark.Route;
 
 /**
- * Class to query a username from the Firestore database.
- * It will take in a userID and return a true boolean along with the username associated with that userID.
- * If the userID does not exist, it will return a false boolean, and an empty string.
+ * Class to query a username from the Firestore database. It will take in a userID and return a true
+ * boolean along with the username associated with that userID. If the userID does not exist, it
+ * will return a false boolean, and an empty string.
  */
 public class QueryUsernameHandler implements Route {
 
@@ -38,7 +38,8 @@ public class QueryUsernameHandler implements Route {
       boolean userExists = allUsers.stream().anyMatch(user -> user.get("uid").equals(uid));
 
       if (userExists) {
-        Map<String, Object> user = allUsers.stream().filter(u -> u.get("uid").equals(uid)).findFirst().get();
+        Map<String, Object> user =
+            allUsers.stream().filter(u -> u.get("uid").equals(uid)).findFirst().get();
         String username = user.get("username").toString();
         System.out.println("Username (" + username + ") exists with uid (" + uid + ")");
 

@@ -31,12 +31,11 @@ public class MockedFirebaseUtilities implements StorageInterface {
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
     // Simulate adding a document to Firestore
-        //    database
-        //        .computeIfAbsent(uid, k -> new HashMap<>())
-        //        .computeIfAbsent(collection_id, k -> new HashMap<>())
-        //        .put(doc_id, new HashMap<>(data));
+    //    database
+    //        .computeIfAbsent(uid, k -> new HashMap<>())
+    //        .computeIfAbsent(collection_id, k -> new HashMap<>())
+    //        .put(doc_id, new HashMap<>(data));
     database
-        
         .computeIfAbsent(uid, k -> new HashMap<>())
         .computeIfAbsent(collection_id, k -> new HashMap<>())
         .put(doc_id, data);
