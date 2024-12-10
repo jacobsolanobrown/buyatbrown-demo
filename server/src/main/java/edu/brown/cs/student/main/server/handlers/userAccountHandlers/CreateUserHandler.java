@@ -1,5 +1,6 @@
-package edu.brown.cs.student.main.server.handlers;
+package edu.brown.cs.student.main.server.handlers.userAccountHandlers;
 
+import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +101,7 @@ public class CreateUserHandler implements Route {
       Map<String, Object> userData = new HashMap<>();
       userData.put("uid", uid);
       userData.put("username", username);
-      if (email != null) userData.put("email", email);
+      userData.put("email", email);
 
       // Store the new user in the database
       storageHandler.addDocument(uid, "users", uid, userData);

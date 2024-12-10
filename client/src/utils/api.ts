@@ -24,6 +24,12 @@ export async function createUser(uid: string, username: string, email: string) {
   });
 }
 
+// This function is used to get a user's username from their userID. It will also return a boolean regarding whether 
+// the user already has set a username or not. 
+export async function getUser(userID: string) {
+  return await queryAPI("query-username", { uid: userID });
+}
+
 // This function is used to get all the user listings using the server's listAllUserListings handler
 export async function getAllListings() {
   return await queryAPI("list-all-listings", {

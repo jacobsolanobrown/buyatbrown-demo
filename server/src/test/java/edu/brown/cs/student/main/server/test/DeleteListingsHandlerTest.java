@@ -2,10 +2,9 @@ package edu.brown.cs.student.main.server.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.brown.cs.student.main.server.handlers.DeleteListingHandler;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;

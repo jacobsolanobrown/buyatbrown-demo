@@ -2,7 +2,7 @@ package edu.brown.cs.student.main.server.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
+import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.List;
