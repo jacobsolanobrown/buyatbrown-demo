@@ -5,7 +5,7 @@ import {
   import { IoSearch } from "react-icons/io5";
   import { useRef } from 'react';
   
-  export default function Navbar() {
+  export default function Navbar({username}: {username: string}) {
 
     const navScrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,16 +23,19 @@ import {
       <header className="sticky top-0 z-50 bg-red-600 shadow-md">
         {/* App name and sign out */}
         <div className="flex justify-between items-center px-6 py-3">
-          <Link to="/" className="text-2xl font-bold text-white"> Buy@Brown</Link>
+          <Link to="/" className="text-2xl font-bold text-white">
+            {" "}
+            Buy@Brown
+          </Link>
           <div className="flex items-center space-x-4">
+            <p className="text-white">Account:</p>
             <Link to="/yourListings" className="text-white underline">
-              username
+              {username}
             </Link>
             <SignOutButton />
           </div>
         </div>
-  
-        
+
         <div className="flex items-center justify-between px-6 py-2">
           {/* Search Bar */}
           <div className="md:hidden">
@@ -46,8 +49,8 @@ import {
               className="w-full max-w-sm px-3 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
-          
-        {/* Nav Links with Buttons */}
+
+          {/* Nav Links with Buttons */}
           <div className="relative flex items-center w-full sm:w-auto">
             {/* Left Scroll Button */}
             <button
@@ -62,25 +65,46 @@ import {
               ref={navScrollRef}
               className="flex overflow-x-auto whitespace-nowrap scrollbar-hidden gap-6 mx-12"
             >
-              <Link to="/clothes" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/clothes"
+                className="text-white underline hover:text-stone-200"
+              >
                 Clothes
               </Link>
-              <Link to="/tech" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/tech"
+                className="text-white underline hover:text-stone-200"
+              >
                 Tech
               </Link>
-              <Link to="/school" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/school"
+                className="text-white underline hover:text-stone-200"
+              >
                 School
               </Link>
-              <Link to="/furniture" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/furniture"
+                className="text-white underline hover:text-stone-200"
+              >
                 Furniture
               </Link>
-              <Link to="/kitchen" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/kitchen"
+                className="text-white underline hover:text-stone-200"
+              >
                 Kitchen
               </Link>
-              <Link to="/bathroom" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/bathroom"
+                className="text-white underline hover:text-stone-200"
+              >
                 Bathroom
               </Link>
-              <Link to="/misc" className="text-white underline hover:text-stone-200">
+              <Link
+                to="/misc"
+                className="text-white underline hover:text-stone-200"
+              >
                 Misc
               </Link>
             </nav>

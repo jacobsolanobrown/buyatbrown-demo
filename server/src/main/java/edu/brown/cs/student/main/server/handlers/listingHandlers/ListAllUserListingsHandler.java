@@ -1,5 +1,6 @@
-package edu.brown.cs.student.main.server.handlers;
+package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
+import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +9,12 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ListListingsHandler implements Route {
+/** Class for the ListAllUserListings route, which lists all listings for all users */
+public class ListAllUserListingsHandler implements Route {
 
   public StorageInterface storageHandler;
 
-  public ListListingsHandler(StorageInterface storageHandler) {
+  public ListAllUserListingsHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -25,25 +27,13 @@ public class ListListingsHandler implements Route {
    */
   @Override
   public Object handle(Request request, Response response) {
+
     Map<String, Object> responseMap = new HashMap<>();
     try {
-      String uid = request.queryParams("uid");
-
-      System.out.println("listing listings for user: " + uid);
-
-      // get all the listings for the user
-      List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "listings");
-
-      // convert the key,value map to just a list of the listings.
-      System.out.println(vals);
-      List<String> listings = vals.stream().map(Object::toString).toList();
-      //      List<String> listings = vals.stream().map(items ->
-      // items.get("listings").toString()).toList();
-      System.out.println("listings: " + listings);
-      //      System.out.println(vals.stream().map(listing -> listing.get("item")));
-
+      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
+      System.out.println("printing all user listings: " + allListings);
       responseMap.put("response_type", "success");
-      responseMap.put("listings", listings);
+      responseMap.put("listings", allListings);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import edu.brown.cs.student.main.server.handlers.FilterListingsHandler;
+import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.FilterListingsHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import java.io.IOException;
 import java.util.HashMap;

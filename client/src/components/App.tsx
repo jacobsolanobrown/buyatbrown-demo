@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Clothes from "./Tabs/Clothes";
 import Tech from "./Tabs/Tech";
 import Bathroom from "./Tabs/Bathroom";
@@ -21,7 +16,7 @@ import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
-import { createUser } from "../utils/api";
+import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
 
 const firebaseConfig = {
@@ -45,11 +40,47 @@ function App() {
   const [checkingUsername, setCheckingUsername] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  /**
+   * This function is used to check if the user has a username set. If the user has a username set, then we set the state to true and set the username.
+   * If the user does not have a username set, then we set the state to false, and the user will be redirected to create a username.
+   */
+  const checkForUsername = async () => {
+    if (user) {
+      setLoading(true); // Start loading the account details
+      try {
+        // The call to the server to check if the user has a username set
+        const jsonResponse = await getUser(user.id);
+        if (jsonResponse.response_type === "success") {
+          const usernameExists = jsonResponse.exists; // Boolean if the username exists
+          const fetchedUsername = jsonResponse.username; // The string if the username was set
+          if (usernameExists && fetchedUsername) {
+            setIsUsernameSet(true);
+            setUsername(fetchedUsername);
+          } else {
+            setIsUsernameSet(false);
+          }
+        } else {
+          // This is the case where the user has inputted an empty string as their username
 
+          setIsUsernameSet(false);
+        }
+      } catch (error) {
+        console.error("Error checking username: ", error);
+        setIsUsernameSet(false);
+      } finally {
+        setLoading(false); // Stop loading the account details
+      }
+    }
+  };
+
+  /**
+   * Check for username on app load or when the user changes.
+   */
   useEffect(() => {
-    if (checkingUsername) {
-      console.log("LOADING?: ", checkingUsername);
-  }}, []);
+    if (user) {
+      checkForUsername();
+    }
+  }, [user]); // Run whenever the `user` object changes
 
   /**
    * This function is used to create a new user in the database using the server's createUser handler.
@@ -61,7 +92,7 @@ function App() {
     setCheckingUsername(true);
     e.preventDefault(); // prevent the page from refreshing
     console.log("Checking Username Availability");
-    console.log("LOADING?: ", checkingUsername); 
+    console.log("LOADING?: ", checkingUsername);
     setLoading(true);
     console.log("LOADING?: ", loading);
     if (username && user) {
@@ -100,7 +131,19 @@ function App() {
         <SignInPage />
       </SignedOut>
       <SignedIn>
-        {!isUsernameSet ? (
+        {loading ? (
+          <div className="flex justify-center items-center min-h-screen bg-gray-100">
+            <div className="text-center">
+              <div
+                className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full"
+                role="status"
+              ></div>
+              <p className="text-2xl font-semibold mt-4">
+                Fetching Account Details...
+              </p>
+            </div>
+          </div>
+        ) : !isUsernameSet ? (
           // If the user is set, then we go to the homepage, otherwise we go to the createusername page
           <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
             <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
@@ -146,12 +189,8 @@ function App() {
           </div>
         ) : (
           <div>
-            <Navbar />
-            <h1 className="text-center text-2xl font-bold text-red-600">
-              THIS IS THE USER'S USERNAME: {username}{" "}
-            </h1>
+            <Navbar username={username} />
             <Routes>
-              <Route path="/" element={<Homepage />} />
               <Route path="/" element={<Homepage />} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
