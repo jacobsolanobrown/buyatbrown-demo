@@ -6,3 +6,13 @@ interface ImportMetaEnv {
 interface ImportMeta {
   env: ImportMetaEnv;
 }
+
+
+interface ImportMetaEnv {
+  readonly VITE_CLERK_PUBLISHABLE_KEY: string;
+  // Add other environment variables as needed
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

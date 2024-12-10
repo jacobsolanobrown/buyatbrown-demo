@@ -23,6 +23,7 @@ import SignInPage from "./SignInPage";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser } from "../utils/api";
 import "/src/index.css";
+import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -39,6 +40,14 @@ const app = initializeApp(firebaseConfig);
 
 function App() {
   const { user } = useUser();
+
+//   if (!user) {
+//     console.log("USER .. Loading...");
+
+//     return
+    
+// ]  }
+
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,7 +58,8 @@ function App() {
   useEffect(() => {
     if (checkingUsername) {
       console.log("LOADING?: ", checkingUsername);
-  }}, []);
+    }
+  }, []);
 
   /**
    * This function is used to create a new user in the database using the server's createUser handler.
@@ -61,7 +71,7 @@ function App() {
     setCheckingUsername(true);
     e.preventDefault(); // prevent the page from refreshing
     console.log("Checking Username Availability");
-    console.log("LOADING?: ", checkingUsername); 
+    console.log("LOADING?: ", checkingUsername);
     setLoading(true);
     console.log("LOADING?: ", loading);
     if (username && user) {
@@ -146,10 +156,7 @@ function App() {
           </div>
         ) : (
           <div>
-            <Navbar />
-            <h1 className="text-center text-2xl font-bold text-red-600">
-              THIS IS THE USER'S USERNAME: {username}{" "}
-            </h1>
+            < Navbar usernamename={username} />
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/" element={<Homepage />} />
