@@ -19,7 +19,7 @@ import ListingForm from "../components/ListingForm.tsx"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
-import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
+// import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
