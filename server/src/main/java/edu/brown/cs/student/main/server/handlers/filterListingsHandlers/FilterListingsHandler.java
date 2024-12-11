@@ -101,9 +101,9 @@ public class FilterListingsHandler implements Route {
       // validate the inputs of the request
       System.out.println("Validating parameter values for search");
       if ((titleDescriptionKeyword == null || titleDescriptionKeyword.isEmpty())
-        && (categoryKeyword == null || categoryKeyword.isEmpty())
-        && (tagKeywords == null || tagKeywords.isEmpty())
-        && (conditionKeywords == null || conditionKeywords.isEmpty())) {
+        || (categoryKeyword == null || categoryKeyword.isEmpty())
+        || (tagKeywords == null || tagKeywords.isEmpty())
+        || (conditionKeywords == null || conditionKeywords.isEmpty())) {
         System.out.println(
           "Cannot have ALL blank filter parameters. Please ensure that titleDescriptionKeyword, "
             + "categoryKeyword, tagKeywords, and conditionKeywords are non-null and non-empty values.");

@@ -66,7 +66,7 @@ export default function Clothes () {
         onConditionsChange={handleConditionsChange} />
 
       {/* Render posts based on filters */}
-      <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-start">
+      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-start mx-12">
         {posts.map((post) => ( // posts should reflect 
         <ListingCard
           key={post.id}
