@@ -4,7 +4,7 @@
 # <div align='center'> How to Run the Application </div>
 
 ## In the client directory: 
-Run Commands:
+Commands:
 - run `npm start` to start the client
 
 Setup:
@@ -14,11 +14,11 @@ Setup:
 npx tailwindcss init -p` to install tailwindcss
 - Add/Replace the following files with our own: 
     - postcss.config.js
-    - tailwind.config.
+    - tailwind.config.js
     - .env
 
 ## In the server directory:
-Run Commands:
+Commands:
 - run `mvn package` to start the server
 
 Setup:
