@@ -70,5 +70,3 @@ const FilterBar: React.FC<FilterBarProps> = ({ title, filters, conditionFilters,
 }
 
 export default FilterBar;
-
-  

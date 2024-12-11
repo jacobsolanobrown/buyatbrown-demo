@@ -2,7 +2,7 @@ package edu.brown.cs.student.main.server.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.brown.cs.student.main.server.handlers.ListAllUserListingsHandler;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;

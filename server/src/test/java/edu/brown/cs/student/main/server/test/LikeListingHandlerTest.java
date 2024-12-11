@@ -2,7 +2,7 @@ package edu.brown.cs.student.main.server.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import edu.brown.cs.student.main.server.handlers.LikeListingHandler;
+import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import java.util.HashMap;
 import java.util.List;

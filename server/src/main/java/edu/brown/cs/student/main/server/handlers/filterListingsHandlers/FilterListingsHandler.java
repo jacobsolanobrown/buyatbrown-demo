@@ -24,12 +24,32 @@ public class FilterListingsHandler implements Route {
    *     appearances
    * @return An int representing number of times the keyword appears in the specified listing field
    */
-  public int countKeywordAppearances(
-      Map<String, Object> listing, String keyword, String fieldToSearch) {
+  public static int countKeywordAppearances(
+    Map<String, Object> listing, String keyword, String fieldToSearch) {
     assert !keyword.isEmpty();
 
     String fieldString = listing.get(fieldToSearch).toString();
     return (fieldString.length() - fieldString.replace(keyword, "").length()) / keyword.length();
+  }
+
+  /**
+   * Count the number of times the keywords appear in a listing field
+   *
+   * @param listing A listing represented as a mapping from field name (e.g. title) to field value
+   *                for the listing
+   * @param keywords A String input of keywords separated by commas
+   * @param fieldToSearch The field in the listing for which the function should count the number of
+   *    appearances
+   * @return An Integer representing the total number of times the keywords appear in the fieldToSearch
+   */
+  public static Integer countManyKeywordsAppearances(Map<String, Object> listing,
+    String keywords, String fieldToSearch) {
+    ArrayList<String> keywordList = new ArrayList<String>(Arrays.asList(keywords.split(",")));
+    Integer totalNumAppearances = 0;
+    for (String keyword : keywordList) {
+      totalNumAppearances += countKeywordAppearances(listing, keyword, fieldToSearch);
+    }
+    return totalNumAppearances;
   }
 
   /**
@@ -43,8 +63,8 @@ public class FilterListingsHandler implements Route {
       return Boolean.valueOf(booleanString);
     } else {
       throw new IllegalArgumentException(
-          "filterByTitle, filterByCondition, filterByTag, and "
-              + "filterByDescription should not be null");
+        "filterByTitle, filterByCondition, filterByTag, and "
+          + "filterByDescription should not be null");
     }
   }
 
@@ -60,46 +80,29 @@ public class FilterListingsHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
     try {
       // get the request values
-      String keyword = request.queryParams("keyword");
-      String filterByTitle = request.queryParams("filterByTitle");
-      String filterByCondition = request.queryParams("filterByCondition");
-      String filterByTag = request.queryParams("filterByTag");
-      String filterByDescription = request.queryParams("filterByDescription");
+      String titleDescriptionKeyword = request.queryParams("titleDescriptionKeyword");
+      String categoryKeyword = request.queryParams("categoryKeyword");
+      String tagKeywords = request.queryParams("tagKeywords");
+      String conditionKeywords = request.queryParams("conditionKeywords");
+
 
       // validate the inputs of the request
       System.out.println("Validating parameter values for search");
-      if (filterByTitle == null
-          || filterByTitle.isEmpty()
-          || filterByCondition == null
-          || filterByCondition.isEmpty()
-          || filterByTag == null
-          || filterByTag.isEmpty()
-          || filterByDescription == null
-          || filterByDescription.isEmpty()) {
+      if (titleDescriptionKeyword == null
+        || titleDescriptionKeyword.isEmpty()
+        || categoryKeyword == null
+        || categoryKeyword.isEmpty()
+        || tagKeywords == null
+        || tagKeywords.isEmpty()
+        || conditionKeywords == null
+        || conditionKeywords.isEmpty()) {
         System.out.println(
-            "Cannot have blank filter parameters. Please ensure that filterByTitle, "
-                + "filterByCondition, filterByTag, and filterByDescription are non-null and non-empty values.");
+          "Cannot have blank filter parameters. Please ensure that titleDescriptionKeyword, "
+            + "categoryKeyword, tagKeywords, and conditionKeywords are non-null and non-empty values.");
         throw new IllegalArgumentException(
-            "Cannot have blank filter parameters. "
-                + "Please ensure that filterByTitle, filterByCondition, filterByTag, and "
-                + "filterByDescription are non-null and non-empty values.");
-      }
-
-      Boolean filterByTitleBoolean = stringToBoolean(filterByTitle);
-      Boolean filterByConditionBoolean = stringToBoolean(filterByCondition);
-      Boolean filterByTagBoolean = stringToBoolean(filterByTag);
-      Boolean filterByDescriptionBoolean = stringToBoolean(filterByDescription);
-
-      if (!filterByTitleBoolean
-          && !filterByConditionBoolean
-          && !filterByTagBoolean
-          && !filterByDescriptionBoolean) {
-        System.out.println(
-            "Please provide at least field value of a listing to search. "
-                + "i.e. Either filterByTitle, filterByCondition, filterByTag, or filterByDescription must be 'true'.");
-        throw new IllegalArgumentException(
-            "Cannot have blank filter parameters. "
-                + "Please ensure that title, condition, tag, and description are non-null and non-empty values.");
+          "Cannot have blank filter parameters. "
+            + "Please ensure that titleDescriptionKeyword, categoryKeyword, tagKeywords, and "
+            + "conditionKeywords are non-null and non-empty values.");
       }
 
       List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
@@ -107,37 +110,38 @@ public class FilterListingsHandler implements Route {
 
       System.out.println("Searching...");
       List<AbstractMap.SimpleEntry<Map<String, Object>, Integer>> sortedListings =
-          new ArrayList<>();
+        new ArrayList<>();
       // Apply filters
       // List of Pairs(<Map<String, Object> Listing(String field name, Object field value))
       for (Map<String, Object> listing : allListings) {
-        Integer keywordInTitleCount = 0;
-        if (filterByTitleBoolean) {
-          keywordInTitleCount = countKeywordAppearances(listing, keyword, "title");
+
+        // Search bar filtering: Filter by Title and Description
+        Integer titleDescriptionValue = -500;
+        if (!titleDescriptionKeyword.equalsIgnoreCase("ignore")) {
+          Integer titleValue =
+            (countKeywordAppearances(listing, titleDescriptionKeyword, "title") * 10);
+          Integer descriptionValue = countKeywordAppearances(listing, titleDescriptionKeyword, "description");
+          titleDescriptionValue = titleValue + descriptionValue;
         }
 
-        Integer keywordInConditionCount = 0;
-        if (filterByConditionBoolean && keyword.toLowerCase().equals(listing.get("condition"))) {
-          keywordInConditionCount = 1;
+        Integer categoryValue = -500;
+        if (!categoryKeyword.equalsIgnoreCase("ignore")) {
+          categoryValue = countKeywordAppearances(listing, categoryKeyword, "category");
         }
 
-        Integer keywordInTagCount = 0;
-        if (filterByTagBoolean) {
-          keywordInTagCount = countKeywordAppearances(listing, keyword, "tag");
+        Integer conditionValue = -500;
+        if (!conditionKeywords.toLowerCase().contains("ignore")) {
+          conditionValue = countManyKeywordsAppearances(listing, conditionKeywords, "condition");
         }
 
-        Integer keywordInDescriptionCount = 0;
-        if (filterByDescriptionBoolean) {
-          keywordInDescriptionCount = countKeywordAppearances(listing, keyword, "description");
+        Integer tagValue = -500;
+        if (!tagKeywords.toLowerCase().contains("ignore")) {
+          tagValue = countManyKeywordsAppearances(listing, tagKeywords, "tags");
         }
 
         // get value for listing (based on how many times the keyword appears) while setting
         // weights for each field
-        Integer heuristicValueForListing =
-            keywordInDescriptionCount
-                + (3 * keywordInTagCount)
-                + (4 * keywordInConditionCount)
-                + (7 * keywordInTitleCount);
+        Integer heuristicValueForListing = titleDescriptionValue + categoryValue + conditionValue + tagValue;
 
         // skip listing if there are no appearances of keyword in the listing
         if (heuristicValueForListing > 0) {

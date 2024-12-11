@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.brown.cs.student.main.server.handlers.AddListingHandler;
-import edu.brown.cs.student.main.server.handlers.CreateUserHandler;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler;
+import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.Collection;
