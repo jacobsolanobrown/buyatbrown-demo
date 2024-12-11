@@ -30,14 +30,12 @@ export async function getAllListings() {
   });
 }
 
-// This function is used to filter through all the listings by keyword, title, condition, tag, category, or description
-export async function filterListings(keyword: string, title: string, condition: string, tag: string, description: string, category: string) {
+// This function is used to filter through all the listings by title/description, categorgy, tag, or condition 
+export async function filterListings(titleDesc: string, category: string, tag: string, condition: string) {
   return await queryAPI("filter-listings", {
-    keyword: keyword,
-    title: title, 
-    condition: condition, 
-    tag:tag,
-    description: description, 
+    titleDesc: titleDesc, 
     category: category,
+    tag:tag,
+    condition: condition, 
   });
 }
