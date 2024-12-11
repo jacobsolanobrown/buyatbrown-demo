@@ -15,7 +15,7 @@ npx tailwindcss init -p` to install tailwindcss
 - Add/Replace the following files with our own: 
     - `postcss.config.js`
     - `tailwind.config.js`
-    - .`env`
+    - `.env`
 
 ## In the server directory:
 Commands:

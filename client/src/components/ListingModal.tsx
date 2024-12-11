@@ -58,27 +58,36 @@ const ListingModal: React.FC<ModalCardProps> = ({
           >
             Back to Listings
           </button>
-          <h2 className="text-2xl font-bold">{listing.title}</h2>
+          <div>
+            <h2 className="text-2xl font-bold">{listing.title}</h2>
+            <h3 className="text-gray-500 text-lg">{listing.condition}</h3>
+          </div>
           <h2 className="text-xl text-gray-600">${listing.price}</h2>
           <img
             src={listing.imageUrl}
             alt={listing.title}
             className="w-full h-72 object-cover rounded-md"
           />
-          <p className="text-gray-700 border border-black rounded-xl p-2">
+          <p className="text-gray-700 text-md">
+            <span className="font-bold">{listing.username}</span>:{" "}
             {listing.description}
           </p>
-          <p className="text-gray-500">Condition: {listing.condition}</p>
-          <p className="text-gray-500">Category: {listing.category}</p>
-          <p className="text-gray-500">Tags: {listing.tags}</p>
-          <div className="flex flex-row space-x-4">
-            <button className="bg-rose-200 text-lg p-4 rounded-xl">
+          {/* <h3 className="text-gray-500 text-md">
+            Category: {listing.category}
+          </h3> */}
+          <h3 className="text-gray-500 text-md">Tags: {listing.category}, {listing.tags}</h3>
+          <div className="flex flex-row space-x-4 w-full">
+            <button className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center">
               <FaRegHeart />
             </button>
-            <button className="bg-teal-200 text-lg p-4 rounded-xl">
+            <button className="bg-teal-200 text-lg p-4 rounded-xl w-5/6">
               Message Seller: {listing.username}
             </button>
           </div>
+          {/* <div className="flex justify-center items-center">
+            <p>Added to Favorites!</p>
+          </div>
+          <p>TODO add a message to indicate added to favorites </p> */}
         </div>
       </div>
     </div>

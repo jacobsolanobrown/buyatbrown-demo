@@ -15,7 +15,7 @@ import UserListings from "./UserPages/UserListings";
 import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
-import ListingForm from "../components/ListingForm.tsx"
+import ListingForm from "./ListingForm"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
