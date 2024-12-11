@@ -44,9 +44,9 @@ export default function Navbar({ username }: { username: string }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-6 py-2">
+      <div className="flex items-center justify-between px-6 py-2 pb-4">
         {/* Search Bar */}
-        <div className="md:hidden">
+        <div className="md:hidden"> 
           <IoSearch />
         </div>
 
