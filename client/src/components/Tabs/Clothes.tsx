@@ -33,19 +33,21 @@ export default function Clothes () {
 
   // fetch data from the api
   useEffect(() => {
-    // input to pass into server 
-    // const filterTrue = selectedFilters.length == 0 ? "false" : "true";
-    // const conditionsTrue = selectedConditions.length == 0 ? "false" : "true";
-    // Convert arrays to comma-separated strings to pass into server 
-    const tagsString = selectedFilters.join(","); 
-    const conditionsString = selectedConditions.join(","); 
+    // format tag and condition filters for server 
+    const tagsString = selectedFilters.length == 0 ? "ignore" : selectedFilters.join(",");
+    const conditionsString = selectedConditions.length == 0 ? "ignore" : selectedConditions.join(",");
 
-    filterListings("nothing", "clothes", tagsString, conditionsString)
+    filterListings("ignore", "clothes", tagsString, conditionsString) // no filtering by title
         .then((data) => {
-          if (data.response_type === "success" && Array.isArray(data.listings)) {
-            setPosts(data.listings); 
+          console.log("API Response:", data);
+          if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
+            setPosts(data.filtered_listings); 
+            console.log("success!!!");
+            console.log("Posts:", posts);
           } else {
             setPosts([]);
+            console.log("not success???");
+            console.log("Posts:", posts);
           }
         })
         .catch((err) => {
@@ -53,9 +55,9 @@ export default function Clothes () {
         });
     }, [selectedConditions, selectedFilters]); // call server when either list changes (when filters change)
 
-
+  
   return (
-    <div>
+    <div className="flex">
       <FilterBar 
         title="Clothes" 
         filters={clothesFilters} 
@@ -64,15 +66,18 @@ export default function Clothes () {
         onConditionsChange={handleConditionsChange} />
 
       {/* Render posts based on filters */}
-      <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-start">
         {posts.map((post) => ( // posts should reflect 
         <ListingCard
-          key={post.uid}
-          imageUrl={post.imageUrl}
+          key={post.id}
+          imageUrl={"src/assets/brown-university-logo-transparent.png"} 
           title={post.title}
           price={post.price}
           username={post.username}
           description={post.description}
+          condition={post.condition}
+          category={post.category}
+          tags={post.tags}
           onClick={handleCardClick}
         />
       ))}

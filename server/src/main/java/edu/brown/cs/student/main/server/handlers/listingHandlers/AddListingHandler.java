@@ -176,6 +176,7 @@ public class AddListingHandler implements Route {
       data.put("price", price);
       data.put("title", title);
       data.put("description", description);
+      data.put("category", category);
 
       // get the current word count to make a unique word_id by index.
       LocalDateTime now = LocalDateTime.now();

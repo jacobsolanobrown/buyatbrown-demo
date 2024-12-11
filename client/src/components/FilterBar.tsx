@@ -43,7 +43,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ title, filters, conditionFilters,
               key={index}
               onClick={() => toggleFilter(filter)}
               className={`block py-2 px-4 rounded-3xl mb-4 w-full text-left ${
-              selectedFilters.includes(filter) ? 'bg-blue-500 text-white' : 'bg-white text-black'
+              selectedFilters.includes(filter) ? 'bg-yellow-500 text-white' : 'bg-white text-black'
               }`}
             >
               {filter}

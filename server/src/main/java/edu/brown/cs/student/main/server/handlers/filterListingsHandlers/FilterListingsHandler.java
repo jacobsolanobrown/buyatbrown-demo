@@ -1,5 +1,6 @@
-package edu.brown.cs.student.main.server.handlers;
+package edu.brown.cs.student.main.server.handlers.filterListingsHandlers;
 
+import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.*;
 import spark.Request;
@@ -27,8 +28,14 @@ public class FilterListingsHandler implements Route {
   public static int countKeywordAppearances(
     Map<String, Object> listing, String keyword, String fieldToSearch) {
     assert !keyword.isEmpty();
+    Object value = listing.get(fieldToSearch);
+    if (value ==  null) {
+      throw new NullPointerException("listing does not have category set");
+    }
 
-    String fieldString = listing.get(fieldToSearch).toString();
+    String fieldString = value.toString();
+    keyword = keyword.toLowerCase();
+    fieldString = fieldString.toLowerCase();
     return (fieldString.length() - fieldString.replace(keyword, "").length()) / keyword.length();
   }
 
@@ -85,22 +92,23 @@ public class FilterListingsHandler implements Route {
       String tagKeywords = request.queryParams("tagKeywords");
       String conditionKeywords = request.queryParams("conditionKeywords");
 
+      System.out.println("category: " +categoryKeyword);
+      System.out.println("tag: " + tagKeywords);
+      System.out.println("condition: " + conditionKeywords);
+
+
 
       // validate the inputs of the request
       System.out.println("Validating parameter values for search");
-      if (titleDescriptionKeyword == null
-        || titleDescriptionKeyword.isEmpty()
-        || categoryKeyword == null
-        || categoryKeyword.isEmpty()
-        || tagKeywords == null
-        || tagKeywords.isEmpty()
-        || conditionKeywords == null
-        || conditionKeywords.isEmpty()) {
+      if ((titleDescriptionKeyword == null || titleDescriptionKeyword.isEmpty())
+        && (categoryKeyword == null || categoryKeyword.isEmpty())
+        && (tagKeywords == null || tagKeywords.isEmpty())
+        && (conditionKeywords == null || conditionKeywords.isEmpty())) {
         System.out.println(
-          "Cannot have blank filter parameters. Please ensure that titleDescriptionKeyword, "
+          "Cannot have ALL blank filter parameters. Please ensure that titleDescriptionKeyword, "
             + "categoryKeyword, tagKeywords, and conditionKeywords are non-null and non-empty values.");
         throw new IllegalArgumentException(
-          "Cannot have blank filter parameters. "
+          "Cannot have ALL blank filter parameters. "
             + "Please ensure that titleDescriptionKeyword, categoryKeyword, tagKeywords, and "
             + "conditionKeywords are non-null and non-empty values.");
       }
@@ -116,37 +124,59 @@ public class FilterListingsHandler implements Route {
       for (Map<String, Object> listing : allListings) {
 
         // Search bar filtering: Filter by Title and Description
-        Integer titleDescriptionValue = -500;
-        if (!titleDescriptionKeyword.equalsIgnoreCase("ignore")) {
+        Integer titleDescriptionValue = 0;
+        if (!titleDescriptionKeyword.equalsIgnoreCase("ignore")) { // -500
           Integer titleValue =
             (countKeywordAppearances(listing, titleDescriptionKeyword, "title") * 10);
           Integer descriptionValue = countKeywordAppearances(listing, titleDescriptionKeyword, "description");
           titleDescriptionValue = titleValue + descriptionValue;
+          if (titleDescriptionValue == 0) {
+            titleDescriptionValue = -500;
+          }
         }
 
-        Integer categoryValue = -500;
-        if (!categoryKeyword.equalsIgnoreCase("ignore")) {
-          categoryValue = countKeywordAppearances(listing, categoryKeyword, "category");
+        Integer categoryValue = 0;
+        if (!categoryKeyword.equalsIgnoreCase("ignore")) { // -500
+          try {
+            categoryValue = countKeywordAppearances(listing, categoryKeyword, "category");
+            if (categoryValue == 0) {
+              categoryValue = -500;
+            }
+          }
+          catch (NullPointerException e) {
+            continue; // skip listings that do not have category
+          }
+          System.out.println("listing had category!");
         }
 
-        Integer conditionValue = -500;
-        if (!conditionKeywords.toLowerCase().contains("ignore")) {
+        Integer conditionValue = 0;
+        if (!conditionKeywords.toLowerCase().contains("ignore")) { // -500
+          System.out.println("listing had condition!");
           conditionValue = countManyKeywordsAppearances(listing, conditionKeywords, "condition");
+          if (conditionValue == 0) {
+            conditionValue = -500;
+          }
         }
 
-        Integer tagValue = -500;
-        if (!tagKeywords.toLowerCase().contains("ignore")) {
+        Integer tagValue = 0;
+        if (!tagKeywords.toLowerCase().contains("ignore")) { // -500
+          System.out.println("listing had tag");
           tagValue = countManyKeywordsAppearances(listing, tagKeywords, "tags");
+          if (tagValue == 0) {
+            tagValue = -500;
+          }
         }
 
         // get value for listing (based on how many times the keyword appears) while setting
         // weights for each field
         Integer heuristicValueForListing = titleDescriptionValue + categoryValue + conditionValue + tagValue;
+        System.out.println("heuristic value: " + heuristicValueForListing);
 
         // skip listing if there are no appearances of keyword in the listing
         if (heuristicValueForListing > 0) {
           // if there is an appearance of the keyword, then add an entry to sortedListings
           sortedListings.add(new AbstractMap.SimpleEntry<>(listing, heuristicValueForListing));
+          System.out.println("add listing");
         }
 
         // Sort listings by heuristic value in descending order
@@ -156,6 +186,8 @@ public class FilterListingsHandler implements Route {
       }
 
       responseMap.put("response_type", "success");
+      System.out.println("success");
+      System.out.println(filteredListings);
       responseMap.put("filtered_listings", filteredListings);
     } catch (Exception e) {
       e.printStackTrace();
