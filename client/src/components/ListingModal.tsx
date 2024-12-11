@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { FaRegHeart } from "react-icons/fa";
+
 
 interface ModalCardProps {
   isOpen: boolean;
@@ -9,7 +11,9 @@ interface ModalCardProps {
     price: string;
     username: string;
     description: string;
-
+    condition: string;
+    category: string;
+    tags: string;
   };
 }
 
@@ -40,12 +44,12 @@ const ListingModal: React.FC<ModalCardProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 min-w-screen"
       onClick={handleOutsideClick}
       role="dialog"
       aria-modal="true"
     >
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative space-y-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative space-y-6 min-w-fit">
         <div className="flex flex-col text-left space-y-6">
           <button
             onClick={onClose}
@@ -61,13 +65,20 @@ const ListingModal: React.FC<ModalCardProps> = ({
             alt={listing.title}
             className="w-full h-72 object-cover rounded-md"
           />
-          <p className="text-gray-700 border border-black rounded-xl p-2">{listing.description}</p>
-          <p className="text-gray-500">Condition:</p>
-          <p className="text-gray-500">Category:  </p>
-          <p className="text-gray-500">Tags: </p>
-          <button className="bg-teal-200 text-lg p-4 rounded-xl">
-            Message Seller: {listing.username}
-          </button>
+          <p className="text-gray-700 border border-black rounded-xl p-2">
+            {listing.description}
+          </p>
+          <p className="text-gray-500">Condition: {listing.condition}</p>
+          <p className="text-gray-500">Category: {listing.category}</p>
+          <p className="text-gray-500">Tags: {listing.tags}</p>
+          <div className="flex flex-row space-x-4">
+            <button className="bg-rose-200 text-lg p-4 rounded-xl">
+              <FaRegHeart />
+            </button>
+            <button className="bg-teal-200 text-lg p-4 rounded-xl">
+              Message Seller: {listing.username}
+            </button>
+          </div>
         </div>
       </div>
     </div>
