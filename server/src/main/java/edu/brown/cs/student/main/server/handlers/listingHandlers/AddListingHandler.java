@@ -91,20 +91,20 @@ public class AddListingHandler implements Route {
       Map<String, Object> data = new HashMap<>();
       System.out.println("Validating parameter values for search");
       if (uid == null
-        || username == null
-        || imageUrl == null
-        || price == null
-        || condition == null
-        || description == null
-        || title == null
-        || tags == null
-        || category == null) {
+          || username == null
+          || imageUrl == null
+          || price == null
+          || condition == null
+          || description == null
+          || title == null
+          || tags == null
+          || category == null) {
         System.out.println(
-          "All listings arguments are required "
-            + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
+            "All listings arguments are required "
+                + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
         throw new IllegalArgumentException(
-          "All listings arguments are required "
-            + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
+            "All listings arguments are required "
+                + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
       }
 
       // check if title is less than 40 characters
@@ -123,25 +123,24 @@ public class AddListingHandler implements Route {
       condition = condition.toLowerCase();
       if (!(condition.equals("new") || condition.equals("like new") || condition.equals("used"))) {
         System.out.println(
-          "Please choose from valid condition inputs (i.e. new, like new, or used");
+            "Please choose from valid condition inputs (i.e. new, like new, or used");
         throw new IllegalArgumentException(
-          "Please choose from valid condition inputs (i.e. New, Like New, or Used");
+            "Please choose from valid condition inputs (i.e. New, Like New, or Used");
       }
 
       if (category.contains(",")) {
-        System.out.println(
-          "Category can only have one value (i.e.value  must not contain commas)");
+        System.out.println("Category can only have one value (i.e.value  must not contain commas)");
         throw new IllegalArgumentException(
-          "Category can only have one value (i.e.value  must not contain commas)");
+            "Category can only have one value (i.e.value  must not contain commas)");
       }
 
       // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
       if (tags.length() - tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length()
-        > 0) {
+          > 0) {
         System.out.println(
-          "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas");
         throw new IllegalArgumentException(
-          "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas");
       }
 
       if (countWordsBetweenCommas(tags) > 2) {
@@ -193,22 +192,22 @@ public class AddListingHandler implements Route {
       this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       System.out.println(
-        "addded listing for username: "
-          + username
-          + ", title: "
-          + condition
-          + ", tags: "
-          + tags
-          + ", imageUrl: "
-          + imageUrl
-          + ", category"
-          + category
-          + ", price: "
-          + price
-          + ", description: "
-          + description
-          + ", for user: "
-          + uid);
+          "addded listing for username: "
+              + username
+              + ", title: "
+              + condition
+              + ", tags: "
+              + tags
+              + ", imageUrl: "
+              + imageUrl
+              + ", category"
+              + category
+              + ", price: "
+              + price
+              + ", description: "
+              + description
+              + ", for user: "
+              + uid);
 
       responseMap.put("response_type", "success");
       responseMap.putAll(data);
