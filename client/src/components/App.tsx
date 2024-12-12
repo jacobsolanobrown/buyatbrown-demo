@@ -131,13 +131,18 @@ function App() {
         {loading ? (
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="text-center">
-              <div
+              {/* <div
                 className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full"
                 role="status"
-              ></div>
-              <p className="text-2xl font-semibold mt-4">
+              ></div> */}
+              <img 
+                className="w-24 h-24"
+                src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+                alt="Loading Image"
+              />
+              {/* <p className="text-2xl font-semibold mt-4">
                 Fetching Account Details...
-              </p>
+              </p> */}
             </div>
           </div>
         ) : !isUsernameSet ? (
