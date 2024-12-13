@@ -8,40 +8,92 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.cloud.StorageClient;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class FirebaseUtilities implements StorageInterface {
-
   public FirebaseUtilities() throws IOException {
     // TODO: FIRESTORE PART 0:
     // Create /resources/ folder with firebase_config.json and
     // add your admin SDK from Firebase. see:
     // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
     String workingDirectory = System.getProperty("user.dir");
+    System.out.println("Working Directory: " + workingDirectory);
+
     Path firebaseConfigPath =
         Paths.get(workingDirectory, "server/resources", "firebase_config.json");
+    System.out.println("Full Firebase Config Path: " + firebaseConfigPath.toString());
+    System.out.println("Absolute Path: " + firebaseConfigPath.toAbsolutePath());
+    System.out.println("File Exists: " + Files.exists(firebaseConfigPath));
 
-    // ^-- if your /resources/firebase_config.json exists but is not found,
-    // try printing workingDirectory and messing around with this path.
+    try {
+      if (!Files.exists(firebaseConfigPath)) {
+        // Try alternative paths
+        Path[] alternativePaths = {
+          Paths.get(workingDirectory, "resources", "firebase_config.json"),
+          Paths.get(workingDirectory, "firebase_config.json"),
+          Paths.get("firebase_config.json"),
+          Paths.get(System.getProperty("user.home"), "firebase_config.json")
+        };
 
-    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+        for (Path altPath : alternativePaths) {
+          System.out.println("Checking alternative path: " + altPath.toAbsolutePath());
+          if (Files.exists(altPath)) {
+            firebaseConfigPath = altPath;
+            break;
+          }
+        }
+      }
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
+      FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
-    FirebaseApp.initializeApp(options);
+      FirebaseOptions options =
+          new FirebaseOptions.Builder()
+              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+              .build();
+
+      FirebaseApp.initializeApp(options);
+    } catch (Exception e) {
+      System.err.println("Detailed Error: " + e.getMessage());
+      e.printStackTrace();
+      throw e;
+    }
+  }
+
+  /**
+   * Generates a signed URL for accessing a file in Firebase Storage.
+   *
+   * @param bucketName The name of the Firebase Storage bucket.
+   * @param objectName The path of the file in the bucket.
+   * @return A signed URL for the file.
+   */
+  public String generateSignedUrl(String bucketName, String objectName) {
+    // Get the default Firebase Storage bucket
+    Bucket bucket = StorageClient.getInstance().bucket(bucketName);
+
+    // Get the blob (file) from the bucket
+    Blob blob = bucket.get(objectName);
+
+    if (blob == null) {
+      throw new IllegalArgumentException("Object not found: " + objectName);
+    }
+
+    // Generate a signed URL that expires in 1 hour
+    return blob.signUrl(1, TimeUnit.HOURS).toString();
   }
 
   @Override

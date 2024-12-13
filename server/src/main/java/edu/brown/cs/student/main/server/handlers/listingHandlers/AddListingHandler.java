@@ -1,6 +1,12 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
+import com.google.firebase.FirebaseApp;
 import edu.brown.cs.student.main.server.handlers.Utils;
+import  com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -78,6 +84,13 @@ public class AddListingHandler implements Route {
       String uid = request.queryParams("uid");
       String username = request.queryParams("username");
       String imageUrl = request.queryParams("imageUrl");
+
+      // Example: Generate signed URL for the given object
+      String bucketName = FirebaseApp.getInstance().getOptions().getStorageBucket();
+      String signedUrl = storageHandler.generateSignedUrl(bucketName, imageUrl);
+
+      responseMap.put("signedImageUrl", signedUrl);
+
       String price = request.queryParams("price");
       String title = request.queryParams("title");
       String category = request.queryParams("category");
