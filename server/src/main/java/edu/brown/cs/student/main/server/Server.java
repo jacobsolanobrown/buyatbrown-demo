@@ -37,15 +37,6 @@ public class Server {
         response.header("Access-Control-Allow-Credentials", "true");
         return "OK";
       });
-//    before(
-//      (request, response) -> {
-//        System.out.println("Incoming request:");
-//        System.out.println("Method: " + request.requestMethod());
-//        System.out.println("Path: " + request.pathInfo());
-//        System.out.println("Headers: " + request.headers());
-//      });
-
-
     after(
       (Filter)
         (request, response) -> {

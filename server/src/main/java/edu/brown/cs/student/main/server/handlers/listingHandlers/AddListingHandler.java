@@ -1,11 +1,15 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,11 +30,41 @@ public class AddListingHandler implements Route {
   private static final String BUCKET_NAME = "buy-at-brown-listing-images";
 
   private String uploadImageToGCS(String base64Image, String imageName) throws Exception {
+//    System.out.println("uploading image to Google Cloud Storage...");
+//    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+//    Storage storage = StorageOptions.getDefaultInstance().getService();
+//    BlobId blobId = BlobId.of(BUCKET_NAME, imageName);
+//    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setCredentials(ServiceAccountCredentials.fromStream(
+//      new FileInputStream("/path/to/my/key.json"))).setContentType("image/jpeg").build();
+//    System.out.println("Connecting to storage...");
+//    storage.create(blobInfo, imageBytes);
+//    System.out.println("image built");
+//    return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, imageName);
+    System.out.println("Uploading image to Google Cloud Storage...");
     byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-    Storage storage = StorageOptions.getDefaultInstance().getService();
+
+    String workingDirectory = System.getProperty("user.dir");
+    Path googleCredentialsPath =
+      Paths.get(workingDirectory, "/resources", "google_cred.json");
+    // Initialize the Storage client with credentials
+    Storage storage = StorageOptions.newBuilder()
+      .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(
+        String.valueOf(googleCredentialsPath))))
+      .build()
+      .getService();
+
+    // Build the BlobInfo
     BlobId blobId = BlobId.of(BUCKET_NAME, imageName);
-    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+      .setContentType("image/jpeg")
+      .build();
+
+    // Upload the image
+    System.out.println("Connecting to storage...");
     storage.create(blobInfo, imageBytes);
+    System.out.println("Image uploaded successfully!");
+
+    // Return the public URL
     return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, imageName);
   }
 
@@ -111,6 +145,7 @@ public class AddListingHandler implements Route {
 
       String listingUUID = UUID.randomUUID().toString();
       String imageName = "listing-" + listingUUID + ".jpg";
+      System.out.println("Processing image...");
       String imageUrl = uploadImageToGCS(base64Image, imageName);
 
       Map<String, Object> data = new HashMap<>();
