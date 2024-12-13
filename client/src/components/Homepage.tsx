@@ -61,7 +61,6 @@ function Homepage() {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           listing={selectedListing}
-
         />
       )}
     </div>

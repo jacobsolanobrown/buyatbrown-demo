@@ -1,7 +1,9 @@
 import { SignOutButton } from "@clerk/clerk-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { SearchBar } from "./Search/SearchBar";
+import { filterListings } from "../utils/api";
 
 export default function Navbar({ username }: { username: string }) {
   const navScrollRef = useRef<HTMLDivElement | null>(null);
@@ -22,6 +24,23 @@ export default function Navbar({ username }: { username: string }) {
       }
     }
   };
+
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState([]);
+  const navigate = useNavigate();
+
+  const handleSearchSubmit = (term: string) => {
+      setLoading(true);
+      filterListings(term, "ignore", "ignore", "ignore")
+          .then((data) => {
+              setResults(data.filtered_listings || []);
+              navigate('/search-results', { state: { searchTerm: term, filteredPosts: data.filtered_listings || []} });
+          })
+          .catch(console.error)
+          .finally(() => setLoading(false));
+  };
+
+
   return (
     <header className="sticky top-0 z-50 bg-red-600 shadow-md">
       {/* App name and sign out */}
@@ -44,18 +63,15 @@ export default function Navbar({ username }: { username: string }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-6 py-2">
+      <div className="flex items-center justify-between px-6 py-2 pb-4">
         {/* Search Bar */}
-        <div className="md:hidden">
+        <div className="md:hidden"> 
           <IoSearch />
         </div>
 
         <div className="hidden md:flex md:flex-grow">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full max-w-sm px-3 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+          <SearchBar onSearchSubmit={handleSearchSubmit} />
+          {loading && <p>Loading...</p>}
         </div>
 
         {/* Nav Links with Buttons */}
