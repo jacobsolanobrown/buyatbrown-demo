@@ -1,225 +1,184 @@
-import { useState, useEffect } from "react";
-import { initializeApp } from "firebase/app";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import Clothes from "./Tabs/Clothes";
-import Tech from "./Tabs/Tech";
-import Bathroom from "./Tabs/Bathroom";
-import Furniture from "./Tabs/Furniture";
-import Kitchen from "./Tabs/Kitchen";
-import Misc from "./Tabs/Misc";
-import Navbar from "./Navbar";
-import Homepage from "./Homepage";
-import School from "./Tabs/School";
-import UserFavorites from "./UserPages/UserFavorites";
-import UserListings from "./UserPages/UserListings";
-import UserMessages from "./UserPages/UserMessages";
-import UserSettings from "./UserPages/UserSettings";
-import SignInPage from "./SignInPage";
-import ListingForm from "../components/ListingForm.tsx"
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
-import { createUser, getUser } from "../utils/api";
-import "/src/index.css";
-// import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
+import React, { useState } from "react";
+import axios from "axios";
 
-const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
-};
+const AddListing = () => {
+  const [formData, setFormData] = useState({
+    uid: "",
+    username: "",
+    price: "",
+    title: "",
+    category: "",
+    tags: "",
+    condition: "",
+    description: "",
+    imageFile: null,
+  });
 
-const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-// export default db;
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-function App() {
-  const { user } = useUser();
-
-//   if (!user) {
-
-// ]  }
-
-  const [username, setUsername] = useState("");
-  const [isUsernameSet, setIsUsernameSet] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [checkingUsername, setCheckingUsername] = useState(false);
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  /**
-   * This function is used to check if the user has a username set. If the user has a username set, then we set the state to true and set the username.
-   * If the user does not have a username set, then we set the state to false, and the user will be redirected to create a username.
-   */
-  const checkForUsername = async () => {
-    if (user) {
-      setLoading(true); // Start loading the account details
-      try {
-        // The call to the server to check if the user has a username set
-        const jsonResponse = await getUser(user.id);
-        if (jsonResponse.response_type === "success") {
-          const usernameExists = jsonResponse.exists; // Boolean if the username exists
-          const fetchedUsername = jsonResponse.username; // The string if the username was set
-          if (usernameExists && fetchedUsername) {
-            setIsUsernameSet(true);
-            setUsername(fetchedUsername);
-          } else {
-            // the username has not been set
-            setIsUsernameSet(false);
-          }
-        } else {
-          // This is the case where the user has inputted an empty string as their username
-
-          setIsUsernameSet(false);
-        }
-      } catch (error) {
-        console.error("Error checking username: ", error);
-        setIsUsernameSet(false);
-      } finally {
-        setLoading(false); // Stop loading the account details
-      }
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  /**
-   * Check for username on app load or when the user changes.
-   */
-  useEffect(() => {
-    if (user) {
-      checkForUsername();
-    }
-  }, [user]); // Run whenever the `user` object changes
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, imageFile: file });
+  };
 
-  /**
-   * This function is used to create a new user in the database using the server's createUser handler.
-   * On success it returns the userID and the username of the newly created user.
-   *
-   * @param e This is the event from submitting the form
-   */
-  const handleUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // prevent the page from refreshing
-    if (username && user) {
-      await createUser(user.id, username, user.emailAddresses[0].emailAddress)
-        .then((data) => {
-          if (data.response_type === "success") {
-            setIsUsernameSet(true);
-            navigate("/");
-          } else {
-            // for username already taken
-            console.error("Failed to create username: ", data.error);
-            setErrorMessage(
-              "Username is already taken. Please try another one."
-            );
-          }
-        })
-        // general api error catching
-        .catch((error) => {
-          console.error("Error creating user: ", error);
-          setErrorMessage(
-            "Error creating user. Please try again. (Error:  " + error + ")"
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.imageFile) {
+      setResponseMessage("Please upload an image.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setResponseMessage("");
+
+    try {
+      // Convert image to Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(formData.imageFile);
+      reader.onload = async () => {
+        const base64Image = reader.result.split(",")[1]; // Strip out metadata
+
+        // Prepare form data
+        const data = {
+          ...formData,
+          imageUrl: base64Image,
+        };
+        
+
+        try {
+          const response = await axios.post(
+            "http://localhost:3232/add-listings",
+            data.imageUrl, // Send the image URL as raw body
+            {
+              headers: { "Content-Type": "text/plain" },
+              params: {
+                uid: data.uid,
+                username: data.username,
+                price: data.price,
+                title: data.title,
+                category: data.category,
+                tags: data.tags,
+                condition: data.condition,
+                description: data.description,
+              },
+            }
           );
-        });
+          setResponseMessage(
+            response.data.response_type === "success"
+              ? "Listing added successfully!"
+              : `Error: ${response.data.error}`
+          );
+        } catch (error) {
+          console.error("Error uploading listing:", error);
+          setResponseMessage("An error occurred while uploading the listing.");
+        }
+      };
+    } catch (error) {
+      console.error("Error uploading listing:", error);
+      setResponseMessage("An error occurred while uploading the listing.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="App ">
-      <SignedOut>
-        <SignInPage />
-      </SignedOut>
-      <SignedIn>
-        {loading ? (
-          <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="text-center">
-              <div
-                className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full"
-                role="status"
-              ></div>
-              <p className="text-2xl font-semibold mt-4">
-                Fetching Account Details...
-              </p>
-            </div>
-          </div>
-        ) : !isUsernameSet ? (
-          //TODO add loading state to checking username availability (when the api is called (create/edit user), have a loading state saying checking username availability!)
-          // If the user is set, then we go to the homepage, otherwise we go to the createusername page
-          <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
-            <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
-              <img
-                src="src/assets/brown-university-logo-transparent.png"
-                alt="Brown University Logo"
-                className="h-48"
-              />
-              <h1 className="p-4 text-red-600	text-6xl font-kodchasan font-semibold">
-                BUY @ BROWN
-              </h1>
-              <h2 className="p-4 text-3xl font-ibm-plex-sans text-center">
-                Create a username to start selling now!
-                <br />
-                (Other users will see this username on listings)
-              </h2>
-              <form
-                onSubmit={handleUserSubmit}
-                className="flex flex-col items-center rounded-3xl space-y-8"
-              >
-                <input
-                  placeholder="Type your username..."
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="text-2xl font-ibm-plex-sans py-4 px-12 rounded-3xl"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-10 rounded-3xl"
-                >
-                  Submit
-                </button>
-              </form>
-              {errorMessage && (
-                <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-                  {errorMessage}
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="font-ibm-plex-sans">
-            <Navbar username={username} />
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/listing-form" element={<ListingForm />} />
-              <Route path="/clothes" element={<Clothes />} />
-              <Route path="/tech" element={<Tech />} />
-              <Route path="/bathroom" element={<Bathroom />} />
-              <Route path="/kitchen" element={<Kitchen />} />
-              <Route path="/misc" element={<Misc />} />
-              <Route path="/school" element={<School />} />
-              <Route path="/furniture" element={<Furniture />} />
-              <Route
-                path="/favorites"
-                element={<UserFavorites username={username} />}
-              />
-              <Route
-                path="/yourlistings"
-                element={<UserListings username={username} />}
-              />
-              <Route
-                path="/messages"
-                element={<UserMessages username={username} />}
-              />
-              <Route
-                path="/settings"
-                element={<UserSettings username={username} />}
-              />
-            </Routes>
-          </div>
-        )}
-      </SignedIn>
+    <div style={{ padding: "20px" }}>
+      <h2>Add a Listing</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="uid"
+          placeholder="User ID"
+          value={formData.uid}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={formData.price}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={formData.category}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <input
+          type="text"
+          name="tags"
+          placeholder="Tags (comma-separated)"
+          value={formData.tags}
+          onChange={handleInputChange}
+          required
+        />
+        <br />
+        <select
+          name="condition"
+          value={formData.condition}
+          onChange={handleInputChange}
+          required
+        >
+          <option value="">Select Condition</option>
+          <option value="new">New</option>
+          <option value="like new">Like New</option>
+          <option value="used">Used</option>
+        </select>
+        <br />
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={formData.description}
+          onChange={handleInputChange}
+          required
+        ></textarea>
+        <br />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          required
+        />
+        <br />
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Add Listing"}
+        </button>
+      </form>
+      {responseMessage && <p>{responseMessage}</p>}
     </div>
   );
-}
+};
 
-export default App;
+export default AddListing;

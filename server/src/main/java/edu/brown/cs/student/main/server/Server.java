@@ -1,6 +1,8 @@
 package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.FilterListingsHandler;
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
@@ -25,20 +27,42 @@ public class Server {
     int port = 3232;
     Spark.port(port);
 
+    // Enable CORS for all routes
+    options(
+      "/*",
+      (request, response) -> {
+        response.header("Access-Control-Allow-Origin", "http://localhost:8000"); // Frontend origin
+        response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.header("Access-Control-Allow-Credentials", "true");
+        return "OK";
+      });
+//    before(
+//      (request, response) -> {
+//        System.out.println("Incoming request:");
+//        System.out.println("Method: " + request.requestMethod());
+//        System.out.println("Path: " + request.pathInfo());
+//        System.out.println("Headers: " + request.headers());
+//      });
+
+
     after(
-        (Filter)
-            (request, response) -> {
-              response.header("Access-Control-Allow-Origin", "*");
-              response.header("Access-Control-Allow-Methods", "*");
-            });
+      (Filter)
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "http://localhost:8000"); // Frontend origin
+          response.header("Access-Control-Allow-Credentials", "true");
+          response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+          response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        });
 
     StorageInterface firebaseUtils;
     try {
-      //      firebaseUtils = new MockedFirebaseUtilities();
+      // Initialize Firebase
       firebaseUtils = new FirebaseUtilities();
-      // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
-      //      GeoMapCollection geoMapCollection = myDataSource.getData();
-      Spark.get("add-listings", new AddListingHandler(firebaseUtils));
+
+      // Define routes
+      System.out.println("Server's routes are being defined...");
+      Spark.post("add-listings", new AddListingHandler(firebaseUtils));
       Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
       Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
       Spark.get("delete-listings", new DeleteListingHandler(firebaseUtils));
@@ -48,20 +72,22 @@ public class Server {
       Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
       Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
 
+      // Handle undefined routes
       Spark.notFound(
-          (request, response) -> {
-            response.status(404); // Not Found
-            System.out.println("ERROR");
-            return "404 Not Found - The requested endpoint does not exist.";
-          });
+        (request, response) -> {
+          response.status(404); // Not Found
+          System.out.println("ERROR");
+          return "404 Not Found - The requested endpoint does not exist.";
+        });
+
+      // Start server
       Spark.init();
       Spark.awaitInitialization();
-
       System.out.println("Server started at http://localhost:" + port);
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println(
-          "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
+        "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
       System.exit(1);
     }
   }
