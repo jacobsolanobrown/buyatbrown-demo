@@ -15,10 +15,11 @@ import UserListings from "./UserPages/UserListings";
 import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
-// import ListingForm from "../components/ListingForm.tsx"
+import ListingForm from "../components/ListingForm"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
+// import SearchResultsPage from "./Search/SearchResultsPage";
 // import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
@@ -214,6 +215,7 @@ function App() {
                 path="/settings"
                 element={<UserSettings username={username} />}
               />
+              {/* <Route path="/search-results" element={<SearchResultsPage />} /> */}
             </Routes>
           </div>
         )}
