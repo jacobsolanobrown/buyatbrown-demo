@@ -11,7 +11,17 @@ Bisola Folarin (arfolari), Kayleen Cruz (kcruz10), & Jacob Solano (gsolano)
  https://github.com/cs0320-f24/term-project-last-minute-wo-men/tree/main
 
 ## Summary:
-Our project is a web application that allows Brown students to buy and sell items within the Brown community. Users can create an account, post items for sale, and browse items for sale. Users can also search for items by various categories and tags.
+Our project is a web application that allows Brown students to buy and sell items within the Brown community. Users can create an account, post items for sale, and browse items for sale. Users can also search for items by various categories and tags. Users have their own accounts with custom usernames, and they can favorite, list, and edit their own items. Users can contact sellers through contact information provided in the item listing.
+
+## Features:
+- User authentication for account creation with custom usernames and login for only Brown University students using Clerk. 
+- Users can post items for sale with a title, price, image, description, category and tags.
+- Users can browse items for sale by category and tags, through a search bar or by our custom filters.
+- Users can favorite items to view later on. They can also un-favorite items.
+- Users edit or delete their own listings by going to their profile listings page. 
+- Each listing has its own card that contains contact information for the seller, allowing users to contact the sellers through their Brown email. 
+- Users can edit their usernames anytime in the user settings page. 
+- Users can delete their accounts, removing their account from our database and logging them out from Clerk, in the user settings page.
 
 # <div align='center'> How to Run the Application </div>
 
@@ -40,5 +50,12 @@ Setup:
         -> `firebase_config.json`
    - `resources`-> `google_cred.json`
 
+# <div align='center'> Tests </div>
+## Front-end Tests:
+- We will be using Playwright to test the front-end of our application.
 
+## Back-end Tests:
+- We use JUnit to test the back-end of our application.
 
+# <div align='center'> Errors/Bugs </div>
+- There are minor bugs in the application that we are currently working on fixing.
