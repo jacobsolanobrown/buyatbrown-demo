@@ -59,6 +59,7 @@ public class FirebaseUtilities implements StorageInterface {
         }
       }
 
+      System.out.println("Setting up Service Account");
       FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
       FirebaseOptions options =
@@ -66,12 +67,55 @@ public class FirebaseUtilities implements StorageInterface {
               .setCredentials(GoogleCredentials.fromStream(serviceAccount))
               .build();
 
+      System.out.println("Initializing Firebase");
       FirebaseApp.initializeApp(options);
+      System.out.println("ekfrmew Firebase");
     } catch (Exception e) {
       System.err.println("Detailed Error: " + e.getMessage());
       e.printStackTrace();
       throw e;
     }
+
+    //    try {
+    //      if (!Files.exists(firebaseConfigPath)) {
+    //        // Try alternative paths
+    //        Path[] alternativePaths = {
+    //          Paths.get(workingDirectory, "resources", "firebase_config.json"),
+    //          Paths.get(workingDirectory, "firebase_config.json"),
+    //          Paths.get("firebase_config.json"),
+    //          Paths.get(System.getProperty("user.home"), "firebase_config.json")
+    //        };
+    //
+    //        for (Path altPath : alternativePaths) {
+    //          System.out.println("Checking alternative path: " + altPath.toAbsolutePath());
+    //          if (Files.exists(altPath)) {
+    //            firebaseConfigPath = altPath;
+    //            break;
+    //          }
+    //        }
+    //      }
+    //
+    //      System.out.println("Setting up Service Account");
+    ////      FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+    //      FileInputStream serviceAccount = new FileInputStream("resources/google_cred.json");
+    //
+    ////      FirebaseOptions options =
+    ////          new FirebaseOptions.Builder()
+    ////              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    ////              .build();
+    //      FirebaseOptions options = new FirebaseOptions.Builder()
+    //          .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    //          .setStorageBucket("buy-at-brown-listing-images")
+    //          .build();
+    //
+    //      System.out.println("Initializing Firebase");
+    //      FirebaseApp.initializeApp(options);
+    //      System.out.println("ekfrmew Firebase");
+    //    } catch (Exception e) {
+    //      System.err.println("Detailed Error: " + e.getMessage());
+    //      e.printStackTrace();
+    //      throw e;
+    //    }
   }
 
   /**
@@ -172,9 +216,65 @@ public class FirebaseUtilities implements StorageInterface {
     // Get reference to the document
     DocumentReference docRef =
         db.collection("users").document(uid).collection(collection_id).document(doc_id);
+    // Retrieve the document to get the imageUrl
+    ApiFuture<DocumentSnapshot> future = docRef.get();
+    try {
+      DocumentSnapshot document = future.get();
+      if (document.exists()) {
+        // Extract the imageUrl field
+        String imageUrl = document.getString("imageUrl");
+        System.out.println(imageUrl);
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+          // Delete the image from Firebase Storage
+          deleteImageFromStorage(imageUrl);
+        } else {
+          System.out.println("No imageUrl found for document: " + doc_id);
+        }
 
+        // Delete the document from Firestore
+        docRef
+            .delete()
+            .addListener(
+                () -> {
+                  System.out.println("Document deleted successfully: " + doc_id);
+                },
+                Runnable::run);
+      } else {
+        System.out.println("Document not found: " + doc_id);
+      }
+    } catch (Exception e) {
+      System.err.println("Error while deleting document or image: " + e.getMessage());
+    }
     // Delete the document
-    docRef.delete();
+    //    docRef.delete();
+  }
+
+  // Helper method to delete image from Firebase Storage
+  public void deleteImageFromStorage(String imageUrl) {
+    try {
+      // Get the Firebase Storage bucket name
+      //      String bucketName = FirebaseApp.getInstance().getOptions().getStorageBucket();
+      String bucketName = "buy-at-brown-listing-images";
+      System.out.println("Bucket name: " + bucketName);
+
+      // Extract the object path from the imageUrl
+      // Assuming imageUrl is something like:
+      // https://storage.googleapis.com/{bucketName}/images/{objectName}
+      //      String objectName = imageUrl.substring(imageUrl.indexOf("/images/") + 1);
+      String objectName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+      System.out.println("Parsed object name: " + objectName);
+
+      // Get the Blob object and delete it
+      Blob blob = StorageClient.getInstance().bucket(bucketName).get(objectName);
+      if (blob != null) {
+        blob.delete();
+        System.out.println("Image deleted successfully: " + objectName);
+      } else {
+        System.out.println("No image found with path: " + objectName);
+      }
+    } catch (Exception e) {
+      System.err.println("Error while deleting image from storage: " + e.getMessage());
+    }
   }
 
   @Override

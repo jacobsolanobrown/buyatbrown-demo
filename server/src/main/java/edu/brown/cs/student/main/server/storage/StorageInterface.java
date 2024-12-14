@@ -11,8 +11,6 @@ public interface StorageInterface {
   List<Map<String, Object>> getCollection(String uid, String collection_id)
       throws InterruptedException, ExecutionException;
 
-  String generateSignedUrl(String bucketName, String objectName);
-
   void addListing(Map<String, Object> listing);
 
   void removeDocument(String uid, String collection_id, String doc_id);
@@ -30,4 +28,6 @@ public interface StorageInterface {
 
   Map<String, Object> getDocument(String uid, String collectionId, String docId)
       throws IllegalArgumentException, ExecutionException, InterruptedException;
+
+  void deleteImageFromStorage(String existingImageUrl);
 }
