@@ -26,7 +26,7 @@ Setup:
 - Add the following folder with files: 
     - `resources`
         -> `firebase_config.json`
-        -> `google_cred.json`
+   - `resources`-> `google_cred.json`
 
 
 
