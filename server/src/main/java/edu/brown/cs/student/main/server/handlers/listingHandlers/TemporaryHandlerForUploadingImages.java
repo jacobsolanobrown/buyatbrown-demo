@@ -1,27 +1,27 @@
-//package edu.brown.cs.student.main.server.handlers.listingHandlers;
+// package edu.brown.cs.student.main.server.handlers.listingHandlers;
 //
-//import com.google.auth.oauth2.ServiceAccountCredentials;
-//import com.google.cloud.storage.BlobId;
-//import com.google.cloud.storage.BlobInfo;
-//import com.google.cloud.storage.Storage;
-//import com.google.cloud.storage.StorageOptions;
-//import edu.brown.cs.student.main.server.storage.StorageInterface;
-//import java.io.FileInputStream;
-//import java.nio.file.Path;
-//import java.nio.file.Paths;
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.Base64;
-//import java.util.HashMap;
-//import java.util.HashSet;
-//import java.util.Map;
-//import java.util.UUID;
-//import spark.Request;
-//import spark.Response;
-//import spark.Route;
+// import com.google.auth.oauth2.ServiceAccountCredentials;
+// import com.google.cloud.storage.BlobId;
+// import com.google.cloud.storage.BlobInfo;
+// import com.google.cloud.storage.Storage;
+// import com.google.cloud.storage.StorageOptions;
+// import edu.brown.cs.student.main.server.storage.StorageInterface;
+// import java.io.FileInputStream;
+// import java.nio.file.Path;
+// import java.nio.file.Paths;
+// import java.util.ArrayList;
+// import java.util.Arrays;
+// import java.util.Base64;
+// import java.util.HashMap;
+// import java.util.HashSet;
+// import java.util.Map;
+// import java.util.UUID;
+// import spark.Request;
+// import spark.Response;
+// import spark.Route;
 //
-///** Class for adding a listing to the database */
-//public class ImageAddListingHandler implements Route {
+/// ** Class for adding a listing to the database */
+// public class ImageAddListingHandler implements Route {
 //
 //  public StorageInterface storageHandler;
 //  private static final String BUCKET_NAME = "buy-at-brown-listing-images";
@@ -165,4 +165,4 @@
 //    return responseMap;
 //  }
 //
-//}
+// }
