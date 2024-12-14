@@ -248,10 +248,10 @@ public class AddListingHandler implements Route {
       System.out.println("Processing image...");
       String imageUrl = uploadImageToGCS(base64Image, imageName);
 
-      String listingUUID = UUID.randomUUID().toString();
-      String imageName = "listing-" + listingUUID + ".jpg";
-      System.out.println("Processing image...");
-      String imageUrl = uploadImageToGCS(base64Image, imageName);
+//      String listingUUID = UUID.randomUUID().toString();
+//      String imageName = "listing-" + listingUUID + ".jpg";
+//      System.out.println("Processing image...");
+//      String imageUrl = uploadImageToGCS(base64Image, imageName);
 
       System.out.println("Valid inputs recieved");
       data.put("uid", uid);
