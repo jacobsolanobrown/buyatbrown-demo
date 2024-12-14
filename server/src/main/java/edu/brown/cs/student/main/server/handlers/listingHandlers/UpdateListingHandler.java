@@ -161,19 +161,36 @@ public class UpdateListingHandler implements Route {
         }
         listing.put("price", price);
       }
-      ;
-      if (description != null) listing.put("description", description);
+      System.out.println(request.body());
+
+//      if (request.body() != null && !request.body().isEmpty()) {
+//        String existingImageUrl = (String) listing.get("imageUrl");
+//        System.out.println("Existing image URL: " + existingImageUrl);
+//
+//        // Delete the existing image if it exists
+//        if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
+//          try {
+//            this.storageHandler.deleteImageFromStorage(existingImageUrl);
+//            System.out.println("Old image deleted successfully");
+//          } catch (Exception e) {
+//            System.err.println("Error deleting old image: " + e.getMessage());
+//            e.printStackTrace();
+//          }
+//        }
+//      }
       if (imageUrl != null) {
         String existingImageUrl = (String) listing.get("imageUrl");
-        if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-          storageHandler.deleteImageFromStorage(existingImageUrl);
-        }
+        System.out.println("Existing image URL: " + listing.get("imageUrl"));
+        storageHandler.deleteImageFromStorage(existingImageUrl);
+        System.out.println("Old image deleted successfully");
+
         String base64Image = request.body();
         String listingUUID = UUID.randomUUID().toString();
         String imageName = "listing-" + listingUUID + ".jpg";
         System.out.println("Processing image...");
-        String imageUrl2 = uploadImageToGCS(base64Image, imageName);
-        listing.put("imageUrl", imageUrl2);}
+        imageUrl = uploadImageToGCS(base64Image, imageName);
+        listing.put("imageUrl", imageUrl);
+      }
 
       if (condition != null) {
         // check if condition option is one of the three valid options
@@ -233,6 +250,7 @@ public class UpdateListingHandler implements Route {
         }
         listing.put("tags", tags);
       }
+      listing.put("description", description);
 
       // Save the updated listing back to the storage
       storageHandler.addDocument(uid, "listings", listingId, listing);
