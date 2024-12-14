@@ -1,18 +1,12 @@
 package edu.brown.cs.student.main.server.storage;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class GoogleCloudStorageUtilities {
 
@@ -32,10 +26,10 @@ public class GoogleCloudStorageUtilities {
     Path googleCredentialsPath = Paths.get(workingDirectory, "/resources", "google_cred.json");
     // Initialize the Storage client with credentials
     return StorageOptions.newBuilder()
-      .setCredentials(
-        ServiceAccountCredentials.fromStream(
-          new FileInputStream(String.valueOf(googleCredentialsPath))))
-      .build()
-      .getService();
+        .setCredentials(
+            ServiceAccountCredentials.fromStream(
+                new FileInputStream(String.valueOf(googleCredentialsPath))))
+        .build()
+        .getService();
   }
 }

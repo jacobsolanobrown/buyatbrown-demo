@@ -1,6 +1,18 @@
 
 # <div align='center'> BUY @ BROWN </div>
 
+# <div align='center'> Term Project Details </div>
+
+## Team Members: 
+Claire Zhang (cyzhang), 
+Bisola Folarin (arfolari), Kayleen Cruz (kcruz10), & Jacob Solano (gsolano)
+
+## Github Repository:
+ https://github.com/cs0320-f24/term-project-last-minute-wo-men/tree/main
+
+## Summary:
+Our project is a web application that allows Brown students to buy and sell items within the Brown community. Users can create an account, post items for sale, and browse items for sale. Users can also search for items by various categories and tags.
+
 # <div align='center'> How to Run the Application </div>
 
 ## In the client directory: 

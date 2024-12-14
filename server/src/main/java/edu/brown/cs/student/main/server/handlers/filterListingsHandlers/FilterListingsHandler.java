@@ -32,7 +32,7 @@ public class FilterListingsHandler implements Route {
     if (value == null) {
       System.out.println("Null value in listing encountered");
       return 0;
-//      throw new NullPointerException("listing does not have field set");
+      //      throw new NullPointerException("listing does not have field set");
     }
 
     String fieldString = value.toString().toLowerCase();

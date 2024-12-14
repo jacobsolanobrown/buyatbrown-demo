@@ -1,17 +1,12 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
-import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.io.FileInputStream;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -31,7 +26,8 @@ public class AddListingHandler implements Route {
   public StorageInterface storageHandler;
   public GoogleCloudStorageUtilities gcsHandler;
 
-  public AddListingHandler(StorageInterface storageHandler, GoogleCloudStorageUtilities gcsHandler) {
+  public AddListingHandler(
+      StorageInterface storageHandler, GoogleCloudStorageUtilities gcsHandler) {
     this.storageHandler = storageHandler;
     this.gcsHandler = gcsHandler;
   }
@@ -56,7 +52,10 @@ public class AddListingHandler implements Route {
     gcsStorage.create(blobInfo, imageBytes);
     System.out.println("Image uploaded successfully!");
 
-    URL signedUrl = gcsHandler.makeStorage().signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature());
+    URL signedUrl =
+        gcsHandler
+            .makeStorage()
+            .signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature());
     return signedUrl.toString();
   }
 

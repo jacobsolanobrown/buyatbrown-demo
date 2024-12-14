@@ -254,7 +254,5 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void deleteImageFromStorage(String existingImageUrl) {
-
-  }
+  public void deleteImageFromStorage(String existingImageUrl) {}
 }

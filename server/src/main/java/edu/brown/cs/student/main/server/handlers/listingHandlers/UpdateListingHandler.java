@@ -69,6 +69,7 @@ public class UpdateListingHandler implements Route {
     System.out.println(noDuplicateEntries.size() == duplicateEntries.size());
     return (noDuplicateEntries.size() == duplicateEntries.size());
   }
+
   /**
    * Uploads a base64 image to Google Cloud Storage (GCS)
    *
@@ -81,20 +82,19 @@ public class UpdateListingHandler implements Route {
     byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
     String workingDirectory = System.getProperty("user.dir");
-    Path googleCredentialsPath =
-        Paths.get(workingDirectory, "/resources", "google_cred.json");
+    Path googleCredentialsPath = Paths.get(workingDirectory, "/resources", "google_cred.json");
     // Initialize the Storage client with credentials
-    Storage storage = StorageOptions.newBuilder()
-        .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(
-            String.valueOf(googleCredentialsPath))))
-        .build()
-        .getService();
+    Storage storage =
+        StorageOptions.newBuilder()
+            .setCredentials(
+                ServiceAccountCredentials.fromStream(
+                    new FileInputStream(String.valueOf(googleCredentialsPath))))
+            .build()
+            .getService();
 
     // Build the BlobInfo
     BlobId blobId = BlobId.of(BUCKET_NAME, imageName);
-    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-        .setContentType("image/jpeg")
-        .build();
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("image/jpeg").build();
 
     // Upload the image
     System.out.println("Connecting to storage...");
@@ -104,6 +104,7 @@ public class UpdateListingHandler implements Route {
     // Return the public URL
     return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, imageName);
   }
+
   /**
    * Handles the request to update an existing listing.
    *
@@ -122,7 +123,6 @@ public class UpdateListingHandler implements Route {
       if (uid == null || listingId == null) {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
-
 
       //    System.out.println(listing);
       //      System.out.println(allListings);
@@ -155,21 +155,21 @@ public class UpdateListingHandler implements Route {
       }
       System.out.println(request.body());
 
-//      if (request.body() != null && !request.body().isEmpty()) {
-//        String existingImageUrl = (String) listing.get("imageUrl");
-//        System.out.println("Existing image URL: " + existingImageUrl);
-//
-//        // Delete the existing image if it exists
-//        if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-//          try {
-//            this.storageHandler.deleteImageFromStorage(existingImageUrl);
-//            System.out.println("Old image deleted successfully");
-//          } catch (Exception e) {
-//            System.err.println("Error deleting old image: " + e.getMessage());
-//            e.printStackTrace();
-//          }
-//        }
-//      }
+      //      if (request.body() != null && !request.body().isEmpty()) {
+      //        String existingImageUrl = (String) listing.get("imageUrl");
+      //        System.out.println("Existing image URL: " + existingImageUrl);
+      //
+      //        // Delete the existing image if it exists
+      //        if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
+      //          try {
+      //            this.storageHandler.deleteImageFromStorage(existingImageUrl);
+      //            System.out.println("Old image deleted successfully");
+      //          } catch (Exception e) {
+      //            System.err.println("Error deleting old image: " + e.getMessage());
+      //            e.printStackTrace();
+      //          }
+      //        }
+      //      }
       if (imageUrl != null) {
         String existingImageUrl = (String) listing.get("imageUrl");
         System.out.println("Existing image URL: " + listing.get("imageUrl"));
@@ -265,5 +265,4 @@ public class UpdateListingHandler implements Route {
     // Return the response as JSON
     return Utils.toMoshiJson(responseMap);
   }
-
 }
