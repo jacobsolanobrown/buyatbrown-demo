@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import axios from "axios";
 
 const PostingPage: React.FC = () => {  
   const { user } = useUser();
@@ -20,7 +19,6 @@ const PostingPage: React.FC = () => {
     condition: "",
     category: "",
     tags: "",
-    imageFile: null,
     imageFile: null,
   });
 
