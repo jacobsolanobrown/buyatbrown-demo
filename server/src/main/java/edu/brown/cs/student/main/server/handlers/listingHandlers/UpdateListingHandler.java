@@ -1,12 +1,22 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -14,6 +24,7 @@ import spark.Route;
 public class UpdateListingHandler implements Route {
 
   private final StorageInterface storageHandler;
+  private static final String BUCKET_NAME = "buy-at-brown-listing-images";
 
   public UpdateListingHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
@@ -58,7 +69,41 @@ public class UpdateListingHandler implements Route {
     System.out.println(noDuplicateEntries.size() == duplicateEntries.size());
     return (noDuplicateEntries.size() == duplicateEntries.size());
   }
+  /**
+   * Uploads a base64 image to Google Cloud Storage (GCS)
+   *
+   * @param base64Image A string that represents the base64 encoding of an image
+   * @param imageName A string that represents the name of an image
+   * @return An imageUrl to where the image was stored in GCS
+   */
+  private String uploadImageToGCS(String base64Image, String imageName) throws Exception {
+    System.out.println("Uploading image to Google Cloud Storage...");
+    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
+    String workingDirectory = System.getProperty("user.dir");
+    Path googleCredentialsPath =
+        Paths.get(workingDirectory, "/resources", "google_cred.json");
+    // Initialize the Storage client with credentials
+    Storage storage = StorageOptions.newBuilder()
+        .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(
+            String.valueOf(googleCredentialsPath))))
+        .build()
+        .getService();
+
+    // Build the BlobInfo
+    BlobId blobId = BlobId.of(BUCKET_NAME, imageName);
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+        .setContentType("image/jpeg")
+        .build();
+
+    // Upload the image
+    System.out.println("Connecting to storage...");
+    storage.create(blobInfo, imageBytes);
+    System.out.println("Image uploaded successfully!");
+
+    // Return the public URL
+    return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, imageName);
+  }
   /**
    * Handles the request to update an existing listing.
    *
@@ -118,7 +163,17 @@ public class UpdateListingHandler implements Route {
       }
       ;
       if (description != null) listing.put("description", description);
-      if (imageUrl != null) listing.put("imageUrl", imageUrl);
+      if (imageUrl != null) {
+        String existingImageUrl = (String) listing.get("imageUrl");
+        if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
+          storageHandler.deleteImageFromStorage(existingImageUrl);
+        }
+        String base64Image = request.body();
+        String listingUUID = UUID.randomUUID().toString();
+        String imageName = "listing-" + listingUUID + ".jpg";
+        System.out.println("Processing image...");
+        String imageUrl2 = uploadImageToGCS(base64Image, imageName);
+        listing.put("imageUrl", imageUrl2);}
 
       if (condition != null) {
         // check if condition option is one of the three valid options
@@ -200,4 +255,5 @@ public class UpdateListingHandler implements Route {
     // Return the response as JSON
     return Utils.toMoshiJson(responseMap);
   }
+
 }
