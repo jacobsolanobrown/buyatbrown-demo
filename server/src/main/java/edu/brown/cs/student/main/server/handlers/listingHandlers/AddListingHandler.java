@@ -56,7 +56,7 @@ public class AddListingHandler implements Route {
     gcsStorage.create(blobInfo, imageBytes);
     System.out.println("Image uploaded successfully!");
 
-    URL signedUrl = gcsHandler.makeStorage().signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV4Signature());
+    URL signedUrl = gcsHandler.makeStorage().signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature());
     return signedUrl.toString();
   }
 
