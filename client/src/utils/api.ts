@@ -45,3 +45,15 @@ export async function filterListings(titleDescriptionKeyword: string, categoryKe
     conditionKeywords: conditionKeywords, 
   });
 }
+
+export async function getUserListings(uid: string) {
+  return await queryAPI("list-listings", {
+    uid: uid,
+  });
+}
+
+export async function getUserFavorites(uid: string) {
+  return await queryAPI("list-user-favorites", {
+    uid: uid,
+  });
+}

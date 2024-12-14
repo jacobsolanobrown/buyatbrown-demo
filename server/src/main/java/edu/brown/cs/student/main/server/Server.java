@@ -9,6 +9,7 @@ import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandl
 import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.ListListingsHandler;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.ListUserFavoritesHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.UpdateListingHandler;
 import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.handlers.userAccountHandlers.QueryUsernameHandler;
@@ -63,6 +64,7 @@ public class Server {
       Spark.get("update-listings", new UpdateListingHandler(firebaseUtils));
       Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
       Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
+      Spark.get("list-user-favorites", new ListUserFavoritesHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
