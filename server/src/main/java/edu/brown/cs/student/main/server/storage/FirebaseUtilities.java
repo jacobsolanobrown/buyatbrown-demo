@@ -235,7 +235,6 @@ public class FirebaseUtilities implements StorageInterface {
         }
 
         // Delete the document from Firestore
-        deleteImageFromStorage(imageUrl);
         docRef.delete().addListener(() -> {
           System.out.println("Document deleted successfully: " + doc_id);
         }, Runnable::run);
@@ -250,7 +249,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   // Helper method to delete image from Firebase Storage
-  private void deleteImageFromStorage(String imageUrl) {
+  public void deleteImageFromStorage(String imageUrl) {
     try {
       // Get the Firebase Storage bucket name
 //      String bucketName = FirebaseApp.getInstance().getOptions().getStorageBucket();

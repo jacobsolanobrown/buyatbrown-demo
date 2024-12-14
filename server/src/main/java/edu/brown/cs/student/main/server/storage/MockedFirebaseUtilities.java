@@ -252,4 +252,9 @@ public class MockedFirebaseUtilities implements StorageInterface {
       throws IllegalArgumentException, ExecutionException, InterruptedException {
     return Map.of();
   }
+
+  @Override
+  public void deleteImageFromStorage(String existingImageUrl) {
+
+  }
 }

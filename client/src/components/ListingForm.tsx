@@ -20,6 +20,7 @@ const PostingPage: React.FC = () => {
     category: "",
     tags: "",
     imageFile: null,
+    // imageFile: null,
   });
 
   
