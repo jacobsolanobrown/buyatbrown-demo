@@ -38,11 +38,11 @@ public class Server {
       });
 
     after(
-        (Filter)
-            (request, response) -> {
-              response.header("Access-Control-Allow-Origin", "*");
-              response.header("Access-Control-Allow-Methods", "*");
-            });
+      (Filter)
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+        });
 
     StorageInterface firebaseUtils;
     try {
@@ -61,11 +61,11 @@ public class Server {
       Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
 
       Spark.notFound(
-          (request, response) -> {
-            response.status(404); // Not Found
-            System.out.println("ERROR");
-            return "404 Not Found - The requested endpoint does not exist.";
-          });
+        (request, response) -> {
+          response.status(404); // Not Found
+          System.out.println("ERROR");
+          return "404 Not Found - The requested endpoint does not exist.";
+        });
       Spark.init();
       Spark.awaitInitialization();
 
@@ -73,7 +73,7 @@ public class Server {
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println(
-          "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
+        "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
       System.exit(1);
     }
   }

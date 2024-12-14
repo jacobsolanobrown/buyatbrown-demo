@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import axios from "axios";
 
 const PostingPage: React.FC = () => {  
   const { user } = useUser();
@@ -19,6 +20,7 @@ const PostingPage: React.FC = () => {
     condition: "",
     category: "",
     tags: "",
+    imageFile: null,
     imageFile: null,
   });
 
@@ -45,6 +47,64 @@ const PostingPage: React.FC = () => {
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Must upload an image
+    if (!formData.imageFile) {
+      setResponseMessage("Please upload an image.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setResponseMessage("");
+
+    try {
+      // Convert image to Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(formData.imageFile);
+      reader.onload = async () => {
+        const base64Image = reader.result.split(",")[1]; // Strip out metadata
+
+        // Prepare form data
+        const data = {
+          ...formData,
+          imageUrl: base64Image,
+        };
+        
+
+        try {
+          const response = await axios.post(
+            "http://localhost:3232/add-listings",
+            data.imageUrl, // Send the image URL as raw body
+            {
+              headers: { "Content-Type": "text/plain" },
+              params: {
+                username: data.username,
+                price: data.price,
+                title: data.title,
+                category: data.category,
+                tags: data.tags,
+                condition: data.condition,
+                description: data.description,
+              },
+            }
+          );
+          setResponseMessage(
+            response.data.response_type === "success"
+              ? "Listing added successfully!"
+              : `Error: ${response.data.error}`
+          );
+        } catch (error) {
+          console.error("Error uploading listing:", error);
+          setResponseMessage("An error occurred while uploading the listing.");
+        }
+      };
+    } catch (error) {
+      console.error("Error uploading listing:", error);
+      setResponseMessage("An error occurred while uploading the listing.");
+    } finally {
+      setIsSubmitting(false);
+    }
+
     // Handle form submission logic here
     console.log("Form data submitted:", formData);
     if (!formData.imageFile) {
@@ -202,6 +262,8 @@ const PostingPage: React.FC = () => {
               Photo:
             </label>
             <input
+              type="file"
+              accept="image/png, image/jpeg"
               type="file"
               accept="image/png, image/jpeg"
               id="imageUrl"
