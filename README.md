@@ -11,6 +11,7 @@ Setup:
 - run `npm install` to install the necessary packages
 - run `npm install firebase` to install firebase 
 - run `npm install -D tailwindcss postcss autoprefixer
+- run `npm install axios`
 npx tailwindcss init -p` to install tailwindcss
 - Add/Replace the following files with our own: 
     - `postcss.config.js`
@@ -25,6 +26,7 @@ Setup:
 - Add the following folder with files: 
     - `resources`
         -> `firebase_config.json`
+   - `resources`-> `google_cred.json`
 
 
 

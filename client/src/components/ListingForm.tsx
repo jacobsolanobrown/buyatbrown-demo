@@ -263,8 +263,6 @@ const PostingPage: React.FC = () => {
             <input
               type="file"
               accept="image/png, image/jpeg"
-              type="file"
-              accept="image/png, image/jpeg"
               id="imageUrl"
               name="imageUrl"
               placeholder="Upload an image (png or jpeg)"

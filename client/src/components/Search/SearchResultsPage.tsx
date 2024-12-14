@@ -119,7 +119,7 @@ export default function SearchResultsPage () {
                 listing={selectedListing}
               />
             )}
-          </div>
+      </div>
     </div>
   );
 }
