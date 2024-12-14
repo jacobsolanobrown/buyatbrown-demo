@@ -91,7 +91,7 @@ export default function Furniture () {
             posts.map((post) => ( // posts should reflect 
             <ListingCard
               key={post.id}
-              imageUrl={"src/assets/brown-university-logo-transparent.png"} 
+              imageUrl={post.imageUrl} 
               title={post.title}
               price={post.price}
               username={post.username}

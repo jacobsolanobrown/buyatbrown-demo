@@ -84,38 +84,6 @@ function Homepage() {
         )}
       </div>
     </div>
-
-
-
-    // <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    //   {isLoading ? (
-    //     <div className="text-2xl align-center">Loading All Listings...</div>
-    //   ) : posts.length === 0 ? (
-    //     <p>No listings available</p>
-    //   ) : (
-    //     posts.map((post) => (
-    //       <ListingCard
-    //         key={post.id}
-    //         imageUrl={post.imageUrl}
-    //         title={post.title}
-    //         price={post.price}
-    //         username={post.username}
-    //         description={post.description}
-    //         condition={post.condition}
-    //         category={post.category}
-    //         tags={post.tags}
-    //         onClick={() => handleCardClick(post)}
-    //       />
-    //     ))
-    //   )}
-    //   {isModalOpen && (
-    //     <ListingModal
-    //       isOpen={isModalOpen}
-    //       onClose={handleCloseModal}
-    //       listing={selectedListing}
-    //     />
-    //   )}
-    // </div>
   );
 }
 

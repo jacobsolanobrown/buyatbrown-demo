@@ -109,9 +109,6 @@ function App() {
           } else {
             // for username already taken
             console.error("Failed to create username: ", data.error);
-            setErrorMessage(
-              "Username is already taken. Please try another one."
-            );
           }
         })
         // general api error catching
