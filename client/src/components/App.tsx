@@ -131,10 +131,6 @@ function App() {
         {loading ? (
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="text-center">
-              {/* <div
-                className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full"
-                role="status"
-              ></div> */}
               <img 
                 className="w-24 h-24"
                 src="src/assets/Spin@1x-1.0s-200px-200px.gif"

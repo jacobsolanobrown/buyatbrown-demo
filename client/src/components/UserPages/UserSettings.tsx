@@ -3,10 +3,11 @@ import ListingCard from "../ListingCard";
 import NavUser from "./NavUser";
 import DropdownNavUser from "./DropdownNavUser";
 import { useUser } from "@clerk/clerk-react";
-import { createUser } from "../../utils/api";
+import { createUser, clearUser } from "../../utils/api";
 
 export default function UserSettings({ username }: { username: string }) {
   const [newUsername, setUsername] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const { user } = useUser();
 
@@ -18,18 +19,24 @@ export default function UserSettings({ username }: { username: string }) {
    */
   const handleChangeUsername = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent the page from refreshing
+    setLoading(true); // set loading state to true
     if (username && user) {
-      await createUser(user.id, newUsername, user.emailAddresses[0].emailAddress)
+      await createUser(
+        user.id,
+        newUsername,
+        user.emailAddresses[0].emailAddress
+      )
         .then((data) => {
           if (data.response_type === "success") {
             setUsername(newUsername);
-            setMessage("Username changed successfully! Refresh the page to see the changes.");
-
+            setMessage(
+              "Username changed successfully! Refresh the page to see the changes."
+            );
+            // automatically refresh the page
+            window.location.reload();
           } else {
             // for username already taken
-            setMessage(
-              "Username is already taken. Please try another one."
-            );
+            setMessage("Username is already taken. Please try another one.");
           }
         })
         // general api error catching
@@ -37,6 +44,36 @@ export default function UserSettings({ username }: { username: string }) {
           console.error("Error creating user: ", error);
           setMessage(
             "Error creating user. Please try again. (Error:  " + error + ")"
+          );
+        })
+        .finally(() => {
+          setLoading(false); // set loading state to false
+        });
+    } else {
+      setLoading(false); // set loading state to false if username or user is not available
+    }
+  };
+
+  // TODO: SIGN OUT ACCOUNT FROM CLERK
+  const handleDeleteAccount = async () => {
+    if (username && user) {
+      await clearUser(user.id)
+        .then((data) => {
+          if (data.response_type === "success") {
+            // Sign out from Clerk 
+            // refresh 
+            window.location.reload();
+            // Redirect to homepage
+            //window.location.href = "/";
+          } else {
+            // for username already taken
+            setMessage("Error deleting account. Please try again.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting account: ", error);
+          setMessage(
+            "Error deleting account. Please try again. (Error:  " + error + ")"
           );
         });
     }
@@ -82,16 +119,40 @@ export default function UserSettings({ username }: { username: string }) {
                   placeholder="Enter new username..."
                   required
                 />
-                <button
+                {loading ? (
+                  <button
+                    type="button"
+                    className="text-sm rounded-full block p-3 w-40 mb-5 text-center bg-gray-400 text-white font-ibm-plex-sans font-bold"
+                    disabled
+                  >
+                    <img
+                      //className="w-24 h-24"
+                      src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+                      alt="Loading Image"
+                    />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="text-sm rounded-full block p-3 w-40 mb-5 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
+                  >
+                    Submit
+                  </button>
+                )}
+                {/* <button
                   type="submit"
                   className=" text-sm rounded-full block p-3 w-40  mb-5 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
                 >
+                              <img  src=/>
+
                   Submit
-                </button>
+                </button> */}
               </div>
               // TODO automatically refresh for the user
               {message && (
-                <p className="py-4 font-ibm-plex-sans text-red-600">{message}</p>
+                <p className="py-4 font-ibm-plex-sans text-red-600">
+                  {message}
+                </p>
               )}
             </div>
           </form>
@@ -99,7 +160,12 @@ export default function UserSettings({ username }: { username: string }) {
           <h2 className="block mb-5 text-lg font-medium text-gray-900 ">
             Delete Account:
           </h2>
-          <button className="bg-yellow-500 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-yellow-500 hover:border-yellow-500">
+          {/* // TODO: are we sure we want to delete the account? */}
+
+          <button
+            className="bg-yellow-500 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-yellow-500 hover:border-yellow-500"
+            onClick={handleDeleteAccount}
+          >
             Yes, Delete My Account
           </button>
         </div>

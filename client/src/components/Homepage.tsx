@@ -52,6 +52,7 @@ function Homepage() {
             condition={post.condition}
             category={post.category}
             tags={post.tags}
+            
             onClick={() => handleCardClick(post)}
           />
         ))
