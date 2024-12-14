@@ -11,7 +11,7 @@ export default function DropdownNavUser() {
   return (
     <div>
       {/* Dropdown for smaller screens */}
-      <div className="sm:hidden p-4 flex flex-col items-center">
+      <div className="min-[860px]:hidden p-4 flex flex-col items-center">
         <button
           onClick={toggleDropdown}
           className="w-80 bg-white text-black py-2 px-4 rounded-3xl hover:bg-blue-800 focus:ring-4 focus:outline-none 
