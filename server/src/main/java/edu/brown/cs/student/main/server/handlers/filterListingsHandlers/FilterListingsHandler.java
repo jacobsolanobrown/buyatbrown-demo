@@ -30,7 +30,9 @@ public class FilterListingsHandler implements Route {
     assert !keyword.isEmpty();
     Object value = listing.get(fieldToSearch);
     if (value == null) {
-      throw new NullPointerException("listing does not have category set");
+      System.out.println("Null value in listing encountered");
+      return 0;
+//      throw new NullPointerException("listing does not have field set");
     }
 
     String fieldString = value.toString().toLowerCase();

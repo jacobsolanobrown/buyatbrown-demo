@@ -77,15 +77,7 @@ public class UpdateListingHandler implements Route {
       if (uid == null || listingId == null) {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
-      //      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
-      //
-      //      Map<String, Object> listing = allListings.stream()
-      //          .filter(listingMap ->
-      // listingMap.get("listingId").toString().equalsIgnoreCase(listingId)
-      //              || listingId.equalsIgnoreCase("ignore"))
-      //          .findFirst()
-      //          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given
-      // ID: " + listingId));
+
 
       //    System.out.println(listing);
       //      System.out.println(allListings);
