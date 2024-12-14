@@ -248,7 +248,6 @@ public class AddListingHandler implements Route {
       validateTags(tags);
       validatePrice(price);
 
-<<<<<<< HEAD
       String listingUUID = UUID.randomUUID().toString();
       String imageName = "listing-" + listingUUID + ".jpg";
       String imageUrl;
