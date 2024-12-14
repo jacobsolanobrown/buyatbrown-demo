@@ -1,32 +1,85 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
-import com.google.firebase.FirebaseApp;
 import edu.brown.cs.student.main.server.handlers.Utils;
+
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import  com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.UUID;
 
 // import org.
 /** Class for adding a listing to the database */
 public class AddListingHandler implements Route {
 
   public StorageInterface storageHandler;
+  private static final String BUCKET_NAME = "buy-at-brown-listing-images";
+
 
   public AddListingHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
+  }
+
+  /**
+   * Uploads a base64 image to Google Cloud Storage (GCS)
+   *
+   * @param base64Image A string that represents the base64 encoding of an image
+   * @param imageName A string that represents the name of an image
+   * @return An imageUrl to where the image was stored in GCS
+   */
+  private String uploadImageToGCS(String base64Image, String imageName) throws Exception {
+    System.out.println("Uploading image to Google Cloud Storage...");
+    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
+    String workingDirectory = System.getProperty("user.dir");
+    Path googleCredentialsPath =
+      Paths.get(workingDirectory, "/resources", "google_cred.json");
+    // Initialize the Storage client with credentials
+    Storage storage = StorageOptions.newBuilder()
+      .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(
+        String.valueOf(googleCredentialsPath))))
+      .build()
+      .getService();
+
+    // Build the BlobInfo
+    BlobId blobId = BlobId.of(BUCKET_NAME, imageName);
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+      .setContentType("image/jpeg")
+      .build();
+
+    // Upload the image
+    System.out.println("Connecting to storage...");
+    storage.create(blobInfo, imageBytes);
+    System.out.println("Image uploaded successfully!");
+
+    // Return the public URL
+    return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, imageName);
   }
 
   /**
@@ -69,6 +122,7 @@ public class AddListingHandler implements Route {
     return (noDuplicateEntries.size() == duplicateEntries.size());
   }
 
+
   /**
    * Invoked when a request is made on this route's corresponding path e.g. '/hello'
    *
@@ -80,17 +134,11 @@ public class AddListingHandler implements Route {
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
     try {
-      // collect parameters from the request
+      System.out.println("AddListingHandler has received a request.");
+      // Collect base64Image from raw body
+      String base64Image = request.body();
       String uid = request.queryParams("uid");
       String username = request.queryParams("username");
-      String imageUrl = request.queryParams("imageUrl");
-
-      // Example: Generate signed URL for the given object
-      String bucketName = FirebaseApp.getInstance().getOptions().getStorageBucket();
-      String signedUrl = storageHandler.generateSignedUrl(bucketName, imageUrl);
-
-      responseMap.put("signedImageUrl", signedUrl);
-
       String price = request.queryParams("price");
       String title = request.queryParams("title");
       String category = request.queryParams("category");
@@ -98,79 +146,95 @@ public class AddListingHandler implements Route {
       String condition = request.queryParams("condition");
       String description = request.queryParams("description");
 
+
       // create new listing with collected parameters
       // Listing listing = new Listing(username, title, imageUrl, price, description);
 
       Map<String, Object> data = new HashMap<>();
       System.out.println("Validating parameter values for search");
       if (uid == null
+          || uid.isBlank()
           || username == null
-          || imageUrl == null
+          || username.isBlank()
+          || base64Image == null
+          || base64Image.isBlank()
           || price == null
+          || price.isBlank()
           || condition == null
+          || condition.isBlank()
           || description == null
+          || description.isBlank()
           || title == null
+          || title.isBlank()
           || tags == null
-          || category == null) {
+          || tags.isBlank()
+          || category == null
+          || category.isBlank()) {
         System.out.println(
-            "All listings arguments are required "
-                + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
+          "All listings arguments are required "
+            + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
         throw new IllegalArgumentException(
-            "All listings arguments are required "
-                + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
+          "All listings arguments are required "
+            + "(uid, username, title, tags, price, imageUrl, category, condition, description)");
       }
 
       // check if title is less than 40 characters
       if (title.length() > 40) {
-        System.out.println("Title must be less than or equal to 40 characters");
-        throw new IllegalArgumentException("Title must be less than or equal to 40 characters");
+        System.out.println("Title must be less than or equal to 40 characters.");
+        throw new IllegalArgumentException("Title must be less than or equal to 40 characters.");
       }
 
       // check if price is negative value
       if (Double.parseDouble(price) < 0) {
-        System.out.println("Price cannot be negative");
-        throw new IllegalArgumentException("Price cannot be negative");
+        System.out.println("Price cannot be negative.");
+        throw new IllegalArgumentException("Price cannot be negative.");
+      }
+
+      // check if price is below maximum value
+      if (Double.parseDouble(price) > 999999999) {
+        System.out.println("Price is too large.");
+        throw new IllegalArgumentException("Price is too large.");
       }
 
       // check if category option is one of the valid options
       condition = condition.toLowerCase();
       if (!(condition.equals("new") || condition.equals("like new") || condition.equals("used"))) {
         System.out.println(
-            "Please choose from valid condition inputs (i.e. new, like new, or used");
+            "Please choose from valid condition inputs (i.e. new, like new, or Used).");
         throw new IllegalArgumentException(
-            "Please choose from valid condition inputs (i.e. New, Like New, or Used");
+            "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
       }
 
       if (category.contains(",")) {
-        System.out.println("Category can only have one value (i.e.value  must not contain commas)");
+        System.out.println("Category can only have one value (i.e.value  must not contain commas).");
         throw new IllegalArgumentException(
-            "Category can only have one value (i.e.value  must not contain commas)");
+            "Category can only have one value (i.e.value  must not contain commas).");
       }
 
       // there should be no extra spaces and  tags are in the form "tag1,tag2,tag3, two wordtag"
       if (tags.length() - tags.replace("  ", "").replace(" ,", ",").replace(", ", ",").length()
-          > 0) {
+        > 0) {
         System.out.println(
-            "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas.");
         throw new IllegalArgumentException(
-            "Each tag should only have ONE space between words and non before and after commas");
+            "Each tag should only have ONE space between words and non before and after commas.");
       }
 
       if (countWordsBetweenCommas(tags) > 2) {
-        System.out.println("Each tag should be less than or equal to 2 words");
-        throw new IllegalArgumentException("Each tag should be less than or equal to 2 words");
+        System.out.println("Each tag should be less than or equal to 2 words.");
+        throw new IllegalArgumentException("Each tag should be less than or equal to 2 words.");
       }
 
       // tags are in the form "tag1,tag2,tag3, two wordtag"
       if (tags.length() - tags.replace(",,", "").replace(", ,", "").length() > 0) {
-        System.out.println("Each tag should have a value");
-        throw new IllegalArgumentException("Each tag should have a value");
+        System.out.println("Each tag should have a value.");
+        throw new IllegalArgumentException("Each tag should have a value.");
       }
 
       // if there are more than 5 tags, error
       if (tags.length() - tags.replace(",", "").length() > 4) {
-        System.out.println("Please input less than or equal to 5 tags");
-        throw new IllegalArgumentException("Please input less than or equal to 5 tags");
+        System.out.println("Please input less than or equal to 5 tags.");
+        throw new IllegalArgumentException("Please input less than or equal to 5 tags.");
       }
 
       // if there are repeated tags, error
@@ -178,6 +242,16 @@ public class AddListingHandler implements Route {
         System.out.println("Please make sure all tags are unique");
         throw new IllegalArgumentException("Please make sure all tags are unique");
       }
+
+      String listingUUID = UUID.randomUUID().toString();
+      String imageName = "listing-" + listingUUID + ".jpg";
+      System.out.println("Processing image...");
+      String imageUrl = uploadImageToGCS(base64Image, imageName);
+
+      String listingUUID = UUID.randomUUID().toString();
+      String imageName = "listing-" + listingUUID + ".jpg";
+      System.out.println("Processing image...");
+      String imageUrl = uploadImageToGCS(base64Image, imageName);
 
       System.out.println("Valid inputs recieved");
       data.put("uid", uid);
@@ -190,38 +264,27 @@ public class AddListingHandler implements Route {
       data.put("description", description);
       data.put("category", category);
 
-      // get the current word count to make a unique word_id by index.
-      LocalDateTime now = LocalDateTime.now();
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-      String formattedDateTime = now.format(formatter);
-
-      int listingCount = this.storageHandler.getCollection(uid, "listings").size();
-      String listingId = "listing-" + listingCount + formattedDateTime;
-
-      // WHAT IF WE DELEte LISTING1 OUT OF 5 LISTINGS? THEN LISTING COUNT IS LOWER BUT
-      // THERE ARE STILL 5 LISTINGS?
-      // INSTEAD... IS THERE A WAY TO ATOMICALLY ADD TO THE LISTING WITHOUT HAVINF DUPLICATES?
-
+      String listingId = "listing-" + listingUUID;
       // use the storage handler to add the document to the database
       this.storageHandler.addDocument(uid, "listings", listingId, data);
 
       System.out.println(
-          "addded listing for username: "
-              + username
-              + ", title: "
-              + condition
-              + ", tags: "
-              + tags
-              + ", imageUrl: "
-              + imageUrl
-              + ", category"
-              + category
-              + ", price: "
-              + price
-              + ", description: "
-              + description
-              + ", for user: "
-              + uid);
+        "addded listing for username: "
+          + username
+          + ", title: "
+          + condition
+          + ", tags: "
+          + tags
+          + ", imageUrl: "
+          + imageUrl
+          + ", category"
+          + category
+          + ", price: "
+          + price
+          + ", description: "
+          + description
+          + ", for user: "
+          + uid);
 
       responseMap.put("response_type", "success");
       responseMap.putAll(data);

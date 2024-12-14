@@ -59,6 +59,7 @@ public class FirebaseUtilities implements StorageInterface {
         }
       }
 
+      System.out.println("Setting up Service Account");
       FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
       FirebaseOptions options =
@@ -66,7 +67,9 @@ public class FirebaseUtilities implements StorageInterface {
               .setCredentials(GoogleCredentials.fromStream(serviceAccount))
               .build();
 
+      System.out.println("Initializing Firebase");
       FirebaseApp.initializeApp(options);
+      System.out.println("ekfrmew Firebase");
     } catch (Exception e) {
       System.err.println("Detailed Error: " + e.getMessage());
       e.printStackTrace();
