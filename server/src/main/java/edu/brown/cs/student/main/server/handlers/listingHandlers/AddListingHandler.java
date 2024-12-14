@@ -258,12 +258,6 @@ public class AddListingHandler implements Route {
         System.out.println("Error loading image: " + e.getMessage());
         throw new IllegalArgumentException("Error loading image: " + e.getMessage());
       }
-=======
-//      String listingUUID = UUID.randomUUID().toString();
-//      String imageName = "listing-" + listingUUID + ".jpg";
-//      System.out.println("Processing image...");
-//      String imageUrl = uploadImageToGCS(base64Image, imageName);
->>>>>>> bf8b36d22a68190a5aa2b87baf7566c72b40f24e
 
       System.out.println("Valid inputs recieved");
       data.put("uid", uid);
