@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const PostingPage: React.FC = () => {
+const PostingPage: React.FC = () => {  
   const { user } = useUser();
   const navigate = useNavigate();
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const [formData, setFormData] = useState({
-    imageUrl: "",
+    uid: "",
     title: "",
     price: "",
     username: "", // pass in the username (no need for user to type it in)
@@ -15,8 +19,10 @@ const PostingPage: React.FC = () => {
     condition: "",
     category: "",
     tags: "",
+    imageFile: null,
   });
 
+  
   // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -28,11 +34,75 @@ const PostingPage: React.FC = () => {
     }));
   };
 
+  // Handle form image changes
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, imageFile: file });
+  };
+
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission logic here
     console.log("Form data submitted:", formData);
+    if (!formData.imageFile) {
+      setResponseMessage("Please upload an image.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setResponseMessage("");
+
+    try {
+      // Convert image to Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(formData.imageFile);
+      reader.onload = async () => {
+        const base64Image = reader.result.split(",")[1]; // Strip out metadata
+
+        // Prepare form data
+        const data = {
+          ...formData,
+          imageUrl: base64Image,
+        };
+        
+
+        try {
+          const response = await axios.post(
+            "http://localhost:3232/add-listings",
+            data.imageUrl, // Send the image URL as raw body
+            {
+              headers: { "Content-Type": "text/plain" },
+              params: {
+                uid: data.uid,
+                username: data.username,
+                price: data.price,
+                title: data.title,
+                category: data.category,
+                tags: data.tags,
+                condition: data.condition,
+                description: data.description,
+              },
+            }
+          );
+          setResponseMessage(
+            response.data.response_type === "success"
+              ? "Listing added successfully!"
+              : `Error: ${response.data.error}`
+          );
+        } catch (error) {
+          console.error("Error uploading listing:", error);
+          setResponseMessage("An error occurred while uploading the listing.");
+        }
+      };
+    } catch (error) {
+      console.error("Error uploading listing:", error);
+      setResponseMessage("An error occurred while uploading the listing.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const goBack = () => {
@@ -47,6 +117,44 @@ const PostingPage: React.FC = () => {
         </button>
         <h1 className="text-3xl font-bold mb-6">Post a New Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Input for UID: REMOVE LATER */}
+        <div>
+            <label
+              htmlFor="uid"
+              className="block text-sm font-medium text-gray-700"
+            >
+              UID:
+            </label>
+            <input
+              type="uid"
+              id="price"
+              name="uid"
+              placeholder="Enter your uid"
+              value={formData.uid}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              required
+            />
+          </div>
+          {/* Input for USERNAME: REMOVE LATER */}
+        <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Username:
+            </label>
+            <input
+              type="username"
+              id="price"
+              name="username"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              required
+            />
+          </div>
           {/* Input for a listing Title */}
           <div>
             <label
@@ -94,12 +202,12 @@ const PostingPage: React.FC = () => {
               Photo:
             </label>
             <input
-              type="text"
+              type="file"
+              accept="image/png, image/jpeg"
               id="imageUrl"
               name="imageUrl"
-              placeholder="Upload an image"
-              value={formData.imageUrl}
-              onChange={handleChange}
+              placeholder="Upload an image (png or jpeg)"
+              onChange={handleImageChange}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               required
             />

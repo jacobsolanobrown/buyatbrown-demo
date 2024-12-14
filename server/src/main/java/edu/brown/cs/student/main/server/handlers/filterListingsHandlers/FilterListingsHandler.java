@@ -33,9 +33,8 @@ public class FilterListingsHandler implements Route {
       throw new NullPointerException("listing does not have category set");
     }
 
-    String fieldString = value.toString();
+    String fieldString = value.toString().toLowerCase();
     keyword = keyword.toLowerCase();
-    fieldString = fieldString.toLowerCase();
     return (fieldString.length() - fieldString.replace(keyword, "").length()) / keyword.length();
   }
 

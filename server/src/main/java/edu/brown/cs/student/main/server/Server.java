@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
+import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.FilterListingsHandler;
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
@@ -25,6 +26,17 @@ public class Server {
     int port = 3232;
     Spark.port(port);
 
+    // Enable CORS for all routes
+    options(
+      "/*",
+      (request, response) -> {
+        response.header("Access-Control-Allow-Origin", "http://localhost:8000"); // Frontend origin
+        response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.header("Access-Control-Allow-Credentials", "true");
+        return "OK";
+      });
+
     after(
         (Filter)
             (request, response) -> {
@@ -38,7 +50,7 @@ public class Server {
       firebaseUtils = new FirebaseUtilities();
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
       //      GeoMapCollection geoMapCollection = myDataSource.getData();
-      Spark.get("add-listings", new AddListingHandler(firebaseUtils));
+      Spark.post("add-listings", new AddListingHandler(firebaseUtils));
       Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
       Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
       Spark.get("delete-listings", new DeleteListingHandler(firebaseUtils));
