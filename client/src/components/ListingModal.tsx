@@ -58,16 +58,16 @@ const ListingModal: React.FC<ModalCardProps> = ({
         </button>
         <div className="flex flex-col text-left space-y-6">
           <div>
-            <h2 className="text-2xl font-bold">{listing.title}</h2>
-            <h3 className="text-gray-500 text-lg">{listing.condition}</h3>
+            <h2 className="text-3xl font-bold">{listing.title}</h2>
+            <h3 className="text-gray-500 text-xl">{listing.condition}</h3>
           </div>
-          <h2 className="text-xl text-gray-600">${listing.price}</h2>
+          <h2 className="text-2xl text-gray-600">${listing.price}</h2>
           <img
             src={listing.imageUrl}
             alt={listing.title}
             className="object-cover rounded-md"
           />
-          <div className="flex flex-row">
+          <div className="flex flex-row text-lg">
             <p className="font-bold">{listing.username}:&nbsp;</p>
             <p>{listing.description}</p>
           </div>
