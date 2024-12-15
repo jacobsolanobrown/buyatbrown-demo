@@ -171,6 +171,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
       setResponseMessage("An error occurred while uploading the listing.");
     } finally {
       setIsSubmitting(false);
+      navigate("/");
     }
   };
 

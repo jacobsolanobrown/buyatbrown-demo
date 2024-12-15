@@ -104,7 +104,7 @@ export default function UserSettings({ username }: { username: string }) {
 
       <div className="flex-1 p-8">
         <div className="flex flex-col items-center sm:block">
-          <div className="bg-red-600 w-96 text-white py-4 px-6 rounded-lg shadow-md mb-6">
+          <div className="bg-red-600 w-96 text-white py-4 px-6 rounded-xl shadow-md mb-6">
             <h1 className="text-lg font-semibold text-center">
               Hey, {username}!
             </h1>

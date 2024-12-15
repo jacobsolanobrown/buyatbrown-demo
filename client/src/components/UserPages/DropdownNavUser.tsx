@@ -29,9 +29,9 @@ export default function DropdownNavUser() {
               <Link to="/favorites" className="block text-gray-950 underline hover:text-stone-200">
                 Favorites
               </Link>
-              <Link to="/messages" className="block text-gray-950 underline hover:text-stone-200">
+              {/* <Link to="/messages" className="block text-gray-950 underline hover:text-stone-200">
                 Messages
-              </Link>
+              </Link> */}
               <Link to="/settings" className="block text-gray-950 underline hover:text-stone-200">
                 Settings
               </Link>

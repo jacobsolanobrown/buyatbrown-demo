@@ -228,10 +228,10 @@ function App() {
                 path="/yourlistings"
                 element={<UserListings username={username} />}
               />
-              <Route
+              {/* <Route
                 path="/messages"
                 element={<UserMessages username={username} />}
-              />
+              /> */}
               <Route
                 path="/settings"
                 element={<UserSettings username={username} />}
