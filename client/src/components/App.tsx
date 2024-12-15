@@ -38,10 +38,7 @@ const app = initializeApp(firebaseConfig);
 function App() {
   const { user } = useUser();
 
-//   if (!user) {
-
-// ]  }
-
+  const [uid, setUID] = useState("");
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -87,6 +84,7 @@ function App() {
    */
   useEffect(() => {
     if (user) {
+      setUID(user.id)
       checkForUsername();
     }
   }, [user]); // Run whenever the `user` object changes
@@ -130,7 +128,7 @@ function App() {
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="text-center">
               <img 
-                className="w-24 h-24"
+                className="max-w-24"
                 src="src/assets/Spin@1x-1.0s-200px-200px.gif"
                 alt="Loading Image"
               />
@@ -189,7 +187,7 @@ function App() {
             <Navbar username={username} />
             <Routes>
               <Route path="/" element={<Homepage />} />
-              <Route path="/listing-form" element={<ListingForm />} />
+              <Route path="/listing-form" element={<ListingForm uid={uid} username={username}/>} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
               <Route path="/bathroom" element={<Bathroom />} />
