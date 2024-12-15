@@ -7,8 +7,10 @@ import { createUser, clearUser } from "../../utils/api";
 
 export default function UserSettings({ username }: { username: string }) {
   const [newUsername, setUsername] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [message, setMessage] = React.useState("");
+  const [usernameLoading, setUsernameLoading] = React.useState(false);
+  const [usernameMessage, setUsernameMessage] = React.useState("");
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
+  const [deleteMessage, setDeleteMessage] = React.useState("");
   const { user } = useUser();
 
   /**
@@ -19,7 +21,8 @@ export default function UserSettings({ username }: { username: string }) {
    */
   const handleChangeUsername = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent the page from refreshing
-    setLoading(true); // set loading state to true
+    setUsernameLoading(true); // set loading state to true
+    setUsernameMessage("Checking username availability... ");
     if (username && user) {
       await createUser(
         user.id,
@@ -29,53 +32,66 @@ export default function UserSettings({ username }: { username: string }) {
         .then((data) => {
           if (data.response_type === "success") {
             setUsername(newUsername);
-            setMessage(
+            setUsernameMessage(
               "Username changed successfully! Refresh the page to see the changes."
             );
             // automatically refresh the page
             window.location.reload();
           } else {
             // for username already taken
-            setMessage("Username is already taken. Please try another one.");
+            setUsernameMessage(
+              "Username is already taken. Please try another one."
+            );
           }
         })
         // general api error catching
         .catch((error) => {
           console.error("Error creating user: ", error);
-          setMessage(
+          setUsernameMessage(
             "Error creating user. Please try again. (Error:  " + error + ")"
           );
         })
         .finally(() => {
-          setLoading(false); // set loading state to false
+          setUsernameLoading(false); // set loading state to false
         });
     } else {
-      setLoading(false); // set loading state to false if username or user is not available
+      setUsernameLoading(false);
+      setUsernameMessage("User or username not available. Please try again.");
     }
   };
 
-  // TODO: SIGN OUT ACCOUNT FROM CLERK
   const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    setDeleteMessage("Deleting Account...");
     if (username && user) {
       await clearUser(user.id)
         .then((data) => {
           if (data.response_type === "success") {
-            // Sign out from Clerk 
-            // refresh 
+            setDeleteMessage(
+              "Account Successfully Deleted. You will be loggeed out."
+            );
+            // Sign out from Clerk
+            // refresh
             window.location.reload();
             // Redirect to homepage
             //window.location.href = "/";
           } else {
             // for username already taken
-            setMessage("Error deleting account. Please try again.");
+            setDeleteMessage("Error deleting account. Please try again.");
           }
         })
         .catch((error) => {
           console.error("Error deleting account: ", error);
-          setMessage(
+          setDeleteMessage(
             "Error deleting account. Please try again. (Error:  " + error + ")"
           );
+        })
+        .finally(() => {
+          setDeleteLoading(false);
         });
+    } else {
+      setDeleteLoading(false);
+      setDeleteMessage("User or username not available. Please try again.");
     }
   };
 
@@ -100,74 +116,77 @@ export default function UserSettings({ username }: { username: string }) {
 
         <div className="bg-white/50 p-6 rounded-xl shadow-md border">
           <h2 className="text-2xl font-bold mb-5">Settings</h2>
+
           <form onSubmit={handleChangeUsername}>
-            <div>
+            <div className="flex flex-col">
               <label className="block mb-5 text-lg font-medium text-gray-900 ">
                 Change Username:
               </label>
-              <div className="flex flex-row space-x-4">
+              <div className="flex flex-row space-x-5">
                 <input
                   id="changedUsername"
                   type="text"
                   value={newUsername}
                   onChange={(e) => setUsername(e.target.value)}
                   className="
-                  text-sm rounded-full focus:ring-red-500 focus:border-red-500 
-                  block p-3 w-80 dark:bg-gray-200 dark:border-gray-600
-                  dark:placeholder-gray-400 
-                    dark:focus:ring-red-500 dark:focus:border-red-500 mb-5 text-center"
-                  placeholder="Enter new username..."
+                  text-md rounded-full focus:ring-red-500 focus:border-red-500 
+                   p-3 w-80 h-12 dark:bg-gray-200 dark:border-gray-600
+                  dark:placeholder-gray-400 dark:focus:ring-red-500 dark:focus:border-red-500 text-center"
+                  placeholder="Enter new username"
                   required
                 />
-                {loading ? (
-                  <button
-                    type="button"
-                    className="text-sm rounded-full block p-3 w-40 mb-5 text-center bg-gray-400 text-white font-ibm-plex-sans font-bold"
-                    disabled
-                  >
-                    <img
-                      //className="w-24 h-24"
-                      src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-                      alt="Loading Image"
-                    />
-                  </button>
+                {usernameLoading ? (
+                  // loading screen
+                  <img
+                    className="w-14 block h-12"
+                    src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+                    alt="Loading Image"
+                  />
                 ) : (
                   <button
                     type="submit"
-                    className="text-sm rounded-full block p-3 w-40 mb-5 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
+                    className="text-sm rounded-full block p-3 w-40 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
                   >
                     Submit
                   </button>
                 )}
-                {/* <button
-                  type="submit"
-                  className=" text-sm rounded-full block p-3 w-40  mb-5 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
-                >
-                              <img  src=/>
-
-                  Submit
-                </button> */}
               </div>
-              // TODO automatically refresh for the user
-              {message && (
-                <p className="py-4 font-ibm-plex-sans text-red-600">
-                  {message}
-                </p>
-              )}
+              <div>
+                {usernameMessage && usernameLoading ? (
+                  <p className="py-4 font-ibm-plex-sans text-red-600">
+                    {usernameMessage}
+                  </p>
+                ) : (
+                  <p className="py-4 font-ibm-plex-sans text-red-600">
+                    {usernameMessage}
+                  </p>
+                )}
+              </div>
             </div>
           </form>
 
-          <h2 className="block mb-5 text-lg font-medium text-gray-900 ">
-            Delete Account:
-          </h2>
-          {/* // TODO: are we sure we want to delete the account? */}
+          <div>
+            <h2 className="block mt-5 mb-5 text-lg font-medium text-gray-900 ">
+              Delete Account:
+            </h2>
+            {/* // TODO: are we sure we want to delete the account? */}
 
-          <button
-            className="bg-yellow-500 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-yellow-500 hover:border-yellow-500"
-            onClick={handleDeleteAccount}
-          >
-            Yes, Delete My Account
-          </button>
+            <button
+              className="bg-yellow-500 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-yellow-500 hover:border-yellow-500"
+              onClick={handleDeleteAccount}
+            >
+              Yes, Delete My Account
+            </button>
+            {deleteMessage && deleteLoading ? (
+              <p className="py-4 font-ibm-plex-sans text-red-600">
+                {deleteMessage}
+              </p>
+            ) : (
+              <p className="py-4 font-ibm-plex-sans text-red-600">
+                {deleteMessage}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
