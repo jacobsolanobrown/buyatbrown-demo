@@ -15,11 +15,18 @@ import UserListings from "./UserPages/UserListings";
 import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
-import ListingForm from "./ListingForm"
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
+import ListingForm from "./ListingForm";
+import {
+  SignedIn,
+  SignedOut,
+  useUser,
+  SignOutButton,
+} from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
 import SearchResultsPage from "./Search/SearchResultsPage";
+import { FaArrowLeft } from "react-icons/fa";
+
 // import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
@@ -141,6 +148,12 @@ function App() {
         ) : !isUsernameSet ? (
           <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
             <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
+              <button
+                type="submit"
+                className="text-xl bg-yellow-500 hover:text-yellow-500 hover:bg-white border border-yellow-500 text-white font-ibm-plex-sans font-bold py-3 px-8 rounded-3xl"
+              >
+                <SignOutButton> Cancel </SignOutButton>
+              </button>
               <img
                 src="src/assets/brown-university-logo-transparent.png"
                 alt="Brown University Logo"
@@ -159,12 +172,12 @@ function App() {
                 className="flex flex-col items-center rounded-3xl space-y-8"
               >
                 <input
-                  placeholder="Type your username..."
+                  placeholder="Type your username"
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="text-2xl font-ibm-plex-sans py-4 px-12 rounded-3xl"
+                  className="text-2xl font-ibm-plex-sans py-4 px-20 rounded-3xl"
                   required
                 />
                 {createUsernameLoad ? (
@@ -174,12 +187,14 @@ function App() {
                     alt="Loading Image"
                   />
                 ) : (
-                  <button
-                    type="submit"
-                    className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-10 rounded-3xl"
-                  >
-                    Submit
-                  </button>
+                  <div>
+                    <button
+                      type="submit"
+                      className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-16 rounded-3xl"
+                    >
+                      Submit
+                    </button>
+                  </div>
                 )}
               </form>
               {errorMessage && (

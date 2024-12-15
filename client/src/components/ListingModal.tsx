@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { FaRegHeart } from "react-icons/fa";
 
-
 interface ModalCardProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,20 +43,20 @@ const ListingModal: React.FC<ModalCardProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 min-w-screen"
+      className="flex fixed inset-0 bg-black bg-opacity-50 justify-center items-start py-16 z-50 overflow-auto"
       onClick={handleOutsideClick}
       role="dialog"
       aria-modal="true"
     >
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative space-y-6 min-w-fit">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto space-y-6">
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-800 underline"
+          aria-label="Close modal"
+        >
+          Back to Listings
+        </button>
         <div className="flex flex-col text-left space-y-6">
-          <button
-            onClick={onClose}
-            className=" text-gray-500 hover:text-gray-800 underline"
-            aria-label="Close modal"
-          >
-            Back to Listings
-          </button>
           <div>
             <h2 className="text-2xl font-bold">{listing.title}</h2>
             <h3 className="text-gray-500 text-lg">{listing.condition}</h3>
@@ -66,16 +65,15 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <img
             src={listing.imageUrl}
             alt={listing.title}
-            className="w-full h-72 object-cover rounded-md"
+            className="object-cover rounded-md"
           />
-          <p className="text-gray-700 text-md">
-            <span className="font-bold">{listing.username}</span>:{" "}
-            {listing.description}
-          </p>
-          {/* <h3 className="text-gray-500 text-md">
-            Category: {listing.category}
-          </h3> */}
-          <h3 className="text-gray-500 text-md">Tags: {listing.category}, {listing.tags}</h3>
+          <div className="flex flex-row">
+            <p className="font-bold">{listing.username}:&nbsp;</p>
+            <p>{listing.description}</p>
+          </div>
+          <h3 className="text-gray-500 text-md">
+            Tags: {listing.category}, {listing.tags}
+          </h3>
           <div className="flex flex-row space-x-4 w-full">
             <button className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center">
               <FaRegHeart />
@@ -84,10 +82,6 @@ const ListingModal: React.FC<ModalCardProps> = ({
               Message Seller: {listing.username}
             </button>
           </div>
-          {/* <div className="flex justify-center items-center">
-            <p>Added to Favorites!</p>
-          </div>
-          <p>TODO add a message to indicate added to favorites </p> */}
         </div>
       </div>
     </div>

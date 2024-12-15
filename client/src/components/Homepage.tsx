@@ -43,7 +43,7 @@ function Homepage() {
 
   return (
     <div className="flex">
-    {/* Filter by condition */}
+      {/* Filter by condition */}
       <div className="bg-gray-200 p-4 w-64 rounded-xl max-h-32 ml-5 mt-5">
         <h2 className="text-xl font-bold mb-4 text-center "> Home </h2>
         <button
@@ -54,9 +54,15 @@ function Homepage() {
         </button>
       </div>
 
-      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 items-start mx-auto">
+      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 items-start mx-auto">
         {isLoading ? (
-          <div className="text-2xl align-center">Loading All Listings...</div>
+          <div className="flex w-screen justify-center items-center">
+            <img
+              className="w-14 block h-12"
+              src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+              alt="Loading Image"
+            />
+          </div>
         ) : posts.length === 0 ? (
           <p>No listings available</p>
         ) : (
