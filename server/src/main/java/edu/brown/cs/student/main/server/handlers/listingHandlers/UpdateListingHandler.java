@@ -170,6 +170,7 @@ public class UpdateListingHandler implements Route {
       //          }
       //        }
       //      }
+      System.out.println(request.queryParams("imageUrl"));
       if (imageUrl != null) {
         String existingImageUrl = (String) listing.get("imageUrl");
         System.out.println("Existing image URL: " + listing.get("imageUrl"));
