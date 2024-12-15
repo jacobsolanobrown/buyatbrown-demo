@@ -65,10 +65,10 @@ public class MockedFirebaseUtilities implements StorageInterface {
     return result;
   }
 
-  @Override
-  public String generateSignedUrl(String bucketName, String objectName) {
-    return "";
-  }
+  // @Override
+  // public String generateSignedUrl(String bucketName, String objectName) {
+  //   return "";
+  // }
 
   @Override
   public void addListing(Map<String, Object> listing) {
