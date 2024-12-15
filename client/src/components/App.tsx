@@ -42,7 +42,7 @@ function App() {
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [checkingUsername, setCheckingUsername] = useState(false);
+  const [createUsernameLoad, setCreateUsernameLoad] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   /**
@@ -95,8 +95,9 @@ function App() {
    *
    * @param e This is the event from submitting the form
    */
-  const handleUserSubmit = async (e: React.FormEvent) => {
+  const handleCreateUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent the page from refreshing
+    setCreateUsernameLoad(true); // set loading state to true
     if (username && user) {
       await createUser(user.id, username, user.emailAddresses[0].emailAddress)
         .then((data) => {
@@ -114,6 +115,9 @@ function App() {
           setErrorMessage(
             "Error creating user. Please try again. (Error:  " + error + ")"
           );
+        })
+        .finally(() => {
+          setCreateUsernameLoad(false); // set loading state to false
         });
     }
   };
@@ -127,19 +131,14 @@ function App() {
         {loading ? (
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="text-center">
-              <img 
+              <img
                 className="max-w-24"
                 src="src/assets/Spin@1x-1.0s-200px-200px.gif"
                 alt="Loading Image"
               />
-              {/* <p className="text-2xl font-semibold mt-4">
-                Fetching Account Details...
-              </p> */}
             </div>
           </div>
         ) : !isUsernameSet ? (
-          //TODO add loading state to checking username availability (when the api is called (create/edit user), have a loading state saying checking username availability!)
-          // If the user is set, then we go to the homepage, otherwise we go to the createusername page
           <div className="flex flex-col justify-center items-center min-h-screen bg-slate-100 bg-gradient-to-r from-blue-200 to-pink-200">
             <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
               <img
@@ -156,7 +155,7 @@ function App() {
                 (Other users will see this username on listings)
               </h2>
               <form
-                onSubmit={handleUserSubmit}
+                onSubmit={handleCreateUsernameSubmit}
                 className="flex flex-col items-center rounded-3xl space-y-8"
               >
                 <input
@@ -168,12 +167,20 @@ function App() {
                   className="text-2xl font-ibm-plex-sans py-4 px-12 rounded-3xl"
                   required
                 />
-                <button
-                  type="submit"
-                  className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-10 rounded-3xl"
-                >
-                  Submit
-                </button>
+                {createUsernameLoad ? (
+                  <img
+                    className="w-16 block h-16"
+                    src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+                    alt="Loading Image"
+                  />
+                ) : (
+                  <button
+                    type="submit"
+                    className="text-2xl bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold py-6 px-10 rounded-3xl"
+                  >
+                    Submit
+                  </button>
+                )}
               </form>
               {errorMessage && (
                 <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
@@ -187,7 +194,10 @@ function App() {
             <Navbar username={username} />
             <Routes>
               <Route path="/" element={<Homepage />} />
-              <Route path="/listing-form" element={<ListingForm uid={uid} username={username}/>} />
+              <Route
+                path="/listing-form"
+                element={<ListingForm uid={uid} username={username} />}
+              />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
               <Route path="/bathroom" element={<Bathroom />} />
