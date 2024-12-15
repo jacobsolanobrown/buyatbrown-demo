@@ -28,4 +28,6 @@ public interface StorageInterface {
 
   Map<String, Object> getDocument(String uid, String collectionId, String docId)
       throws IllegalArgumentException, ExecutionException, InterruptedException;
+
+  void deleteImageFromStorage(String existingImageUrl);
 }

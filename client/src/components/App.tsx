@@ -19,6 +19,7 @@ import ListingForm from "./ListingForm"
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
+import SearchResultsPage from "./Search/SearchResultsPage";
 // import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
@@ -107,9 +108,6 @@ function App() {
           } else {
             // for username already taken
             console.error("Failed to create username: ", data.error);
-            setErrorMessage(
-              "Username is already taken. Please try another one."
-            );
           }
         })
         // general api error catching
@@ -215,6 +213,7 @@ function App() {
                 path="/settings"
                 element={<UserSettings username={username} />}
               />
+              <Route path="/search-results" element={<SearchResultsPage />} />
             </Routes>
           </div>
         )}

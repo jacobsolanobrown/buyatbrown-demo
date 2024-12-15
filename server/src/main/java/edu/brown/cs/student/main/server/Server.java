@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
+import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.FilterListingsHandler;
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
@@ -8,11 +9,13 @@ import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandl
 import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.ListAllUserListingsHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.ListListingsHandler;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.ListUserFavoritesHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.UpdateListingHandler;
 import edu.brown.cs.student.main.server.handlers.userAccountHandlers.ClearUserHandler;
 import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
 import edu.brown.cs.student.main.server.handlers.userAccountHandlers.QueryUsernameHandler;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
+import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,6 +29,18 @@ public class Server {
     int port = 3232;
     Spark.port(port);
 
+    // Enable CORS for all routes
+    options(
+        "/*",
+        (request, response) -> {
+          response.header(
+              "Access-Control-Allow-Origin", "http://localhost:8000"); // Frontend origin
+          response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+          response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+          response.header("Access-Control-Allow-Credentials", "true");
+          return "OK";
+        });
+
     after(
         (Filter)
             (request, response) -> {
@@ -34,12 +49,14 @@ public class Server {
             });
 
     StorageInterface firebaseUtils;
+    GoogleCloudStorageUtilities gcsUtils;
     try {
       //      firebaseUtils = new MockedFirebaseUtilities();
       firebaseUtils = new FirebaseUtilities();
+      gcsUtils = new GoogleCloudStorageUtilities();
       // JSONParser myDataSource = new JSONParser("server/data/geojson/fullDownload.geojson");
       //      GeoMapCollection geoMapCollection = myDataSource.getData();
-      Spark.get("add-listings", new AddListingHandler(firebaseUtils));
+      Spark.post("add-listings", new AddListingHandler(firebaseUtils, gcsUtils));
       Spark.get("filter-listings", new FilterListingsHandler(firebaseUtils));
       Spark.get("list-listings", new ListListingsHandler(firebaseUtils));
       Spark.get("delete-listings", new DeleteListingHandler(firebaseUtils));
@@ -49,6 +66,7 @@ public class Server {
       Spark.get("update-listings", new UpdateListingHandler(firebaseUtils));
       Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
       Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
+      Spark.get("list-user-favorites", new ListUserFavoritesHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {

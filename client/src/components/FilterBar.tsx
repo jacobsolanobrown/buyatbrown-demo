@@ -44,7 +44,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   return (
-    <div className="bg-gray-200 p-4 w-64 rounded-xl mx-5 mt-5">
+    <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mt-5">
       <h2 className="text-xl font-bold mb-4 text-center ">{title}</h2>
       <button
         className="bg-red-500 text-white py-2 px-4 rounded-3xl mb-4 w-full"

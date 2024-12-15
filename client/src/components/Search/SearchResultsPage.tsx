@@ -1,15 +1,15 @@
-
-
 import React, {useState, useEffect}from 'react';
 import { filterListings } from '../../utils/api';
-import FilterBar from '../FilterBar'; // Adjust the import path as needed
+import { useLocation } from 'react-router-dom';
+import FilterBar from '../FilterBar';
 import ListingCard from '../ListingCard';
 import ListingModal from '../ListingModal';
 
-export default function School () {
+
+export default function SearchResultsPage () {
+
 
   // ********* Bigger card with more information on click: *********
-
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,33 +26,30 @@ export default function School () {
 
   // **************** Handle filtering: ***************
 
-  const clothesFilters = ["Stationary", "Books", "Textbooks", "Printing", "Art Supplies", "Other"];
-  const conditionFilters = ["New", "Like New", "Used"];
+  // keep track of what conditions are clicked:
+  const toggleCondition = (condition: string) => {
+      const newConditions = selectedConditions.includes(condition)
+      ? selectedConditions.filter((c) => c !== condition) // Remove condition
+      : [...selectedConditions, condition]; // Add condition
+      setSelectedConditions(newConditions);
+  };
 
-  // Array of tag filters selected
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]); 
+  const conditionFilters = ["New", "Like New", "Used"];
   // Array of condition filters selected:
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]); 
-  // Array to store all listings with the corresponding category
-  const [posts, setPosts] = useState<any[]>([]);
 
-  // Update activeFilters state
-  const handleFiltersChange = (newFilters: string[]) => {
-    setSelectedFilters(newFilters); 
-  };
+  // Search Term and Results passed from parent:
+  const location = useLocation();
+  const { searchTerm, filteredPosts } = location.state || {}; // Retrieve passed data
 
-  // Update activeConditions state
-  const handleConditionsChange = (newConditions: string[]) => {
-    setSelectedConditions(newConditions); 
-  };
+  // Array to store relevant results: 
+  const [posts, setPosts] = useState(filteredPosts || []); // initialized to search results
 
-  // Fetch data from the api:
   useEffect(() => {
-    // format tag and condition filters for server 
-    const tagsString = selectedFilters.length == 0 ? "ignore" : selectedFilters.join(",");
+    // only able to filter by condition within search results page
     const conditionsString = selectedConditions.length == 0 ? "ignore" : selectedConditions.join(",");
 
-    filterListings("ignore", "school", tagsString, conditionsString) // no filtering by title
+    filterListings(searchTerm, "ignore", "ignore", conditionsString) // no filtering by title
         .then((data) => {
           console.log("API Response:", data);
           if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
@@ -68,30 +65,41 @@ export default function School () {
         .catch((err) => {
           console.error("Error fetching clothes listings", err);
         })
-        .finally(() => setIsLoading(false));
-    }, [selectedConditions, selectedFilters]); // call server when either list changes (when filters change)
+    }, [selectedConditions, searchTerm]); // call server when conditions or searchTerm changes
 
-  
   return (
     <div className="flex">
-      <FilterBar 
-        title="School" 
-        filters={clothesFilters} 
-        conditionFilters={conditionFilters}
-        onFiltersChange={handleFiltersChange}
-        onConditionsChange={handleConditionsChange} />
+        {/* Filter by condition */}
+        <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mt-5">
+            <h2 className="text-xl font-bold mb-4 text-center "> Search Results for: {searchTerm} </h2>
 
+            <div className="content-center">
+                <h3 className="font-semibold mb-2">Condition Filters</h3>
+                {conditionFilters.map((condition, index) => (
+                <button
+                    key={index}
+                    onClick={() => toggleCondition(condition)}
+                    className={`block py-2 px-4 rounded-3xl mb-2 w-full text-left ${
+                    selectedConditions.includes(condition)
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-black"
+                    }`}
+                >
+                    {condition}
+                </button>
+                ))}
+            </div>
+        </div>
+
+
+      
       {/* Render posts based on filters */}
       <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 items-start mx-auto">
-        {isLoading ? (
-            <div className="text-2xl align-center">Loading All Listings...</div>
-          ) : posts.length === 0 ? (
-            <p>No school listings available</p>
-          ) : (
-            posts.map((post) => ( // posts should reflect 
+        {(
+            posts.map((post: any) => (
             <ListingCard
               key={post.id}
-              imageUrl={post.imageUrl} 
+              imageUrl={"src/assets/brown-university-logo-transparent.png"} 
               title={post.title}
               price={post.price}
               username={post.username}
@@ -111,7 +119,7 @@ export default function School () {
                 listing={selectedListing}
               />
             )}
-          </div>
+      </div>
     </div>
   );
 }

@@ -8,42 +8,136 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.cloud.StorageClient;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class FirebaseUtilities implements StorageInterface {
-
   public FirebaseUtilities() throws IOException {
     // TODO: FIRESTORE PART 0:
     // Create /resources/ folder with firebase_config.json and
     // add your admin SDK from Firebase. see:
     // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
     String workingDirectory = System.getProperty("user.dir");
-    // THIS IS THE PATH TO YOUR FIREBASE CONFIG FILE - IF NOT WORKING CHANGE TO JUST "resources"
-    // INSTEAD OF "server/resources"
+    System.out.println("Working Directory: " + workingDirectory);
+
     Path firebaseConfigPath =
         Paths.get(workingDirectory, "server/resources", "firebase_config.json");
+    System.out.println("Full Firebase Config Path: " + firebaseConfigPath.toString());
+    System.out.println("Absolute Path: " + firebaseConfigPath.toAbsolutePath());
+    System.out.println("File Exists: " + Files.exists(firebaseConfigPath));
 
-    // ^-- if your /resources/firebase_config.json exists but is not found,
-    // try printing workingDirectory and messing around with this path.
+    try {
+      if (!Files.exists(firebaseConfigPath)) {
+        // Try alternative paths
+        Path[] alternativePaths = {
+          Paths.get(workingDirectory, "resources", "firebase_config.json"),
+          Paths.get(workingDirectory, "firebase_config.json"),
+          Paths.get("firebase_config.json"),
+          Paths.get(System.getProperty("user.home"), "firebase_config.json")
+        };
 
-    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+        for (Path altPath : alternativePaths) {
+          System.out.println("Checking alternative path: " + altPath.toAbsolutePath());
+          if (Files.exists(altPath)) {
+            firebaseConfigPath = altPath;
+            break;
+          }
+        }
+      }
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
+      System.out.println("Setting up Service Account");
+      FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
-    FirebaseApp.initializeApp(options);
+      FirebaseOptions options =
+          new FirebaseOptions.Builder()
+              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+              .build();
+
+      System.out.println("Initializing Firebase");
+      FirebaseApp.initializeApp(options);
+      System.out.println("ekfrmew Firebase");
+    } catch (Exception e) {
+      System.err.println("Detailed Error: " + e.getMessage());
+      e.printStackTrace();
+      throw e;
+    }
+
+    //    try {
+    //      if (!Files.exists(firebaseConfigPath)) {
+    //        // Try alternative paths
+    //        Path[] alternativePaths = {
+    //          Paths.get(workingDirectory, "resources", "firebase_config.json"),
+    //          Paths.get(workingDirectory, "firebase_config.json"),
+    //          Paths.get("firebase_config.json"),
+    //          Paths.get(System.getProperty("user.home"), "firebase_config.json")
+    //        };
+    //
+    //        for (Path altPath : alternativePaths) {
+    //          System.out.println("Checking alternative path: " + altPath.toAbsolutePath());
+    //          if (Files.exists(altPath)) {
+    //            firebaseConfigPath = altPath;
+    //            break;
+    //          }
+    //        }
+    //      }
+    //
+    //      System.out.println("Setting up Service Account");
+    ////      FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+    //      FileInputStream serviceAccount = new FileInputStream("resources/google_cred.json");
+    //
+    ////      FirebaseOptions options =
+    ////          new FirebaseOptions.Builder()
+    ////              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    ////              .build();
+    //      FirebaseOptions options = new FirebaseOptions.Builder()
+    //          .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    //          .setStorageBucket("buy-at-brown-listing-images")
+    //          .build();
+    //
+    //      System.out.println("Initializing Firebase");
+    //      FirebaseApp.initializeApp(options);
+    //      System.out.println("ekfrmew Firebase");
+    //    } catch (Exception e) {
+    //      System.err.println("Detailed Error: " + e.getMessage());
+    //      e.printStackTrace();
+    //      throw e;
+    //    }
+  }
+
+  /**
+   * Generates a signed URL for accessing a file in Firebase Storage.
+   *
+   * @param bucketName The name of the Firebase Storage bucket.
+   * @param objectName The path of the file in the bucket.
+   * @return A signed URL for the file.
+   */
+  public String generateSignedUrl(String bucketName, String objectName) {
+    // Get the default Firebase Storage bucket
+    Bucket bucket = StorageClient.getInstance().bucket(bucketName);
+
+    // Get the blob (file) from the bucket
+    Blob blob = bucket.get(objectName);
+
+    if (blob == null) {
+      throw new IllegalArgumentException("Object not found: " + objectName);
+    }
+
+    // Generate a signed URL that expires in 1 hour
+    return blob.signUrl(1, TimeUnit.HOURS).toString();
   }
 
   @Override
@@ -122,9 +216,65 @@ public class FirebaseUtilities implements StorageInterface {
     // Get reference to the document
     DocumentReference docRef =
         db.collection("users").document(uid).collection(collection_id).document(doc_id);
+    // Retrieve the document to get the imageUrl
+    ApiFuture<DocumentSnapshot> future = docRef.get();
+    try {
+      DocumentSnapshot document = future.get();
+      if (document.exists()) {
+        // Extract the imageUrl field
+        String imageUrl = document.getString("imageUrl");
+        System.out.println(imageUrl);
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+          // Delete the image from Firebase Storage
+          deleteImageFromStorage(imageUrl);
+        } else {
+          System.out.println("No imageUrl found for document: " + doc_id);
+        }
 
+        // Delete the document from Firestore
+        docRef
+            .delete()
+            .addListener(
+                () -> {
+                  System.out.println("Document deleted successfully: " + doc_id);
+                },
+                Runnable::run);
+      } else {
+        System.out.println("Document not found: " + doc_id);
+      }
+    } catch (Exception e) {
+      System.err.println("Error while deleting document or image: " + e.getMessage());
+    }
     // Delete the document
-    docRef.delete();
+    //    docRef.delete();
+  }
+
+  // Helper method to delete image from Firebase Storage
+  public void deleteImageFromStorage(String imageUrl) {
+    try {
+      // Get the Firebase Storage bucket name
+      //      String bucketName = FirebaseApp.getInstance().getOptions().getStorageBucket();
+      String bucketName = "buy-at-brown-listing-images";
+      System.out.println("Bucket name: " + bucketName);
+
+      // Extract the object path from the imageUrl
+      // Assuming imageUrl is something like:
+      // https://storage.googleapis.com/{bucketName}/images/{objectName}
+      //      String objectName = imageUrl.substring(imageUrl.indexOf("/images/") + 1);
+      String objectName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+      System.out.println("Parsed object name: " + objectName);
+
+      // Get the Blob object and delete it
+      Blob blob = StorageClient.getInstance().bucket(bucketName).get(objectName);
+      if (blob != null) {
+        blob.delete();
+        System.out.println("Image deleted successfully: " + objectName);
+      } else {
+        System.out.println("No image found with path: " + objectName);
+      }
+    } catch (Exception e) {
+      System.err.println("Error while deleting image from storage: " + e.getMessage());
+    }
   }
 
   @Override

@@ -43,13 +43,11 @@
       <version>1.13.0</version>
     </dependency>
 
-    <!--
-      Javatuples is added to use Tuples in our code (eg. Pair<> in FilterListingsHandler).
-  -->
+    <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage -->
     <dependency>
-      <groupId>org.javatuples</groupId>
-      <artifactId>javatuples</artifactId>
-      <version>1.2</version>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+      <version>2.46.0</version>
     </dependency>
 
     <!--
@@ -57,11 +55,11 @@
            Spark is most commonly used to create APIs and websites.
     -->
 
-        <dependency>
-          <groupId>com.sparkjava</groupId>
-          <artifactId>spark-core</artifactId>
-          <version>2.9.3</version>
-        </dependency>
+    <!--        <dependency>-->
+    <!--          <groupId>com.sparkjava</groupId>-->
+    <!--          <artifactId>spark-core</artifactId>-->
+    <!--          <version>2.9.3</version>-->
+    <!--        </dependency>-->
 
     <dependency>
       <groupId>com.sparkjava</groupId>
@@ -74,6 +72,7 @@
       <artifactId>slf4j-nop</artifactId>
       <version>1.7.36</version>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -381,4 +380,15 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+    <repository>
+      <id>google-cloud-repository</id>
+      <url>https://maven.google.com/</url>
+    </repository>
+  </repositories>
 </project>
