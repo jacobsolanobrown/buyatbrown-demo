@@ -1,19 +1,19 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
- import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
- import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
- import edu.brown.cs.student.main.server.storage.StorageInterface;
- import java.util.List;
- import java.util.Map;
- import java.util.concurrent.ExecutionException;
- import org.junit.jupiter.api.BeforeEach;
- import org.junit.jupiter.api.Test;
- import spark.Request;
- import spark.Response;
+import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import spark.Request;
+import spark.Response;
 
- public class CreateUserHandlerMockedFirebaseTest {
+public class CreateUserHandlerMockedFirebaseTest {
 
   private StorageInterface mockedFirebaseStorage;
   private CreateUserHandler createUserHandler;
@@ -142,7 +142,6 @@
   }
 
   private Response createMockResponse() {
-    return new Response() {
-    };
+    return new Response() {};
   }
- }
+}

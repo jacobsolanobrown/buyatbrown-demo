@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server.handlers.filterListingsHandlers;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -35,20 +36,19 @@ public class LikeListingHandler implements Route {
       if (uid == null || listingId == null) {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
-      Map<String, Object> listing = this.storageHandler.getListingForUser(uid, listingId);
 
-      //      List<Map<String, Object>> allListings = this.storageHandler.getAllUsers();
-      //
-      //      Map<String, Object> listing = allListings.stream()
-      //          .filter(listingMap -> listingMap.get("uid").toString().equalsIgnoreCase(uid)
-      //              || uid.equalsIgnoreCase("ignore"))
-      //          .findFirst()
-      //          .orElseThrow(() -> new IllegalArgumentException("No listing found with the given
-      // ID: " + uid));
+      // Fetch all listings
+      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
+
+      // Find the specific listing by listingId
+      Map<String, Object> targetListing = allListings.stream()
+          .filter(listing -> listingId.equals(listing.get("listingId")))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("Listing not found for the given listingId."));
 
       // Add the listing to the user's liked listings
       String likedListingId = "liked-" + listingId;
-      this.storageHandler.addDocument(uid, "liked_listings", likedListingId, listing);
+      this.storageHandler.addDocument(uid, "liked_listings", likedListingId, targetListing);
 
       // Log the operation
       System.out.println("User " + uid + " liked listing: " + listingId);

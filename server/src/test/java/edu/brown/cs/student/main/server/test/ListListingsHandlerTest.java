@@ -1,20 +1,20 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
- import com.squareup.moshi.JsonAdapter;
- import com.squareup.moshi.Moshi.Builder;
- import edu.brown.cs.student.main.server.handlers.listingHandlers.ListListingsHandler;
- import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
- import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
- import org.junit.jupiter.api.BeforeEach;
- import org.junit.jupiter.api.Test;
- import spark.Request;
- import spark.Response;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi.Builder;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.ListListingsHandler;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import spark.Request;
+import spark.Response;
 
- public class ListListingsHandlerTest {
+public class ListListingsHandlerTest {
   private ListListingsHandler handler;
   private MockedFirebaseUtilities mockedStorageHandler;
 
@@ -237,4 +237,4 @@
       throw new RuntimeException("Failed to parse JSON", e);
     }
   }
- }
+}

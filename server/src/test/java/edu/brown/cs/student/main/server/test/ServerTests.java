@@ -1,16 +1,16 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
- import com.google.gson.JsonObject;
- import com.google.gson.JsonParser;
- import java.io.IOException;
- import java.net.HttpURLConnection;
- import java.net.URL;
- import java.util.Scanner;
- import org.junit.jupiter.api.Test;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+import org.junit.jupiter.api.Test;
 
- public class ServerTests {
+public class ServerTests {
 
   private static final String BASE_URL = "http://localhost:3232";
 
@@ -74,73 +74,74 @@
     // Add listing for the new user
     //
     //
-// http://localhost:3232/add-listings?uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=summer&description=sandals
-//    String addListingResponse = sendGetRequest(
-//        "/add-listings?uid=" + newid + "&username=" + newuser + "&title=Test%20Listing&price=100&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=CS320&description=Integration");
-//    System.out.println(addListingResponse);
-//    assertTrue(
-//        addListingResponse.contains("\"response_type\":\"success\""),
-//        "Listing addition should be successful");
-//    assertTrue(
-//        addListingResponse.contains("\"title\":\"Test Listing\""),
-//        "Listing should have correct title");
+    // http://localhost:3232/add-listings?uid=bibif&username=bibifol&title=Summersandalst&price=49.99&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=summer&description=sandals
+    //    String addListingResponse = sendGetRequest(
+    //        "/add-listings?uid=" + newid + "&username=" + newuser +
+    // "&title=Test%20Listing&price=100&imageUrl=server/src/data/IMG_4132.PNG&condition=new&tags=CS320&description=Integration");
+    //    System.out.println(addListingResponse);
+    //    assertTrue(
+    //        addListingResponse.contains("\"response_type\":\"success\""),
+    //        "Listing addition should be successful");
+    //    assertTrue(
+    //        addListingResponse.contains("\"title\":\"Test Listing\""),
+    //        "Listing should have correct title");
   }
 
   // Testing the interactions between creating a user, adding a listing, updating a listing and
   // deleting a listing
-//  @Test
-//  void testListingLifecycle() throws IOException {
-//    String newuser = "testuser_" + System.currentTimeMillis();
-//    String newid = "testsample" + Math.random();
-//
-//    // Create User
-//    String createUserResponse =
-//        sendGetRequest(
-//            "/create-user?uid="
-//                + newid
-//                + "&username="
-//                + newuser
-//                + "&email=testuser2@brown.com&password=testpassword");
-//    System.out.println(createUserResponse);
-//    assertTrue(
-//        createUserResponse.contains("\"response_type\":\"success\""),
-//        "User creation should be successful");
-//
-//    // Add Listing
-//    String addListingResponse =
-//        sendGetRequest(
-//            "/add-listings?uid="
-//                + newid
-//                + "&username="
-//                + newuser
-//                +
-// "&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
-//    System.out.println(addListingResponse);
-//    assertTrue(
-//        addListingResponse.contains("\"response_type\":\"success\""),
-//        "Listing addition should be successful");
-//
-//    // Extract Listing ID
-//    String listingId = extractListingId(addListingResponse);
-//    System.out.println(listingId);
-//
-//    String updateurl = "/update-listings?uid=" + newid + "&listingId=" + listingId;
-//    System.out.println(updateurl);
-//    // Update Listing
-//    String updateResponse = sendGetRequest(updateurl);
-//
-//    System.out.println("this is the req:" + updateResponse);
-//    assertTrue(updateResponse.contains("\"response_type\":\"success\""));
-//    assertTrue(updateResponse.contains("\"title\":\"Cargo Listing\""));
-//    assertTrue(updateResponse.contains("\"price\":\"356\""));
-//
-//    String deleteurl = "/delete-listings?uid=" + newid + "&listingId=" + listingId;
-//
-//    // Delete Listing
-//    String deleteResponse = sendGetRequest(deleteurl);
-//    System.out.println(deleteResponse);
-//    assertTrue(deleteResponse.contains("\"response_type\":\"success\""));
-//  }
+  //  @Test
+  //  void testListingLifecycle() throws IOException {
+  //    String newuser = "testuser_" + System.currentTimeMillis();
+  //    String newid = "testsample" + Math.random();
+  //
+  //    // Create User
+  //    String createUserResponse =
+  //        sendGetRequest(
+  //            "/create-user?uid="
+  //                + newid
+  //                + "&username="
+  //                + newuser
+  //                + "&email=testuser2@brown.com&password=testpassword");
+  //    System.out.println(createUserResponse);
+  //    assertTrue(
+  //        createUserResponse.contains("\"response_type\":\"success\""),
+  //        "User creation should be successful");
+  //
+  //    // Add Listing
+  //    String addListingResponse =
+  //        sendGetRequest(
+  //            "/add-listings?uid="
+  //                + newid
+  //                + "&username="
+  //                + newuser
+  //                +
+  // "&title=Cargo%20Listing&price=356&imageUrl=server/src/data/IMG_4132.PNG&condition=used&tags=CS320&description=bags");
+  //    System.out.println(addListingResponse);
+  //    assertTrue(
+  //        addListingResponse.contains("\"response_type\":\"success\""),
+  //        "Listing addition should be successful");
+  //
+  //    // Extract Listing ID
+  //    String listingId = extractListingId(addListingResponse);
+  //    System.out.println(listingId);
+  //
+  //    String updateurl = "/update-listings?uid=" + newid + "&listingId=" + listingId;
+  //    System.out.println(updateurl);
+  //    // Update Listing
+  //    String updateResponse = sendGetRequest(updateurl);
+  //
+  //    System.out.println("this is the req:" + updateResponse);
+  //    assertTrue(updateResponse.contains("\"response_type\":\"success\""));
+  //    assertTrue(updateResponse.contains("\"title\":\"Cargo Listing\""));
+  //    assertTrue(updateResponse.contains("\"price\":\"356\""));
+  //
+  //    String deleteurl = "/delete-listings?uid=" + newid + "&listingId=" + listingId;
+  //
+  //    // Delete Listing
+  //    String deleteResponse = sendGetRequest(deleteurl);
+  //    System.out.println(deleteResponse);
+  //    assertTrue(deleteResponse.contains("\"response_type\":\"success\""));
+  //  }
 
   /**
    * Extracts the listingId from the given JSON string.
@@ -161,61 +162,61 @@
   }
 
   // Testing the interactions between adding a listing and deleting a listing
-//  @Test
-//  void testAddAndDeleteListing() throws IOException {
-//    // Define test user and listing details
-//    String userId = "111";
-//    String username = "cprincess";
-//    String title = "New Porsche";
-//    String description = "Integration test listing";
-//    String price = "7999";
-//    String imageUrl = "server/src/data/IMG_4132.PNG";
-//    String condition = "new";
-//    String tags = "CS320";
-//
-////    // Add listing
-////    String addListingResponse =
-////        sendGetRequest(
-////            "/add-listings?uid="
-////                + userId
-////                + "&username="
-////                + username
-////                + "&title="
-////                + title
-////                + "&tags="
-////                + tags
-////                + "&price="
-////                + price
-////                + "&imageUrl="
-////                + imageUrl
-////                + "&condition="
-////                + condition
-////                + "&description="
-////                + description);
-////
-////    // Verify listing was added successfully
-////    assertTrue(
-////        addListingResponse.contains("\"response_type\":\"success\""),
-////        "Listing addition should be successful");
-////    assertTrue(
-////        addListingResponse.contains("\"title\":\"" + title + "\""),
-////        "Listing should have correct title");
-//
-//    // Extract listing ID from response (you may need to implement JSON parsing)
-//    String listingId = "listing-4fcd3c93-a9cf-47d0-a6b2-ecd389275cb4";
-//
-//    // Delete the newly added listing
-//    String deleteResponse =
-//        sendGetRequest("/delete-listings?uid=" + userId + "&listingId=" + listingId);
-////    String deleteResponse2 =
-////        sendGetRequest("/delete-listings?uid=" + userId + "&listingId=" + listingId);
-//
-//    // Verify listing was deleted successfully
-//    assertTrue(
-//        deleteResponse.contains("\"response_type\":\"success\""),
-//        "Listing deletion should be successful");
-////    assertTrue(deleteResponse2.contains("\"response_type\":\"failure\""));
-//  }
+  //  @Test
+  //  void testAddAndDeleteListing() throws IOException {
+  //    // Define test user and listing details
+  //    String userId = "111";
+  //    String username = "cprincess";
+  //    String title = "New Porsche";
+  //    String description = "Integration test listing";
+  //    String price = "7999";
+  //    String imageUrl = "server/src/data/IMG_4132.PNG";
+  //    String condition = "new";
+  //    String tags = "CS320";
+  //
+  ////    // Add listing
+  ////    String addListingResponse =
+  ////        sendGetRequest(
+  ////            "/add-listings?uid="
+  ////                + userId
+  ////                + "&username="
+  ////                + username
+  ////                + "&title="
+  ////                + title
+  ////                + "&tags="
+  ////                + tags
+  ////                + "&price="
+  ////                + price
+  ////                + "&imageUrl="
+  ////                + imageUrl
+  ////                + "&condition="
+  ////                + condition
+  ////                + "&description="
+  ////                + description);
+  ////
+  ////    // Verify listing was added successfully
+  ////    assertTrue(
+  ////        addListingResponse.contains("\"response_type\":\"success\""),
+  ////        "Listing addition should be successful");
+  ////    assertTrue(
+  ////        addListingResponse.contains("\"title\":\"" + title + "\""),
+  ////        "Listing should have correct title");
+  //
+  //    // Extract listing ID from response (you may need to implement JSON parsing)
+  //    String listingId = "listing-4fcd3c93-a9cf-47d0-a6b2-ecd389275cb4";
+  //
+  //    // Delete the newly added listing
+  //    String deleteResponse =
+  //        sendGetRequest("/delete-listings?uid=" + userId + "&listingId=" + listingId);
+  ////    String deleteResponse2 =
+  ////        sendGetRequest("/delete-listings?uid=" + userId + "&listingId=" + listingId);
+  //
+  //    // Verify listing was deleted successfully
+  //    assertTrue(
+  //        deleteResponse.contains("\"response_type\":\"success\""),
+  //        "Listing deletion should be successful");
+  ////    assertTrue(deleteResponse2.contains("\"response_type\":\"failure\""));
+  //  }
 
   // Testing the interactions for listing all available listings
   @Test
@@ -239,7 +240,8 @@
   @Test
   void testLikeListings() throws IOException {
     String likelisting1 =
-        sendGetRequest("/like-listings?uid=bibif&listingId=listing-0db416c0-1c3c-43dd-a601-f0a4026aa6f4");
+        sendGetRequest(
+            "/like-listings?uid=bibif&listingId=listing-0db416c0-1c3c-43dd-a601-f0a4026aa6f4");
     assertTrue(likelisting1.contains("\"response_type\":\"success\""));
     assertTrue(likelisting1.contains("listing-0db416c0-1c3c-43dd-a601-f0a4026aa6f4"));
 
@@ -252,8 +254,8 @@
     String filterResponse =
         sendGetRequest(
 
-// "/filter-listings?keyword=Cargo%20Listing&filterByTitle=true&filterByCondition=false&filterByTag=false&filterByDescription=false");
-    "/filter-listings?keyword=Cargo%20Listing&titleDescriptionKeyword=true&categoryKeyword=false&tagKeywords=false&conditionKeywords=false");
+            // "/filter-listings?keyword=Cargo%20Listing&filterByTitle=true&filterByCondition=false&filterByTag=false&filterByDescription=false");
+            "/filter-listings?keyword=Cargo%20Listing&titleDescriptionKeyword=true&categoryKeyword=false&tagKeywords=false&conditionKeywords=false");
 
     System.out.println(filterResponse);
     assertTrue(
@@ -267,4 +269,4 @@
   private String extractUserId(String response) {
     return "extracted-user-id";
   }
- }
+}

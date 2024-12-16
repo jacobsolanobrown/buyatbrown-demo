@@ -1,19 +1,19 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
- import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
- import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
- import edu.brown.cs.student.main.server.storage.StorageInterface;
- import java.util.HashMap;
- import java.util.Map;
- import java.util.concurrent.ExecutionException;
- import org.junit.jupiter.api.BeforeEach;
- import org.junit.jupiter.api.Test;
- import spark.Request;
- import spark.Response;
+import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import spark.Request;
+import spark.Response;
 
- public class DeleteListingsHandlerTest {
+public class DeleteListingsHandlerTest {
   private StorageInterface mockStorage;
   private DeleteListingHandler deleteListingHandler;
 
@@ -52,8 +52,7 @@
     // Verify the listing is deleted
     Map<String, Object> listing = mockStorage.getListingForUser("user123", "listing-0");
     System.out.println("Listing: " + listing);
-    System.out.print("this is still in storage" + mockStorage.getCollection("user123",
- "listings"));
+    System.out.print("this is still in storage" + mockStorage.getCollection("user123", "listings"));
   }
 
   // Mocked test: testing invalid lisitng (edge case)
@@ -101,7 +100,6 @@
   }
 
   private Response createMockResponse() {
-    return new Response() {
-    };
+    return new Response() {};
   }
- }
+}

@@ -1,185 +1,164 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.*;
- import static org.junit.jupiter.api.Assertions.assertEquals;
- import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
- import com.google.gson.JsonObject;
- import com.google.gson.JsonParser;
- import java.io.IOException;
- import java.net.HttpURLConnection;
- import java.net.URL;
- import java.util.Scanner;
- import java.util.concurrent.ExecutionException;
- import org.junit.jupiter.api.BeforeAll;
- import org.junit.jupiter.api.Test;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+public class UpdateListingHandlerTest {
 
- import static org.junit.jupiter.api.Assertions.*;
+  private static MockedFirebaseUtilities firebaseMock;
+  private static String listingId;
 
- import com.google.gson.JsonObject;
- import com.google.gson.JsonParser;
- import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
- import edu.brown.cs.student.main.server.storage.MockedGoogleCloudStorageUtilities;
- import edu.brown.cs.student.main.server.storage.StorageInterface;
- import java.io.IOException;
- import org.junit.jupiter.api.BeforeAll;
- import org.junit.jupiter.api.BeforeEach;
- import org.junit.jupiter.api.Test;
+  @BeforeAll
+  public static void setUpMockFirebase() throws ExecutionException, InterruptedException {
+    // Initialize the mocked Firebase utilities
+    firebaseMock = new MockedFirebaseUtilities();
 
- import java.io.IOException;
- import java.util.HashMap;
- import java.util.Map;
+    // Add a listing to the mocked database for testing
+    Map<String, Object> listing = new HashMap<>();
+    listing.put("uid", "bibif");
+    listing.put("username", "bibifol");
+    listing.put("title", "Cargo Listing");
+    listing.put("price", 356);
+    listing.put("imageUrl", "server/src/data/IMG_4132.PNG");
+    listing.put("condition", "used");
+    listing.put("tags", "CS320");
+    listing.put("description", "bags");
 
- public class UpdateListingHandlerTest {
+    firebaseMock.addListing(listing);
 
-   private static MockedFirebaseUtilities firebaseMock;
-   private static String listingId;
+    // Retrieve the listing ID from the mocked database
+    listingId = firebaseMock.getCollection("bibif", "listing").get(0).get("doc_id").toString();
+  }
 
-   @BeforeAll
-   public static void setUpMockFirebase() throws ExecutionException, InterruptedException {
-     // Initialize the mocked Firebase utilities
-     firebaseMock = new MockedFirebaseUtilities();
+  // mocked test for valid input
+  @Test
+  void testUpdateListing_ValidInput() throws ExecutionException, InterruptedException {
+    // Simulate updating the listing
+    Map<String, Object> updatedFields = new HashMap<>();
+    updatedFields.put("title", "car");
+    updatedFields.put("price", 28);
+    updatedFields.put("description", "new-benz");
 
-     // Add a listing to the mocked database for testing
-     Map<String, Object> listing = new HashMap<>();
-     listing.put("uid", "bibif");
-     listing.put("username", "bibifol");
-     listing.put("title", "Cargo Listing");
-     listing.put("price", 356);
-     listing.put("imageUrl", "server/src/data/IMG_4132.PNG");
-     listing.put("condition", "used");
-     listing.put("tags", "CS320");
-     listing.put("description", "bags");
+    firebaseMock.addDocument("bibif", "listing", listingId, updatedFields);
 
-     firebaseMock.addListing(listing);
+    // Verify the updates in the mocked database
+    Map<String, Object> updatedListing =
+        firebaseMock.getCollection("bibif", "listing").stream()
+            .filter(listing -> listing.get("doc_id").equals(listingId))
+            .findFirst()
+            .orElse(null);
 
-     // Retrieve the listing ID from the mocked database
-     listingId = firebaseMock.getCollection("bibif", "listing").get(0).get("doc_id").toString();
-   }
-   //mocked test for valid input
-   @Test
-   void testUpdateListing_ValidInput() throws ExecutionException, InterruptedException {
-     // Simulate updating the listing
-     Map<String, Object> updatedFields = new HashMap<>();
-     updatedFields.put("title", "car");
-     updatedFields.put("price", 28);
-     updatedFields.put("description", "new-benz");
+    assertNotNull(updatedListing, "Updated listing should exist");
+    assertEquals("car", updatedListing.get("title"), "Expected updated title");
+    assertEquals(28, updatedListing.get("price"), "Expected updated price");
+    assertEquals("new-benz", updatedListing.get("description"), "Expected updated description");
+  }
 
-     firebaseMock.addDocument("bibif", "listing", listingId, updatedFields);
+  // mocked test for invalid id
+  @Test
+  void testUpdateListing_InvalidListingId() throws ExecutionException, InterruptedException {
+    // Attempt to update with an invalid listing ID
+    String uid = "bibif";
+    String collectionId = "listing";
+    String invalidDocId = "invalid-id";
+    Map<String, Object> updatedFields = new HashMap<>();
+    updatedFields.put("title", "invalid");
 
-     // Verify the updates in the mocked database
-     Map<String, Object> updatedListing =
-         firebaseMock.getCollection("bibif", "listing").stream()
-             .filter(listing -> listing.get("doc_id").equals(listingId))
-             .findFirst()
-             .orElse(null);
+    // Ensure the invalid listing ID does not exist in the mock database
+    assertFalse(
+        firebaseMock.getCollection(uid, collectionId).stream()
+            .anyMatch(doc -> doc.get("doc_id").equals(invalidDocId)),
+        "Expected listing ID to not exist in the database");
 
-     assertNotNull(updatedListing, "Updated listing should exist");
-     assertEquals("car", updatedListing.get("title"), "Expected updated title");
-     assertEquals(28, updatedListing.get("price"), "Expected updated price");
-     assertEquals("new-benz", updatedListing.get("description"), "Expected updated description");
-   }
+    // Try adding a document with the invalid ID
+    firebaseMock.addDocument(uid, collectionId, invalidDocId, updatedFields);
 
-   //mocked test for invalid id
-   @Test
-   void testUpdateListing_InvalidListingId() throws ExecutionException, InterruptedException {
-     // Attempt to update with an invalid listing ID
-     String uid = "bibif";
-     String collectionId = "listing";
-     String invalidDocId = "invalid-id";
-     Map<String, Object> updatedFields = new HashMap<>();
-     updatedFields.put("title", "invalid");
+    // Verify that the new document has been added
+    assertTrue(
+        firebaseMock.getCollection(uid, collectionId).stream()
+            .anyMatch(
+                doc ->
+                    doc.get("doc_id").equals(invalidDocId) && doc.get("title").equals("invalid")),
+        "Document with invalid ID should now exist in the database with correct fields");
+  }
 
-     // Ensure the invalid listing ID does not exist in the mock database
-     assertFalse(
-         firebaseMock.getCollection(uid, collectionId).stream()
-             .anyMatch(doc -> doc.get("doc_id").equals(invalidDocId)),
-         "Expected listing ID to not exist in the database");
+  // mocked test for neg price
+  @Test
+  void testUpdateListing_NegativePrice() {
+    String uid = "bibif";
+    String collectionId = "listing";
+    Map<String, Object> updatedFields = new HashMap<>();
+    updatedFields.put("price", -10);
 
-     // Try adding a document with the invalid ID
-     firebaseMock.addDocument(uid, collectionId, invalidDocId, updatedFields);
+    //  validation
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              if ((int) updatedFields.get("price") < 0) {
+                throw new IllegalArgumentException("Price cannot be negative");
+              }
+              firebaseMock.addDocument(uid, collectionId, listingId, updatedFields);
+            });
 
-     // Verify that the new document has been added
-     assertTrue(
-         firebaseMock.getCollection(uid, collectionId).stream()
-             .anyMatch(doc -> doc.get("doc_id").equals(invalidDocId)
-                 && doc.get("title").equals("invalid")),
-         "Document with invalid ID should now exist in the database with correct fields");
-   }
-   //mocked test for neg price
-   @Test
-   void testUpdateListing_NegativePrice() {
-     String uid = "bibif";
-     String collectionId = "listing";
-     Map<String, Object> updatedFields = new HashMap<>();
-     updatedFields.put("price", -10);
+    assertTrue(
+        exception.getMessage().contains("Price cannot be negative"),
+        "Expected exception for negative price");
+  }
 
-     //  validation
-     IllegalArgumentException exception = assertThrows(
-         IllegalArgumentException.class,
-         () -> {
-           if ((int) updatedFields.get("price") < 0) {
-             throw new IllegalArgumentException("Price cannot be negative");
-           }
-           firebaseMock.addDocument(uid, collectionId, listingId, updatedFields);
-         }
-     );
+  // mocked test for invalid condi
+  @Test
+  void testUpdateListing_InvalidCondition() {
+    String uid = "bibif";
+    String collectionId = "listing";
+    Map<String, Object> updatedFields = new HashMap<>();
+    updatedFields.put("condition", "invalid");
 
-     assertTrue(exception.getMessage().contains("Price cannot be negative"),
-         "Expected exception for negative price");
-   }
+    //  validation =
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              String condition = (String) updatedFields.get("condition");
+              if (!condition.equals("new") && !condition.equals("used")) {
+                throw new IllegalArgumentException("Please choose from valid condition inputs");
+              }
+              firebaseMock.addDocument(uid, collectionId, listingId, updatedFields);
+            });
 
-   //mocked test for invalid condi
-   @Test
-   void testUpdateListing_InvalidCondition() {
-     String uid = "bibif";
-     String collectionId = "listing";
-     Map<String, Object> updatedFields = new HashMap<>();
-     updatedFields.put("condition", "invalid");
+    assertTrue(
+        exception.getMessage().contains("Please choose from valid condition inputs"),
+        "Expected exception for invalid condition");
+  }
 
-     //  validation =
-     IllegalArgumentException exception = assertThrows(
-         IllegalArgumentException.class,
-         () -> {
-           String condition = (String) updatedFields.get("condition");
-           if (!condition.equals("new") && !condition.equals("used")) {
-             throw new IllegalArgumentException("Please choose from valid condition inputs");
-           }
-           firebaseMock.addDocument(uid, collectionId, listingId, updatedFields);
-         }
-     );
+  // mocked test for missing params
+  @Test
+  void testUpdateListing_MissingParams() throws ExecutionException, InterruptedException {
+    // Attempt to update with only listingId, missing other update parameters
+    Map<String, Object> originalData = firebaseMock.getDocument("bibif", "listing", listingId);
 
-     assertTrue(exception.getMessage().contains("Please choose from valid condition inputs"),
-         "Expected exception for invalid condition");
-   }
+    // Perform the update
+    Map<String, Object> updatedFields = new HashMap<>();
+    firebaseMock.addDocument("bibif", "listing", listingId, updatedFields);
 
-   //mocked test for missing params
-   @Test
-   void testUpdateListing_MissingParams() throws ExecutionException, InterruptedException {
-     // Attempt to update with only listingId, missing other update parameters
-     Map<String, Object> originalData = firebaseMock.getDocument("bibif", "listing", listingId);
+    // Retrieve
+    Map<String, Object> updatedData = firebaseMock.getDocument("bibif", "listing", listingId);
 
-     // Perform the update
-     Map<String, Object> updatedFields = new HashMap<>();
-     firebaseMock.addDocument("bibif", "listing", listingId, updatedFields);
-
-     // Retrieve
-     Map<String, Object> updatedData = firebaseMock.getDocument("bibif", "listing", listingId);
-
-     // Verify
-     assertEquals(originalData, updatedData, "Expected no updates to the listing when no parameters are provided.");
-   }
-
- }
-
-
-
-
-
-
-
-
+    // Verify
+    assertEquals(
+        originalData,
+        updatedData,
+        "Expected no updates to the listing when no parameters are provided.");
+  }
+}
 
 // public class UpdateListingHandlerTest {
 //
@@ -304,7 +283,8 @@
 //        response.contains("\"response_type\":\"failure\""),
 //        "Expected a failure response for negative price");
 //    assertTrue(
-//        response.contains("Price cannot be negative"), "Expected error message for negative price");
+//        response.contains("Price cannot be negative"), "Expected error message for negative
+// price");
 //  }
 //
 //  // Testing invalid params

@@ -1,19 +1,19 @@
- package edu.brown.cs.student.main.server.test;
+package edu.brown.cs.student.main.server.test;
 
- import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
- import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
- import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
- import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
- import java.util.concurrent.ExecutionException;
- import org.junit.Before;
- import org.junit.Test;
- import spark.Request;
- import spark.Response;
+import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
+import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import org.junit.Before;
+import org.junit.Test;
+import spark.Request;
+import spark.Response;
 
- public class LikeListingHandlerTest {
+public class LikeListingHandlerTest {
   private LikeListingHandler handler;
   private MockedFirebaseUtilities mockStorage;
 
@@ -137,8 +137,7 @@
   //
   // Helper method to create a mock response
   private Response createMockResponse() {
-    return new Response() {
-    };
+    return new Response() {};
   }
 
   // Helper method to create a mock listing
@@ -149,4 +148,4 @@
     listing.put("title", "Test Listing");
     return listing;
   }
- }
+}

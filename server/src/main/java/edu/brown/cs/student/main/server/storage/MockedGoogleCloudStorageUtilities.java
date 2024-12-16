@@ -1,18 +1,18 @@
 package edu.brown.cs.student.main.server.storage;
+
 import java.io.IOException;
 import java.util.*;
 
 /**
- * This class is a mock implementation of Google Cloud Storage utilities. It simulates
- * operations for testing purposes without connecting to the actual Google Cloud Storage API.
+ * This class is a mock implementation of Google Cloud Storage utilities. It simulates operations
+ * for testing purposes without connecting to the actual Google Cloud Storage API.
  */
 public class MockedGoogleCloudStorageUtilities extends GoogleCloudStorageUtilities {
 
   // Map to simulate a bucket storage structure: bucketName -> objectName -> objectData
   private final Map<String, Map<String, byte[]>> storage = new HashMap<>();
 
-  public MockedGoogleCloudStorageUtilities() throws IOException {
-  }
+  public MockedGoogleCloudStorageUtilities() throws IOException {}
 
   /**
    * Simulates uploading an object to a bucket.
@@ -27,7 +27,9 @@ public class MockedGoogleCloudStorageUtilities extends GoogleCloudStorageUtiliti
     }
 
     // Simulate storing the object in the bucket
-    storage.computeIfAbsent(bucketName, k -> new HashMap<>()).put(objectName, Arrays.copyOf(data, data.length));
+    storage
+        .computeIfAbsent(bucketName, k -> new HashMap<>())
+        .put(objectName, Arrays.copyOf(data, data.length));
   }
 
   /**
@@ -107,4 +109,3 @@ public class MockedGoogleCloudStorageUtilities extends GoogleCloudStorageUtiliti
 
   // Optional: Add other methods to simulate additional Google Cloud Storage operations as needed
 }
-
