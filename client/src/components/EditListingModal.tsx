@@ -25,17 +25,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
 }) => {
   if (!isOpen || !listing) return null;
 
-  const [isFavorited, setIsFavorited] = useState(false);
   const [showEmailPopup, setShowEmailPopup] = useState(false);
-
-  // will need to check if the listing is already favorited
-  useEffect(() => {
-    setIsFavorited(true);
-  }, []);
-
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
-  };
 
   const handleEmailSellerClick = () => {
     setShowEmailPopup(true);
@@ -92,31 +82,12 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <h3 className="text-gray-500 text-md">
             Tags: {listing.category}, {listing.tags}
           </h3>
-          {isFavorited ? (
-            <p className="text-red-600">Added to Favorites!</p>
-          ) : null}
-          {showEmailPopup ? (
-            <div>
-              <p>
-                {/* USER INFO */}
-                Email {listing.username} at  to purchase this item.
-              </p>
-            </div>
-          ) : null}
-          <div className="flex flex-row space-x-4 w-full">
-            <button
-              className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center"
-              onClick={handleFavoriteClick}
-            >
-              {isFavorited ? <FaHeart /> : <FaRegHeart />}
-            </button>
-            <button
-              className="bg-teal-200 text-lg p-4 rounded-xl w-5/6"
-              onClick={handleEmailSellerClick}
-            >
-              Message Seller: {listing.username}
-            </button>
-          </div>
+          <button className="rounded-xl text-white bg-red-600 text-lg p-4">
+            Edit Listing
+          </button>
+          <button className="rounded-xl text-white bg-yellow-500 text-lg p-4">
+            Delete Listing
+          </button>
         </div>
       </div>
     </div>

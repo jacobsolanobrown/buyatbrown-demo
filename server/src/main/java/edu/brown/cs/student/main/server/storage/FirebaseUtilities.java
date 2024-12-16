@@ -404,14 +404,17 @@ public class FirebaseUtilities implements StorageInterface {
         // 6: Add the listing data to the list
         Map<String, Object> listingData = listingsDoc.getData();
         System.out.println(listingData);
-        // add the user id to the listing data
+        // Add the user ID to the listing data
         listingData.put("uid", userDoc.getId());
-        // add the listing id to the listing data
+        // Add the listing ID to the listing data
+        listingData.put("listingId", listingsDoc.getId());
+        // Add the listing to the allListings list
         allListings.add(listingData);
       }
     }
     return allListings;
   }
+
 
   @Override
   public Map<String, Object> getDocument(String uid, String collectionId, String docId)

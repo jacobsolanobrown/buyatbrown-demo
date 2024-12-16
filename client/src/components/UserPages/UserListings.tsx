@@ -6,7 +6,7 @@ import { useState } from "react";
 import DropdownNavUser from "./DropdownNavUser";
 import {useUser} from "@clerk/clerk-react";
 import { getUserListings } from "../../utils/api";
-import ListingModal from "../ListingModal";
+import EditListingModal from "../EditListingModal";
 
 export default function UserListings({ username }: { username: string }) {
 
@@ -35,6 +35,8 @@ export default function UserListings({ username }: { username: string }) {
     if (user) {
       getUserListings(user.id)
         .then((data) => {
+          console.log("json response: ", data);
+          console.log("listings: ", data.listings);
           if (data.response_type === "success" && Array.isArray(data.listings)) {
             setPosts(data.listings);
           } else {
@@ -58,7 +60,7 @@ export default function UserListings({ username }: { username: string }) {
       {/* Main content */}
       <div className="flex-1 p-8">
         <div className="flex flex-col items-center min-[860px]:block">
-          <div className="bg-red-600 w-96 text-white py-4 px-6 rounded-lg shadow-md mb-6">
+          <div className="bg-red-600 w-96 text-white py-4 px-6 rounded-xl shadow-md mb-6">
             <h1 className="text-lg font-semibold text-center">
               Hey, {username}!
             </h1>
@@ -67,7 +69,6 @@ export default function UserListings({ username }: { username: string }) {
 
         {/* Dropdown for smaller screens */}
         <DropdownNavUser></DropdownNavUser>
-
 
         <div className="bg-white/50 p-6 rounded-lg shadow-md border">
           <h2 className="text-2xl font-bold mb-2">Your Listings</h2>
@@ -80,36 +81,37 @@ export default function UserListings({ username }: { username: string }) {
              min-[1410px]:grid-cols-4 min-[860px]:grid-cols-2 
              min-[1110px]:grid-cols-3 gap-4
              min-[860px]:place-items-start min-[860px]:min-h-0
-             
              "
           >
-          {isLoading ? (
-            <div className="text-2xl align-center">Loading All Listings...</div>
-              ) : posts.length === 0 ? (
-                <p>No listings available</p>
-              ) : (
-                posts.map((post) => (
-                  <ListingCard
-                    key={post.id}
-                    imageUrl={post.imageUrl}
-                    title={post.title}
-                    price={post.price}
-                    username={post.username}
-                    description={post.description}
-                    condition={post.condition}
-                    category={post.category}
-                    tags={post.tags}
-                    onClick={() => handleCardClick(post)}
-                  />
-                ))
-              )}
-              {isModalOpen && (
-                <ListingModal
-                  isOpen={isModalOpen}
-                  onClose={handleCloseModal}
-                  listing={selectedListing}
+            {isLoading ? (
+              <div className="text-2xl align-center">
+                Loading All Listings...
+              </div>
+            ) : posts.length === 0 ? (
+              <p>No listings available</p>
+            ) : (
+              posts.map((post) => (
+                <ListingCard
+                  key={post.id}
+                  imageUrl={post.imageUrl}
+                  title={post.title}
+                  price={post.price}
+                  username={post.username}
+                  description={post.description}
+                  condition={post.condition}
+                  category={post.category}
+                  tags={post.tags}
+                  onClick={() => handleCardClick(post)}
                 />
-              )}
+              ))
+            )}
+            {isModalOpen && (
+              <EditListingModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                listing={selectedListing}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -82,7 +82,8 @@ public class UpdateListingHandler implements Route {
     byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
     String workingDirectory = System.getProperty("user.dir");
-    Path googleCredentialsPath = Paths.get(workingDirectory, "/resources", "google_cred.json");
+    Path googleCredentialsPath =
+        Paths.get(workingDirectory, "server/resources", "google_cred.json");
     // Initialize the Storage client with credentials
     Storage storage =
         StorageOptions.newBuilder()
@@ -170,6 +171,7 @@ public class UpdateListingHandler implements Route {
       //          }
       //        }
       //      }
+      System.out.println(request.queryParams("imageUrl"));
       if (imageUrl != null) {
         String existingImageUrl = (String) listing.get("imageUrl");
         System.out.println("Existing image URL: " + listing.get("imageUrl"));

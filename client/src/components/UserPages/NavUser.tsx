@@ -25,12 +25,12 @@ export default function NavUser() {
         >
           Favorites
         </Link>
-        <Link
+        {/* <Link
           to="/messages"
           className="block text-white underline hover:text-stone-200"
         >
           Messages
-        </Link>
+        </Link> */}
         <Link
           to="/settings"
           className="block text-white underline hover:text-stone-200"
