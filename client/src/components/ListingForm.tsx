@@ -14,17 +14,17 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    uid: "",
+    uid: uid || "", // Initialize with passed uid
     title: "",
     price: "",
-    username: "", // pass in the username (no need for user to type it in)
+    username: username || "", // Initialize with passed username
     description: "",
     condition: "",
     category: "",
     tags: "",
     imageFile: null,
-    // imageFile: null,
   });
+  // setFormData({ ...formData, uid: uid, username: username });
 
   // Handle form input changes
   const handleChange = (
@@ -186,11 +186,11 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           Back to Listings
         </button>
         <h1 className="text-3xl font-bold mb-6">Post a New Listing</h1>
-        <h1>{uid}</h1>
-        <h1>{username}</h1>
+        {/* <h1>{uid}</h1>
+        <h1>{username}</h1> */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Input for UID: REMOVE LATER */}
-          <div>
+          {/* <div>
             <label
               htmlFor="uid"
               className="block text-sm font-medium text-gray-700"
@@ -207,9 +207,9 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               required
             />
-          </div>
+          </div> */}
           {/* Input for USERNAME: REMOVE LATER */}
-          <div>
+          {/* <div>
             <label
               htmlFor="username"
               className="block text-sm font-medium text-gray-700"
@@ -226,7 +226,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               required
             />
-          </div>
+          </div> */}
           {/* Input for a listing Title */}
           <div>
             <label

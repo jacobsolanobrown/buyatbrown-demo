@@ -75,3 +75,10 @@ export async function removeFromFavorites(uid: string, listingID: string) {
     listingId: listingID,
   });
 }
+
+export async function deleteListing(uid: string, listingID: string) {
+  return await queryAPI("delete-listings", {
+    uid: uid,
+    listingID: listingID,
+  });
+}

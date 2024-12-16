@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useState } from "react";
+import { deleteListing } from "../utils/api";
+import { useUser } from "@clerk/clerk-react";
+// TODO: can pass in
 
 interface ModalCardProps {
   isOpen: boolean;
@@ -14,6 +17,7 @@ interface ModalCardProps {
     condition: string;
     category: string;
     tags: string;
+    listingId: string;
   };
 }
 
@@ -24,11 +28,17 @@ const ListingModal: React.FC<ModalCardProps> = ({
   listing,
 }) => {
   if (!isOpen || !listing) return null;
-
+  const { user } = useUser();
   const [showEmailPopup, setShowEmailPopup] = useState(false);
 
   const handleEmailSellerClick = () => {
     setShowEmailPopup(true);
+  };
+
+  const handleDeleteListingClick = () => {
+    if (user) {
+      deleteListing(user.id, listing.listingId);
+    }
   };
 
   // Close the modal if the user clicks outside of it
@@ -85,7 +95,10 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <button className="rounded-xl text-white bg-red-600 text-lg p-4">
             Edit Listing
           </button>
-          <button className="rounded-xl text-white bg-yellow-500 text-lg p-4">
+          <button
+            className="rounded-xl text-white bg-yellow-500 text-lg p-4"
+            onClick={handleDeleteListingClick}
+          >
             Delete Listing
           </button>
         </div>
