@@ -34,6 +34,9 @@ export default function Clothes () {
   // Array to store all listings with the corresponding category
   const [posts, setPosts] = useState<any[]>([]);
 
+    // Display error message if failure from server:
+    const [errorMessage, setErrorMessage] = useState("");
+
   // Update activeFilters state
   const handleFiltersChange = (newFilters: string[]) => {
     setSelectedFilters(newFilters); 
@@ -55,15 +58,13 @@ export default function Clothes () {
           console.log("API Response:", data);
           if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
             setPosts(data.filtered_listings); 
-            console.log("success!!!");
-            console.log("Posts:", posts);
           } else {
             setPosts([]);
-            console.log("not success???");
-            console.log("Posts:", posts);
+            setErrorMessage(data.error);
           }
         })
         .catch((err) => {
+          setErrorMessage("Error fetching bathroom listings. (Error:  " + err + ")");
           console.error("Error fetching clothes listings", err);
         })
         .finally(() => setIsLoading(false));
@@ -71,7 +72,7 @@ export default function Clothes () {
 
   
   return (
-    <div className="flex">
+    <div className="flex flex-row">
       <FilterBar 
         title="Clothes" 
         filters={clothesFilters} 
@@ -80,13 +81,28 @@ export default function Clothes () {
         onConditionsChange={handleConditionsChange} />
 
       {/* Render posts based on filters */}
-      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 items-start mx-auto">
+      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+
+          {/* Display error message */}
+          {errorMessage && (
+              <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {errorMessage}
+              </p>
+          )}
+
         {isLoading ? (
-            <div className="text-2xl align-center">Loading All Listings...</div>
+          <div className="align-center">
+          <img
+            className="w-14 h-12 align-center"
+            src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+            alt="Loading Image"
+          />
+          </div>
+            
           ) : posts.length === 0 ? (
-            <p>No clothes listings available</p>
+            <p className= "p-4 text-3xl font-ibm-plex-sans text-center text-red-600">No clothes listings available</p>
           ) : (
-            posts.map((post) => ( // posts should reflect 
+            posts.map((post) => ( 
             <ListingCard
               key={post.id}
               imageUrl={post.imageUrl} 

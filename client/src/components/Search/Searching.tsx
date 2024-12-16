@@ -23,7 +23,7 @@ const Searching = () => {
     return (
         <>
             <SearchBar onSearchSubmit={handleSearchSubmit} />
-            {loading && <p>Searching...</p>}
+            {loading && <p>Loading...</p>}
         </>
     );
 };
