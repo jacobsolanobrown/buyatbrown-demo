@@ -66,11 +66,6 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public String generateSignedUrl(String bucketName, String objectName) {
-    return "";
-  }
-
-  @Override
   public void addListing(Map<String, Object> listing) {
     // Ensure the database structure exists for this user
     String uid = (String) listing.get("uid");
