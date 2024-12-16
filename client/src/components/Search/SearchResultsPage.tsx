@@ -13,7 +13,8 @@ export default function SearchResultsPage () {
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [errorMessage, setErrorMessage] = useState("");
+  
   const handleCardClick = (listing: any) => {
     setSelectedListing(listing);
     setIsModalOpen(true);
@@ -54,23 +55,21 @@ export default function SearchResultsPage () {
           console.log("API Response:", data);
           if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
             setPosts(data.filtered_listings); 
-            console.log("success!!!");
-            console.log("Posts:", posts);
           } else {
             setPosts([]);
-            console.log("not success???");
-            console.log("Posts:", posts);
+            setErrorMessage(data.error);
           }
         })
         .catch((err) => {
           console.error("Error fetching clothes listings", err);
         })
+        .finally(() => setIsLoading(false));
     }, [selectedConditions, searchTerm]); // call server when conditions or searchTerm changes
 
   return (
     <div className="flex">
-        {/* Filter by condition */}
-        <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mt-5">
+        {/* Filter by Condition */}
+        <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5">
             <h2 className="text-xl font-bold mb-4 text-center "> Search Results for: {searchTerm} </h2>
 
             <div className="content-center">
@@ -89,17 +88,36 @@ export default function SearchResultsPage () {
                 </button>
                 ))}
             </div>
-        </div>
+        </div> 
 
 
       
       {/* Render posts based on filters */}
-      <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 items-start mx-auto">
-        {(
-            posts.map((post: any) => (
+      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+
+          {/* Display error message */}
+          {errorMessage && (
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {errorMessage}
+            </p>
+          )}
+
+        {isLoading ? (
+          <div className="align-center">
+          <img
+            className="w-14 h-12 align-center"
+            src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+            alt="Loading Image"
+          />
+          </div>
+            
+          ) : posts.length === 0 ? (
+            <p className= "p-4 text-3xl font-ibm-plex-sans text-center text-red-600"> No listings matched search term: {searchTerm}</p>
+          ) : (
+            posts.map((post: any) => ( 
             <ListingCard
               key={post.id}
-              imageUrl={"src/assets/brown-university-logo-transparent.png"} 
+              imageUrl={post.imageUrl} 
               title={post.title}
               price={post.price}
               username={post.username}

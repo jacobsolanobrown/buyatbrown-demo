@@ -9,6 +9,9 @@ function Homepage() {
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+
 
   useEffect(() => {
     getAllListings()
@@ -17,9 +20,11 @@ function Homepage() {
           setPosts(data.listings);
         } else {
           setPosts([]);
+          setErrorMessage(data.error);
         }
       })
       .catch((err) => {
+        setErrorMessage("Error fetching listings. (Error:  " + err + ")");
         console.error("Error fetching listings:", err);
       })
       .finally(() => setIsLoading(false));
@@ -55,7 +60,14 @@ function Homepage() {
       </div>
 
       {/* Main content */}
-      <div className=" w-full  h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+
+      {errorMessage && (
+                <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+                  {errorMessage}
+                </p>
+              )}
+
         {isLoading ? (
           <div className="">
             <img
