@@ -41,10 +41,12 @@ public class LikeListingHandler implements Route {
       List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
 
       // Find the specific listing by listingId
-      Map<String, Object> targetListing = allListings.stream()
-          .filter(listing -> listingId.equals(listing.get("listingId")))
-          .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("Listing not found for the given listingId."));
+      Map<String, Object> targetListing =
+          allListings.stream()
+              .filter(listing -> listingId.equals(listing.get("listingId")))
+              .findFirst()
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Listing not found for the given listingId."));
 
       // Add the listing to the user's liked listings
       String likedListingId = "liked-" + listingId;

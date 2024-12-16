@@ -415,7 +415,6 @@ public class FirebaseUtilities implements StorageInterface {
     return allListings;
   }
 
-
   @Override
   public Map<String, Object> getDocument(String uid, String collectionId, String docId)
       throws IllegalArgumentException, ExecutionException, InterruptedException {
