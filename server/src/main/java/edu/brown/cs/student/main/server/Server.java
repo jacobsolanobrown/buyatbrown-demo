@@ -5,6 +5,7 @@ import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.FilterListingsHandler;
 import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.LikeListingHandler;
+import edu.brown.cs.student.main.server.handlers.filterListingsHandlers.RemoveFavoriteListingHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.DeleteListingHandler;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.ListAllUserListingsHandler;
@@ -65,6 +66,7 @@ public class Server {
       Spark.get("update-listings", new UpdateListingHandler(firebaseUtils));
       Spark.get("list-all-listings", new ListAllUserListingsHandler(firebaseUtils));
       Spark.get("like-listings", new LikeListingHandler(firebaseUtils));
+      Spark.get("remove-liked-listing", new RemoveFavoriteListingHandler(firebaseUtils));
       Spark.get("list-user-favorites", new ListUserFavoritesHandler(firebaseUtils));
 
       Spark.notFound(

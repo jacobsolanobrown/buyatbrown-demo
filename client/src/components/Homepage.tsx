@@ -91,6 +91,8 @@ function Homepage() {
               condition={post.condition}
               category={post.category}
               tags={post.tags}
+              listingId={post.listingId}
+              userId={post.userId}
               onClick={() => handleCardClick(post)}
             />
           ))

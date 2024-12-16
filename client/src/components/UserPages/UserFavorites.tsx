@@ -82,6 +82,7 @@ export default function UserFavorites({ username }: { username: string }) {
               ) : posts.length === 0 ? (
                 <p>No listings available</p>
               ) : (
+                console.log(posts),
                 posts.map((post) => (
                   <ListingCard
                     key={post.id}
@@ -93,6 +94,8 @@ export default function UserFavorites({ username }: { username: string }) {
                     condition={post.condition}
                     category={post.category}
                     tags={post.tags}
+                    listingId={post.listingId}
+                    userId={post.userId}
                     onClick={() => handleCardClick(post)}
                   />
                 ))

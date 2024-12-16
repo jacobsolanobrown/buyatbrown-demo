@@ -406,9 +406,12 @@ public class FirebaseUtilities implements StorageInterface {
         System.out.println(listingData);
         // Add the user ID to the listing data
         listingData.put("uid", userDoc.getId());
+        System.out.print("user ID: " + userDoc.getId());
         // Add the listing ID to the listing data
         listingData.put("listingId", listingsDoc.getId());
+        System.out.println(", listing ID: " + listingsDoc.getId());
         // Add the listing to the allListings list
+        System.out.println("listingData with user id and listing id?: " + listingData);
         allListings.add(listingData);
       }
     }

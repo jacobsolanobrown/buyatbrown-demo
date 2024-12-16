@@ -9,6 +9,8 @@ interface CardProps {
   condition: string;
   category: string;
   tags: string;
+  listingId: string;
+  userId: string;
   onClick: () => void;
 }
 

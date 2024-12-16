@@ -61,3 +61,17 @@ export async function getUserFavorites(uid: string) {
     uid: uid,
   });
 }
+
+export async function addToFavorites(uid: string, listingID: string) {
+  return await queryAPI("like-listings", {
+    uid: uid,
+    listingId: listingID,
+  });
+}
+
+export async function removeFromFavorites(uid: string, listingID: string) {
+  return await queryAPI("remove-liked-listing", {
+    uid: uid,
+    listingId: listingID,
+  });
+}
