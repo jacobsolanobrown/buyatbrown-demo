@@ -37,14 +37,14 @@ public class ListUserFavoritesHandler implements Route {
 
       // convert the key,value map to just a list of the listings.
       System.out.println(vals);
-      List<String> liked_listings = vals.stream().map(Object::toString).toList();
+      //      List<String> liked_listings = vals.stream().map(Object::toString).toList();
       //      List<String> listings = vals.stream().map(items ->
       // items.get("listings").toString()).toList();
-      System.out.println("liked_listings: " + liked_listings);
+      //      System.out.println("liked_listings: " + liked_listings);
       //      System.out.println(vals.stream().map(listing -> listing.get("item")));
 
       responseMap.put("response_type", "success");
-      responseMap.put("listings", liked_listings);
+      responseMap.put("listings", vals);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const PostingPage: React.FC = () => {  
-  const { user } = useUser();
+interface PostingPageProps {
+  uid: string;
+  username: string;
+}
+
+const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   const navigate = useNavigate();
   const [responseMessage, setResponseMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
   const [formData, setFormData] = useState({
     uid: "",
@@ -23,7 +26,6 @@ const PostingPage: React.FC = () => {
     // imageFile: null,
   });
 
-  
   // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -36,14 +38,22 @@ const PostingPage: React.FC = () => {
   };
 
   // Handle form image changes
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const file = e.target.files[0];
     setFormData({ ...formData, imageFile: file });
   };
 
+  /**
+ * This handles form submission, validating all of the inputs and whether we can post a listing. It handles posting an image to our 
+ * separate logic for i,mage posting.
+ * 
+ * @param e The event when clicking the submit button on the form 
+ * @returns On success, it should return the user back to the home screen 
+ * // TODO: add a success screen for posting and allow the user to navigate to their listings 
 
-  // Handle form submission
+ */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,14 +71,14 @@ const PostingPage: React.FC = () => {
       const reader = new FileReader();
       reader.readAsDataURL(formData.imageFile);
       reader.onload = async () => {
-        const base64Image = reader.result.split(",")[1]; // Strip out metadata
+        // Error check the reader result to prevent null pointer exception
+        const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
 
         // Prepare form data
         const data = {
           ...formData,
           imageUrl: base64Image,
         };
-        
 
         try {
           const response = await axios.post(
@@ -119,14 +129,14 @@ const PostingPage: React.FC = () => {
       const reader = new FileReader();
       reader.readAsDataURL(formData.imageFile);
       reader.onload = async () => {
-        const base64Image = reader.result.split(",")[1]; // Strip out metadata
+        // Error check the reader result to prevent null pointer exception
+        const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
 
         // Prepare form data
         const data = {
           ...formData,
           imageUrl: base64Image,
         };
-        
 
         try {
           const response = await axios.post(
@@ -161,6 +171,7 @@ const PostingPage: React.FC = () => {
       setResponseMessage("An error occurred while uploading the listing.");
     } finally {
       setIsSubmitting(false);
+      navigate("/");
     }
   };
 
@@ -175,9 +186,11 @@ const PostingPage: React.FC = () => {
           Back to Listings
         </button>
         <h1 className="text-3xl font-bold mb-6">Post a New Listing</h1>
+        <h1>{uid}</h1>
+        <h1>{username}</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Input for UID: REMOVE LATER */}
-        <div>
+          <div>
             <label
               htmlFor="uid"
               className="block text-sm font-medium text-gray-700"
@@ -196,7 +209,7 @@ const PostingPage: React.FC = () => {
             />
           </div>
           {/* Input for USERNAME: REMOVE LATER */}
-        <div>
+          <div>
             <label
               htmlFor="username"
               className="block text-sm font-medium text-gray-700"
