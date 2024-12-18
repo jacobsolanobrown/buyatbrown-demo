@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { filterListings } from '../../utils/api';
 import { SearchBar } from './SearchBar';
 import { useNavigate } from 'react-router-dom';
+import { PulseLoader } from 'react-spinners';
 
 
 const Searching = () => {
@@ -21,9 +22,16 @@ const Searching = () => {
     };
 
     return (
-        <>
-            <SearchBar onSearchSubmit={handleSearchSubmit} />
-            {loading && <p>Loading...</p>}
-        </>
+      <>
+        <SearchBar onSearchSubmit={handleSearchSubmit} />
+        {loading && (
+          <PulseLoader
+            color="#FFFFFF"
+            margin={4}
+            size={16}
+            speedMultiplier={0.7}
+          />
+        )}
+      </>
     );
 };

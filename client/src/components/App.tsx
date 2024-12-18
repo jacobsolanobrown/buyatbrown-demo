@@ -16,7 +16,8 @@ import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
 import ListingForm from "./ListingForm";
-import EditingForm from "./EditingForm"
+import EditingForm from "./EditingForm";
+import { PulseLoader } from "react-spinners";
 import {
   SignedIn,
   SignedOut,
@@ -26,9 +27,6 @@ import {
 import { createUser, getUser } from "../utils/api";
 import "/src/index.css";
 import SearchResultsPage from "./Search/SearchResultsPage";
-import { FaArrowLeft } from "react-icons/fa";
-
-// import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -92,7 +90,7 @@ function App() {
    */
   useEffect(() => {
     if (user) {
-      setUID(user.id)
+      setUID(user.id);
       checkForUsername();
     }
   }, [user]); // Run whenever the `user` object changes
@@ -139,10 +137,11 @@ function App() {
         {loading ? (
           <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="text-center">
-              <img
-                className="max-w-24"
-                src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-                alt="Loading Image"
+              <PulseLoader
+                color="#ED1C24"
+                margin={4}
+                size={20}
+                speedMultiplier={0.7}
               />
             </div>
           </div>
@@ -151,7 +150,7 @@ function App() {
             <div className="flex flex-col justify-center items-center bg-white/50 rounded-3xl p-16 shadow-lg space-y-8">
               <button
                 type="submit"
-                className="text-xl bg-yellow-500 hover:text-yellow-500 hover:bg-white border border-yellow-500 text-white font-ibm-plex-sans font-bold py-3 px-8 rounded-3xl"
+                className="text-xl bg-amber-950 hover:text-amber-950 hover:bg-white border border-amber-950 text-white font-ibm-plex-sans font-bold py-3 px-8 rounded-3xl mb-4"
               >
                 <SignOutButton> Cancel </SignOutButton>
               </button>
@@ -178,7 +177,7 @@ function App() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="text-2xl font-ibm-plex-sans py-4 px-20 rounded-3xl"
+                  className="text-2xl font-ibm-plex-sans py-4 px-20 rounded-3xl text-center"
                   required
                 />
                 {createUsernameLoad ? (
@@ -214,10 +213,7 @@ function App() {
                 path="/listing-form"
                 element={<ListingForm uid={uid} username={username} />}
               />
-              <Route
-                path="/editing-form"
-                element={<EditingForm uid={uid}/>}
-              />
+              <Route path="/editing-form" element={<EditingForm uid={uid} />} />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />
               <Route path="/bathroom" element={<Bathroom />} />

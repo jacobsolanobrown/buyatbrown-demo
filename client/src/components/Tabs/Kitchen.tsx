@@ -1,11 +1,11 @@
-import React, {useState, useEffect}from 'react';
-import { filterListings } from '../../utils/api';
-import FilterBar from '../FilterBar'; // Adjust the import path as needed
-import ListingCard from '../ListingCard';
-import ListingModal from '../ListingModal';
+import React, { useState, useEffect } from "react";
+import { filterListings } from "../../utils/api";
+import FilterBar from "../FilterBar"; // Adjust the import path as needed
+import ListingCard from "../ListingCard";
+import ListingModal from "../ListingModal";
+import { PulseLoader } from "react-spinners";
 
-export default function Kitchen () {
-
+export default function Kitchen() {
   // ********* Bigger card with more information on click: *********
 
   const [selectedListing, setSelectedListing] = useState<any | null>(null);
@@ -28,9 +28,9 @@ export default function Kitchen () {
   const conditionFilters = ["New", "Like New", "Used"];
 
   // Array of tag filters selected
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]); 
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   // Array of condition filters selected:
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]); 
+  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   // Array to store all listings with the corresponding category
   const [posts, setPosts] = useState<any[]>([]);
   // Display error message if failure from server:
@@ -38,39 +38,44 @@ export default function Kitchen () {
 
   // Update activeFilters state
   const handleFiltersChange = (newFilters: string[]) => {
-    setSelectedFilters(newFilters); 
+    setSelectedFilters(newFilters);
   };
 
   // Update activeConditions state
   const handleConditionsChange = (newConditions: string[]) => {
-    setSelectedConditions(newConditions); 
+    setSelectedConditions(newConditions);
   };
 
   // Fetch data from the api:
   useEffect(() => {
-    // format tag and condition filters for server 
-    const tagsString = selectedFilters.length == 0 ? "ignore" : selectedFilters.join(",");
-    const conditionsString = selectedConditions.length == 0 ? "ignore" : selectedConditions.join(",");
+    // format tag and condition filters for server
+    const tagsString =
+      selectedFilters.length == 0 ? "ignore" : selectedFilters.join(",");
+    const conditionsString =
+      selectedConditions.length == 0 ? "ignore" : selectedConditions.join(",");
 
     filterListings("ignore", "kitchen", tagsString, conditionsString) // no filtering by title
-        .then((data) => {
-          console.log("API Response:", data);
-          if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
-            setPosts(data.filtered_listings); 
+      .then((data) => {
+        console.log("API Response:", data);
+        if (
+          data.response_type === "success" &&
+          Array.isArray(data.filtered_listings)
+        ) {
+          setPosts(data.filtered_listings);
+        } else {
+          setPosts([]);
+          setErrorMessage(data.error);
+        }
+      })
+      .catch((err) => {
+        setErrorMessage(
+          "Error fetching kitchen listings. (Error:  " + err + ")"
+        );
+        console.error("Error fetching kitchen listings", err);
+      })
+      .finally(() => setIsLoading(false));
+  }, [selectedConditions, selectedFilters]); // call server when either list changes (when filters change)
 
-          } else {
-            setPosts([]);
-            setErrorMessage(data.error);
-          }
-        })
-        .catch((err) => {
-          setErrorMessage("Error fetching kitchen listings. (Error:  " + err + ")");
-          console.error("Error fetching kitchen listings", err);
-        })
-        .finally(() => setIsLoading(false));
-    }, [selectedConditions, selectedFilters]); // call server when either list changes (when filters change)
-
-  
   return (
     <div className="flex flex-row">
       <FilterBar
@@ -91,11 +96,12 @@ export default function Kitchen () {
         )}
 
         {isLoading ? (
-          <div className="align-center">
-            <img
-              className="w-14 h-12"
-              src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-              alt="Loading Image"
+          <div>
+            <PulseLoader
+              color="#ED1C24"
+              margin={4}
+              size={20}
+              speedMultiplier={0.7}
             />
           </div>
         ) : posts.length === 0 ? (
@@ -109,6 +115,7 @@ export default function Kitchen () {
             ) => (
               <ListingCard
                 key={post.id}
+                email={post.email}
                 listingId={post.id}
                 userId={post.userId}
                 imageUrl={post.imageUrl}

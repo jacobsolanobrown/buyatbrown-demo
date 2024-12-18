@@ -3,6 +3,7 @@ import { getAllListings } from "../utils/api";
 import ListingCard from "./ListingCard";
 import ListingModal from "./ListingModal";
 import { useNavigate } from "react-router-dom";
+import { PulseLoader } from "react-spinners";
 
 function Homepage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -10,8 +11,6 @@ function Homepage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
-
 
   useEffect(() => {
     getAllListings()
@@ -67,11 +66,12 @@ function Homepage() {
         )}
 
         {isLoading ? (
-          <div className="">
-            <img
-              className="w-14 h-12"
-              src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-              alt="Loading Image"
+          <div>
+            <PulseLoader
+              color="#ED1C24"
+              margin={4}
+              size={20}
+              speedMultiplier={0.7}
             />
           </div>
         ) : posts.length === 0 ? (
@@ -91,6 +91,7 @@ function Homepage() {
               tags={post.tags}
               listingId={post.listingId}
               userId={post.userId}
+              email={post.email}
               onClick={() => handleCardClick(post)}
             />
           )))

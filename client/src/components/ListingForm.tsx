@@ -201,7 +201,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a listing title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -220,7 +220,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a price"
               value={formData.price}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -258,7 +258,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
                 placeholder="Describe your listing"
                 value={formData.description}
                 onChange={handleChange}
-                className=" block w-full border border-gray-300 rounded-xl shadow-sm px-4 py-2"
+                className=" block w-full border border-gray-300 rounded-xl shadow-sm px-6  py-4"
                 required
               />
             </div>
@@ -278,7 +278,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a condition"
               value={formData.condition}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -297,7 +297,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a category"
               value={formData.category}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2 "
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4 "
               required
             />
           </div>
@@ -316,14 +316,14 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Add tags"
               value={formData.tags}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
           {/* Submit the listing (Call the Create Listing API endpoint) */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 text-xl font-bold"
+            className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
           >
             Post Listing
           </button>

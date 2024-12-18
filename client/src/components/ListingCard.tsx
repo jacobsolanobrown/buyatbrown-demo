@@ -11,6 +11,7 @@ interface CardProps {
   tags: string;
   listingId: string;
   userId: string;
+  email: string;
   onClick: () => void;
 }
 
@@ -39,7 +40,7 @@ const ListingCard: React.FC<CardProps> = ({
       <div className="p-4 text-left">
         <h2 className="text-xl font-bold text-gray-800 truncate">{title}</h2>
         <p className="text-gray-600 font-medium">${price}</p>
-        <p className="text-sm font-light text-blue-600">by {username}</p>
+        <p className="text-sm font-light text-blue-800">by {username}</p>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import DropdownNavUser from "./DropdownNavUser";
 import {useUser} from "@clerk/clerk-react";
 import { getUserFavorites } from "../../utils/api";
 import ListingModal from "../ListingModal";
+import { PulseLoader } from "react-spinners";
 
 export default function UserFavorites({ username }: { username: string }) {
   const handleCardClick = (listing: any) => {
@@ -62,7 +63,6 @@ export default function UserFavorites({ username }: { username: string }) {
         {/* Dropdown for smaller screens */}
         <DropdownNavUser></DropdownNavUser>
 
-
         <div className="bg-white/50 p-6 rounded-lg shadow-md border">
           <h2 className="text-2xl font-bold mb-2">Favorites</h2>
           <p className="text-sm text-gray-600 mb-6">
@@ -70,43 +70,52 @@ export default function UserFavorites({ username }: { username: string }) {
           </p>
 
           <div
-            className="grid grid-cols-1 min-h-screen place-items-center 
+            className="
+             grid grid-cols-1 min-h-screen place-items-center 
              min-[1410px]:grid-cols-4 min-[860px]:grid-cols-2 
              min-[1110px]:grid-cols-3 gap-4
              min-[860px]:place-items-start min-[860px]:min-h-0
              
              "
           >
-          {isLoading ? (
-            <div className="text-2xl align-center">Loading All Listings...</div>
-              ) : posts.length === 0 ? (
-                <p>No listings available</p>
-              ) : (
-                console.log(posts),
-                posts.map((post) => (
-                  <ListingCard
-                    key={post.id}
-                    imageUrl={post.imageUrl}
-                    title={post.title}
-                    price={post.price}
-                    username={post.username}
-                    description={post.description}
-                    condition={post.condition}
-                    category={post.category}
-                    tags={post.tags}
-                    listingId={post.listingId}
-                    userId={post.userId}
-                    onClick={() => handleCardClick(post)}
-                  />
-                ))
-              )}
-              {isModalOpen && (
-                <ListingModal
-                  isOpen={isModalOpen}
-                  onClose={handleCloseModal}
-                  listing={selectedListing}
+            {isLoading ? (
+              <div className="text-2xl align-center">
+                <PulseLoader
+                  color="#ED1C24"
+                  margin={4}
+                  size={20}
+                  speedMultiplier={0.7}
                 />
-              )}
+              </div>
+            ) : posts.length === 0 ? (
+              <p>No listings available</p>
+            ) : (
+              (console.log(posts),
+              posts.map((post) => (
+                <ListingCard
+                  key={post.id}
+                  email={post.email}
+                  imageUrl={post.imageUrl}
+                  title={post.title}
+                  price={post.price}
+                  username={post.username}
+                  description={post.description}
+                  condition={post.condition}
+                  category={post.category}
+                  tags={post.tags}
+                  listingId={post.listingId}
+                  userId={post.userId}
+                  onClick={() => handleCardClick(post)}
+                />
+              )))
+            )}
+            {isModalOpen && (
+              <ListingModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                listing={selectedListing}
+              />
+            )}
           </div>
         </div>
       </div>

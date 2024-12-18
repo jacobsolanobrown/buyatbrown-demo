@@ -521,6 +521,18 @@ public class FirebaseUtilities implements StorageInterface {
       CollectionReference listingsRef = userDoc.collection("listings");
       // 4: Get all listing documents queries for each user
       QuerySnapshot listingsQuery = listingsRef.get().get();
+
+      // 5. Get the user's email to put in the listing data
+      CollectionReference nestedUserRef = userDoc.collection("users");
+      QuerySnapshot usersQuery = nestedUserRef.get().get();
+      String userEmail = "";
+      for (QueryDocumentSnapshot nestedUserDoc : usersQuery.getDocuments()) {
+        Map<String, Object> userData = nestedUserDoc.getData();
+        if (nestedUserDoc.getId().equals(userDoc.getId())) {
+          userEmail = (String) userData.get("email");
+        }
+      }
+
       // 5: Get data from document queries
       for (QueryDocumentSnapshot listingsDoc : listingsQuery.getDocuments()) {
         // 6: Add the listing data to the list
@@ -533,6 +545,10 @@ public class FirebaseUtilities implements StorageInterface {
         listingData.put("listingId", listingsDoc.getId());
         System.out.println(", listing ID: " + listingsDoc.getId());
         // Add the listing to the allListings list
+
+        listingData.put("email", userEmail);
+        System.out.print(", email: " + userEmail);
+
         System.out.println("listingData with user id and listing id?: " + listingData);
         allListings.add(listingData);
       }

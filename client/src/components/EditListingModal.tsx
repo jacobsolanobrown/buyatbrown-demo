@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { deleteListing } from "../utils/api";
 import { useUser } from "@clerk/clerk-react";
-import { useNavigate , useLocation} from "react-router-dom";
- 
+import { useNavigate } from "react-router-dom";
+import { PulseLoader } from "react-spinners";
+
 interface ModalCardProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,7 +17,6 @@ interface ModalCardProps {
     category: string;
     tags: string;
     listingId: string;
-    
   };
 }
 
@@ -29,32 +29,35 @@ const ListingModal: React.FC<ModalCardProps> = ({
   if (!isOpen || !listing) return null;
 
   const { user } = useUser();
-
+  const navigate = useNavigate();
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
 
   const handleDeleteListingClick = () => {
     if (user) {
-      console.log("uid: ", user.id);
-      console.log("require listing id: ", listing.listingId);
+      setDeleteLoading(true);
       deleteListing(user.id, listing.listingId)
-      .then((data) => {
-        if (data.response_type === "success") {
+        .then((data) => {
+          if (data.response_type === "success") {
             window.location.reload();
-        } else {
+          } else {
             console.error("Error deleting listing: ", data);
-        }
-      })
-      .catch((err) => {
-            console.error("Error deleting listing: ", err);``
-      });
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting listing: ", err);
+          ``;
+        })
+        .finally(() => {
+          setDeleteLoading(false);
+          onClose();
+        });
     }
   };
 
-  
-  const navigate = useNavigate();
   const handleEditListingClick = () => {
-    navigate("/editing-form", {state: {listing}});
-  }
-  
+    navigate("/editing-form", { state: { listing } });
+  };
+
   // Close the modal if the user clicks outside of it
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -63,7 +66,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
   };
 
   useEffect(() => {
-    console.log()
+    console.log();
   }, []);
 
   useEffect(() => {
@@ -109,16 +112,31 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <h3 className="text-gray-500 text-md">
             Tags: {listing.category}, {listing.tags}
           </h3>
-          <button className="rounded-xl text-white bg-red-600 text-lg p-4"
-          onClick={handleEditListingClick}>
+          <button
+            className="rounded-xl text-white bg-red-600 text-lg p-4 hover:bg-white hover:text-red-600 border-red-600 border-2 "
+            onClick={handleEditListingClick}
+          >
             Edit Listing
           </button>
-          <button
-            className="rounded-xl text-white bg-yellow-500 text-lg p-4"
-            onClick={handleDeleteListingClick}
-          >
-            Delete Listing
-          </button>
+          {deleteLoading ? (
+            <button
+              className="rounded-xl text-white bg-amber-950 p-4"
+            >
+              <PulseLoader
+                color="#FFFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </button>
+          ) : (
+            <button
+              className="rounded-xl text-white bg-amber-950 text-lg p-4 hover:bg-white hover:text-amber-950 hover:border-2 border-amber-950  "
+              onClick={handleDeleteListingClick}
+            >
+              Delete Listing
+            </button>
+          )}
         </div>
       </div>
     </div>

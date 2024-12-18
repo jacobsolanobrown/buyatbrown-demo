@@ -4,6 +4,7 @@ import { IoSearch } from "react-icons/io5";
 import { useRef, useState } from "react";
 import { SearchBar } from "./Search/SearchBar";
 import { filterListings } from "../utils/api";
+import { PulseLoader } from "react-spinners";
 
 export default function Navbar({ username }: { username: string }) {
   const navScrollRef = useRef<HTMLDivElement | null>(null);
@@ -30,19 +31,22 @@ export default function Navbar({ username }: { username: string }) {
   const navigate = useNavigate();
 
   const handleSearchSubmit = (term: string) => {
-      setLoading(true);
-      filterListings(term, "ignore", "ignore", "ignore")
-          .then((data) => {
-              setResults(data.filtered_listings || []);
-              navigate('/search-results', { state: { searchTerm: term, filteredPosts: data.filtered_listings || []} });
-          })
-          .catch(console.error)
-          .finally(() => setLoading(false));
+    setLoading(true);
+    filterListings(term, "ignore", "ignore", "ignore")
+      .then((data) => {
+        setResults(data.filtered_listings || []);
+        navigate("/search-results", {
+          state: {
+            searchTerm: term,
+            filteredPosts: data.filtered_listings || [],
+          },
+        });
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   };
 
   const [showSearch, setShowSearch] = useState(false);
-
-
 
   return (
     <header className="sticky top-0 z-50 bg-red-600 shadow-md">
@@ -72,7 +76,7 @@ export default function Navbar({ username }: { username: string }) {
         <div className="md:hidden">
           {!showSearch ? (
             <button onClick={() => setShowSearch(true)}>
-              <IoSearch size={24} />
+              <IoSearch size={20} />
             </button>
           ) : (
             <div className="flex flex-grow items-center">
@@ -93,7 +97,16 @@ export default function Navbar({ username }: { username: string }) {
             <SearchBar onSearchSubmit={handleSearchSubmit} />
           </div>
 
-          {loading && <p>Searching...</p>}
+          {loading && (
+            <div className="flex items-center justify-center ml-4">
+              <PulseLoader
+                color="#FFFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </div>
+          )}
         </div>
 
         {/* Nav Links with Buttons */}

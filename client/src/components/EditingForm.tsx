@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
 interface EditingPageProps {
   uid: string;
@@ -19,24 +18,25 @@ interface EditingPageProps {
   };
 }
 
-const EditingPage: React.FC<EditingPageProps> = ({ 
-    uid, 
-    listing,
-}) => {
+const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
+  const location = useLocation();
+  const { listing } = location.state || {}; // Destructure listing from state
+
   const navigate = useNavigate();
   const [responseMessage, setResponseMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     uid: uid || "",
-    title: listing?.title || "",
-    price: listing?.price || "",
-    username: listing?.username || "",
-    description: listing?.description || "",
-    condition: listing?.condition || "",
-    category: listing?.category || "",
-    tags: listing?.tags || "",
+    title: "",
+    price: "",
+    username: "",
+    description: "",
+    condition: "",
+    category: "",
+    tags: "",
     imageFile: null,
+    listingId: "",
   });
 
   // Handle form input changes
@@ -58,134 +58,82 @@ const EditingPage: React.FC<EditingPageProps> = ({
     setFormData({ ...formData, imageFile: file });
   };
 
-  /**
- * This handles form submission, validating all of the inputs and whether we can post a listing. It handles posting an image to our 
- * separate logic for i,mage posting.
- * 
- * @param e The event when clicking the submit button on the form 
- * @returns On success, it should return the user back to the home screen 
- * // TODO: add a success screen for posting and allow the user to navigate to their listings 
+  // TODO: add a success screen for posting and allow the user to navigate to their listings
 
- */
+  useEffect(() => {
+    // Fetch existing listing details
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get("uid") || "";
+    const listingId = params.get("listingId") || "";
+
+    setFormData((prevData) => ({
+      ...prevData,
+      uid,
+      listingId,
+    }));
+
+    if (uid && listingId) {
+      axios
+        .get(`http://localhost:3232/get-listing`, {
+          params: { uid, listingId },
+        })
+        .then((response) => {
+          console.log("response does it go in here");
+          const data = response.data;
+          setFormData((prevData) => ({
+            ...prevData,
+            title: data.title || "",
+            price: data.price || "",
+            description: data.description || "",
+            condition: data.condition || "",
+            category: data.category || "",
+            tags: data.tags || "",
+          }));
+        })
+        .catch((error) => {
+          console.error("Error fetching listing details:", error);
+          setResponseMessage("Error fetching listing details.");
+        });
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Must upload an image
-    if (!formData.imageFile) {
-      setResponseMessage("Please upload an image.");
-      return;
-    }
-
     setIsSubmitting(true);
     setResponseMessage("");
 
-    try {
-      // Convert image to Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(formData.imageFile);
-      reader.onload = async () => {
-        // Error check the reader result to prevent null pointer exception
-        const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
-
-        // Prepare form data
-        const data = {
-          ...formData,
-          imageUrl: base64Image,
-        };
-
-        try {
-          const response = await axios.post(
-            "http://localhost:3232/add-listings",
-            data.imageUrl, // Send the image URL as raw body
-            {
-              headers: { "Content-Type": "text/plain" },
-              params: {
-                username: data.username,
-                price: data.price,
-                title: data.title,
-                category: data.category,
-                tags: data.tags,
-                condition: data.condition,
-                description: data.description,
-              },
-            }
-          );
-          setResponseMessage(
-            response.data.response_type === "success"
-              ? "Listing added successfully!"
-              : `Error: ${response.data.error}`
-          );
-        } catch (error) {
-          console.error("Error uploading listing:", error);
-          setResponseMessage("An error occurred while uploading the listing.");
+    axios
+      .post(
+        `http://localhost:3232/update-listings`,
+        {},
+        {
+          params: {
+            uid: formData.uid,
+            listingId: formData.listingId,
+            title: formData.title,
+            price: formData.price,
+            description: formData.description,
+            condition: formData.condition,
+            category: formData.category,
+            tags: formData.tags,
+          },
         }
-      };
-    } catch (error) {
-      console.error("Error uploading listing:", error);
-      setResponseMessage("An error occurred while uploading the listing.");
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    // Handle form submission logic here
-    console.log("Form data submitted:", formData);
-    if (!formData.imageFile) {
-      setResponseMessage("Please upload an image.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    setResponseMessage("");
-
-    try {
-      // Convert image to Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(formData.imageFile);
-      reader.onload = async () => {
-        // Error check the reader result to prevent null pointer exception
-        const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
-
-        // Prepare form data
-        const data = {
-          ...formData,
-          imageUrl: base64Image,
-        };
-
-        try {
-          const response = await axios.post(
-            "http://localhost:3232/add-listings",
-            data.imageUrl, // Send the image URL as raw body
-            {
-              headers: { "Content-Type": "text/plain" },
-              params: {
-                uid: data.uid,
-                username: data.username,
-                price: data.price,
-                title: data.title,
-                category: data.category,
-                tags: data.tags,
-                condition: data.condition,
-                description: data.description,
-              },
-            }
-          );
-          setResponseMessage(
-            response.data.response_type === "success"
-              ? "Listing added successfully!"
-              : `Error: ${response.data.error}`
-          );
-        } catch (error) {
-          console.error("Error uploading listing:", error);
-          setResponseMessage("An error occurred while uploading the listing.");
-        }
-      };
-    } catch (error) {
-      console.error("Error uploading listing:", error);
-      setResponseMessage("An error occurred while uploading the listing.");
-    } finally {
-      setIsSubmitting(false);
-      navigate("/");
-    }
+      )
+      .then((response) => {
+        setResponseMessage(
+          response.data.response_type === "success"
+            ? "Listing updated successfully!"
+            : `Error: ${response.data.error}`
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating listing:", error);
+        setResponseMessage("An error occurred while updating the listing.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const goBack = () => {
@@ -207,17 +155,16 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="title"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Listing Title:
+              Current Listing Title: {listing?.title}
             </label>
             <input
               type="text"
               id="Listing Title"
               name="title"
-              placeholder={listing?.title || "Enter title"}
+              placeholder={"Enter a new title"}
               value={formData.title}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
-              required
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
             />
           </div>
           {/* Input for price */}
@@ -226,26 +173,25 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="price"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Price
+              Current Price: ${listing?.price}
             </label>
             <input
               type="text"
               id="price"
               name="price"
-              placeholder={listing?.price || "Enter price"}
+              placeholder={"Enter a new price"}
               value={formData.price}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
-              required
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
             />
           </div>
           {/* Input for imageUrl */}
           <div>
             <label
               htmlFor="imageUrl"
-              className="block text-xl font-medium text-gray-700 ml-3"
+              className="block text-xl font-medium text-gray-700 ml-3 truncate"
             >
-              Photo
+              Current Photo: {listing?.imageUrl}
             </label>
             <input
               type="file"
@@ -255,7 +201,6 @@ const EditingPage: React.FC<EditingPageProps> = ({
               placeholder="Upload an image (png or jpeg)"
               onChange={handleImageChange}
               className="mt-2 block w-full border-gray-300  px-2 py-2 rounded-full"
-              required
             />
           </div>
           {/* Input for a description */}
@@ -264,17 +209,16 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="description"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Description
+              Current Description: {listing?.description}
             </label>
             <div>
               <textarea
                 id="description"
                 name="description"
-                placeholder={listing?.description || "Enter description"}
+                placeholder={"Enter a new description"}
                 value={formData.description}
                 onChange={handleChange}
-                className=" block w-full border border-gray-300 rounded-xl shadow-sm px-4 py-2"
-                required
+                className=" block w-full border border-gray-300 rounded-xl shadow-sm px-6  py-4 mt-2"
               />
             </div>
           </div>
@@ -284,17 +228,16 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="condition"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Condition
+              Current Condition: {listing?.condition}
             </label>
             <input
               type="text"
               id="condition"
               name="condition"
-              placeholder={listing?.condition || "Enter condition"}
+              placeholder={"Enter a new condition"}
               value={formData.condition}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
-              required
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
             />
           </div>
           {/* Dropdown menu to choose item category */}
@@ -303,17 +246,16 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="category"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Category
+              Current Category: {listing?.category}
             </label>
             <input
               type="text"
               id="category"
               name="category"
-              placeholder={listing?.category || "Enter category"}
+              placeholder={"Enter a new category"}
               value={formData.category}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2 "
-              required
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
             />
           </div>
           {/* Add tags */}
@@ -322,25 +264,24 @@ const EditingPage: React.FC<EditingPageProps> = ({
               htmlFor="tags"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Tags
+              Current Tags: {listing?.tags}
             </label>
             <input
               type="text"
               id="tags"
               name="tags"
-              placeholder={listing?.tags || "Enter tags"}
+              placeholder={"Enter new tags"}
               value={formData.tags}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
-              required
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6 py-4 "
             />
           </div>
           {/* Submit the listing (Call the Create Listing API endpoint) */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 text-xl font-bold"
+            className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
           >
-            Post Listing
+            Update Listing
           </button>
         </form>
       </div>

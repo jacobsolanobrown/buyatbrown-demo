@@ -7,6 +7,7 @@ import DropdownNavUser from "./DropdownNavUser";
 import {useUser} from "@clerk/clerk-react";
 import { getUserListings } from "../../utils/api";
 import EditListingModal from "../EditListingModal";
+import { PulseLoader } from "react-spinners";
 
 export default function UserListings({ username }: { username: string }) {
 
@@ -77,24 +78,31 @@ export default function UserListings({ username }: { username: string }) {
           </p>
 
           <div
-            className="grid grid-cols-1 min-h-screen place-items-center 
+            className="
+             grid grid-cols-1 min-h-screen place-items-center 
              min-[1410px]:grid-cols-4 min-[860px]:grid-cols-2 
              min-[1110px]:grid-cols-3 gap-4
              min-[860px]:place-items-start min-[860px]:min-h-0
+             
              "
           >
             {isLoading ? (
               <div className="text-2xl align-center">
-                Loading All Listings...
+                <PulseLoader
+                  color="#ED1C24"
+                  margin={4}
+                  size={20}
+                  speedMultiplier={0.7}
+                />
               </div>
             ) : posts.length === 0 ? (
               <p>No listings available</p>
             ) : (
-              (console.log("all user posts", posts)),
-              (posts.map((post) => (
-
+              (console.log("all user posts", posts),
+              posts.map((post) => (
                 <ListingCard
                   key={post.id}
+                  email={post.email}
                   imageUrl={post.imageUrl}
                   title={post.title}
                   price={post.price}
@@ -107,8 +115,8 @@ export default function UserListings({ username }: { username: string }) {
                   userId={post.userId}
                   onClick={() => handleCardClick(post)}
                 />
-              ))
-            ))}
+              )))
+            )}
             {isModalOpen && (
               <EditListingModal
                 isOpen={isModalOpen}
