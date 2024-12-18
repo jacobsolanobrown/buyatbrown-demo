@@ -66,6 +66,7 @@ export default function Navbar({ username }: { username: string }) {
         </div>
       </div>
 
+      {/* Search Bar and navigation */}
       <div className="flex items-center justify-between px-6 py-2 pb-4">
         {/* Search Bar for small screens*/}
         <div className="md:hidden">
@@ -85,15 +86,18 @@ export default function Navbar({ username }: { username: string }) {
             </div>
           )}
         </div>
-        
+
         {/* Search Bar for large screens*/}
         <div className="hidden md:flex md:flex-grow">
-          <SearchBar onSearchSubmit={handleSearchSubmit} />
+          <div className="relative ">
+            <SearchBar onSearchSubmit={handleSearchSubmit} />
+          </div>
+
           {loading && <p>Searching...</p>}
         </div>
 
         {/* Nav Links with Buttons */}
-        <div className="relative flex items-center w-full sm:w-auto">
+        <div className="relative flex items-center sm:w-auto">
           {/* Left Scroll Button */}
           <button
             onClick={() => scrollNav("left")}

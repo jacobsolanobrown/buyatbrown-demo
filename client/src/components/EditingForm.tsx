@@ -2,29 +2,42 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { P } from "@clerk/clerk-react/dist/useAuth-D1ySo1Ar";
 
-interface PostingPageProps {
+interface EditingPageProps {
   uid: string;
-  username: string;
+  listing?: {
+    imageUrl: string;
+    title: string;
+    price: string;
+    username: string;
+    description: string;
+    condition: string;
+    category: string;
+    tags: string;
+    listingId: string;
+  };
 }
 
-const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
+const EditingPage: React.FC<EditingPageProps> = ({ 
+    uid, 
+    listing,
+}) => {
   const navigate = useNavigate();
   const [responseMessage, setResponseMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    uid: uid || "", // Initialize with passed uid
-    title: "",
-    price: "",
-    username: username || "", // Initialize with passed username
-    description: "",
-    condition: "",
-    category: "",
-    tags: "",
+    uid: uid || "",
+    title: listing?.title || "",
+    price: listing?.price || "",
+    username: listing?.username || "",
+    description: listing?.description || "",
+    condition: listing?.condition || "",
+    category: listing?.category || "",
+    tags: listing?.tags || "",
     imageFile: null,
   });
-  // setFormData({ ...formData, uid: uid, username: username });
 
   // Handle form input changes
   const handleChange = (
@@ -176,29 +189,31 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   };
 
   const goBack = () => {
-    navigate("/");
+    navigate("/yourlistings");
   };
 
   return (
     <div className="flex flex-col align-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-pink-100">
+      <p>{uid}</p>
+
       <div className="w-3/4 mx-12 my-14 p-8 rounded-3xl shadow-lg  bg-white/50 ">
         <button className="py-4 px-2 underline" onClick={goBack}>
           Cancel
         </button>
-        <h1 className="text-3xl font-bold mb-6 ml-2">Post a New Listing</h1>
+        <h1 className="text-3xl font-bold mb-6 ml-2">Edit Your Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="title"
               className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Listing Title
+              Listing Title:
             </label>
             <input
               type="text"
               id="Listing Title"
               name="title"
-              placeholder="Choose a listing title"
+              placeholder={listing?.title || "Enter title"}
               value={formData.title}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
@@ -217,7 +232,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               type="text"
               id="price"
               name="price"
-              placeholder="Choose a price"
+              placeholder={listing?.price || "Enter price"}
               value={formData.price}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
@@ -255,7 +270,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               <textarea
                 id="description"
                 name="description"
-                placeholder="Describe your listing"
+                placeholder={listing?.description || "Enter description"}
                 value={formData.description}
                 onChange={handleChange}
                 className=" block w-full border border-gray-300 rounded-xl shadow-sm px-4 py-2"
@@ -275,7 +290,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               type="text"
               id="condition"
               name="condition"
-              placeholder="Choose a condition"
+              placeholder={listing?.condition || "Enter condition"}
               value={formData.condition}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
@@ -294,7 +309,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               type="text"
               id="category"
               name="category"
-              placeholder="Choose a category"
+              placeholder={listing?.category || "Enter category"}
               value={formData.category}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2 "
@@ -313,7 +328,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               type="text"
               id="tags"
               name="tags"
-              placeholder="Add tags"
+              placeholder={listing?.tags || "Enter tags"}
               value={formData.tags}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-4 py-2"
@@ -333,4 +348,4 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   );
 };
 
-export default PostingPage;
+export default EditingPage;

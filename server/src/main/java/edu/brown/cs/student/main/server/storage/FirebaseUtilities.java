@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -277,6 +278,15 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
+  /**
+   * Return singular listing for a user.
+   *
+   * @param uid
+   * @param listingId
+   * @return
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
   @Override
   public Map<String, Object> getListingForUser(String uid, String listingId)
       throws InterruptedException, ExecutionException {
@@ -307,6 +317,49 @@ public class FirebaseUtilities implements StorageInterface {
 
     // 6. Return the listing data
     return listing;
+  }
+
+  /**
+   * This method gets all the listings for a user. This is a separate handler as it adds a listingId
+   * field in each listing document. It is used to list all the listings for a user. It is used in
+   * the ListListingsHandler.
+   *
+   * @param uid The user's ID
+   * @return A map of listing data, including the listing id (Map<String, Object>)
+   * @throws ExecutionException if the query execution fails
+   * @throws InterruptedException if the query is interrupted
+   */
+  @Override
+  public List<Map<String, Object>> getUserListings(String uid)
+      throws ExecutionException, InterruptedException {
+    Firestore db = FirestoreClient.getFirestore();
+
+    // 1. Get a reference to the user's document
+    DocumentReference userRef = db.collection("users").document(uid);
+
+    // 2. Get the user's listings collection
+    CollectionReference listingsRef = userRef.collection("listings");
+
+    // 3. Fetch all listings for the user
+    ApiFuture<QuerySnapshot> future = listingsRef.get();
+
+    // 4. Retrieve the query result (list of listings)
+    QuerySnapshot querySnapshot = future.get();
+
+    // 5. Create a list to store the listings
+    List<Map<String, Object>> userListings = new ArrayList<>();
+
+    // 6. Loop through each document in the query result and add it to the map
+    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+      // 5. Create a map to store the listings (listingId -> listingData)
+      Map<String, Object> listingData;
+      listingData = doc.getData();
+      assert listingData != null;
+      listingData.put("listingId", doc.getId());
+      // Add the listing to the list
+      userListings.add(listingData);
+    }
+    return userListings;
   }
 
   // clears the collections inside of a specific user.
@@ -350,6 +403,70 @@ public class FirebaseUtilities implements StorageInterface {
     return allUsers;
   }
 
+  /**
+   * This method gets all the user IDs in the database.
+   *
+   * @return
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Override
+  public List<String> getAllUsersIds() throws InterruptedException, ExecutionException {
+    // gets all listings for all users
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+    // 2: Create a list to hold all user IDs
+    List<String> allUserIds = new ArrayList<>();
+    // 3: Loop through each document in the users collection and add the user ID to the list
+    for (DocumentReference userDoc : usersRef.listDocuments()) {
+      allUserIds.add(userDoc.getId());
+    }
+    // Return the list of user IDs
+    return allUserIds;
+  }
+
+  /**
+   * This method will get the all the documents of liked listings for all users. It is primarily
+   * used to delete a listing from all users' liked listings if that listing no longer exists.
+   *
+   * @return a list of all the liked listings for all users
+   */
+  public List<Map<String, List<String>>> getAllUserFavoritesIds()
+      throws ExecutionException, InterruptedException {
+    // gets all users in our database
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Get a ref to the users collection
+    CollectionReference usersRef = db.collection("users");
+    // Create a list to store the liked listings to the user
+    List<Map<String, List<String>>> allUsers = new ArrayList<>();
+
+    // 2: Get all user documents (goes into the user subcollection)
+    for (DocumentReference userDoc : usersRef.listDocuments()) {
+      // 3: Reference the subcollection: liked_listing for each user
+      CollectionReference likedListingRef =
+          userDoc.collection("liked_listings"); // each user only has one document - user
+      List<String> likedListingsIds =
+          new ArrayList<>(); // store a list of liked listings for each user
+      // 4: Get all liked_listing documents for each user
+      for (DocumentReference nestedListingDoc : likedListingRef.listDocuments()) {
+        // 5: Add the liked listing id to the list
+        likedListingsIds.add(nestedListingDoc.getId());
+      }
+      Map<String, List<String>> userLikedListings = new HashMap<>();
+      userLikedListings.put(userDoc.getId(), likedListingsIds);
+      allUsers.add(userLikedListings);
+    }
+    return allUsers;
+  }
+
+  /**
+   * This gets the account details for all users in the database.
+   *
+   * @return
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
   public List<Map<String, Object>> getAllUserDataMaps()
       throws ExecutionException, InterruptedException {
     // gets all users in our database
@@ -372,7 +489,6 @@ public class FirebaseUtilities implements StorageInterface {
       for (QueryDocumentSnapshot nestedUserDoc : usersQuery.getDocuments()) {
         // 6: Add the user data to the list
         Map<String, Object> userData = nestedUserDoc.getData();
-        // TODO: get only the user id and add to the list of all users ? or return the user data
         // with all 3 fields (uid, username, email)
         String userId = nestedUserDoc.getId();
         // add the marker id to the marker data
@@ -382,7 +498,13 @@ public class FirebaseUtilities implements StorageInterface {
     return allUsers;
   }
 
-  // gets all listings for all users
+  /**
+   * This method gets all the listings for all users in the database.
+   *
+   * @return
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
   @Override
   public List<Map<String, Object>> getAllUsersListings()
       throws InterruptedException, ExecutionException {
@@ -418,6 +540,17 @@ public class FirebaseUtilities implements StorageInterface {
     return allListings;
   }
 
+  /**
+   * This method gets a document from a collection for a user.
+   *
+   * @param uid
+   * @param collectionId
+   * @param docId
+   * @return
+   * @throws IllegalArgumentException
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
   @Override
   public Map<String, Object> getDocument(String uid, String collectionId, String docId)
       throws IllegalArgumentException, ExecutionException, InterruptedException {
@@ -441,12 +574,15 @@ public class FirebaseUtilities implements StorageInterface {
       System.out.println("No document found with ID: " + docId);
       throw new IllegalArgumentException("No document found with ID: " + docId);
     }
-
     System.out.println("Document Data: " + documentSnapshot.getData());
-
     return documentSnapshot.getData();
   }
 
+  /**
+   * This method deletes a document from a collection for a user.
+   *
+   * @param doc
+   */
   private void deleteDocument(DocumentReference doc) {
     // for each subcollection, run deleteCollection()
     Iterable<CollectionReference> collections = doc.listCollections();
@@ -476,5 +612,43 @@ public class FirebaseUtilities implements StorageInterface {
     } catch (Exception e) {
       System.err.println("Error deleting collection : " + e.getMessage());
     }
+  }
+
+  /**
+   * This method returns a list of document IDs for a given collection for a user. Ex: The listing
+   * ids for a user's listings collection. This method is unused but can be used to get a list of
+   * document IDs for a collection.
+   *
+   * @param uid The user's ID
+   * @param collection_id The collection ID
+   * @return A list of document IDs
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Override
+  public List<String> getCollectionDocumentIds(String uid, String collection_id)
+      throws InterruptedException, ExecutionException {
+    if (uid == null || collection_id == null) {
+      throw new IllegalArgumentException(
+          "getCollectionDocumentIds: uid and/or collection_id cannot be null");
+    }
+
+    // gets all documents in the collection 'collection_id' for user 'uid'
+
+    Firestore db = FirestoreClient.getFirestore();
+    // 1: Make the data payload to add to your collection
+    CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
+
+    // 2: Get pin documents
+    QuerySnapshot dataQuery = dataRef.get().get();
+
+    // 3: Get data from document queries
+    List<String> data = new ArrayList<>();
+    for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
+      //      System.out.print(doc);
+      data.add(doc.getId());
+    }
+
+    return data;
   }
 }

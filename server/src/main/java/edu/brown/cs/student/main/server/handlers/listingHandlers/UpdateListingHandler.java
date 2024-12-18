@@ -146,6 +146,7 @@ public class UpdateListingHandler implements Route {
         }
         listing.put("title", title);
       }
+
       if (price != null) {
         // check if price is negative value
         if (Double.parseDouble(price) < 0) {

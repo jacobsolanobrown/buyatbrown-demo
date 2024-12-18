@@ -48,11 +48,10 @@ function Homepage() {
 
   return (
     <div className="flex flex-row">
-      {/* Filter by condition */}
-      <div className="bg-slate-200 p-4 min-w-64 max-w-64 rounded-xl max-h-32 ml-5 mt-5 mb-5">
+      <div className="bg-slate-200 p-4 w-64 rounded-xl max-h-32 ml-5 mt-5 mb-5">
         <h2 className="text-xl font-bold mb-4 text-center">Home</h2>
         <button
-          className="bg-red-500 text-white py-2 px-4 rounded-3xl mb-4 w-full"
+          className="bg-red-600 text-white py-2 px-4 rounded-3xl mb-4 w-full"
           onClick={handlePostListingClick}
         >
           Post Listing
@@ -61,12 +60,11 @@ function Homepage() {
 
       {/* Main content */}
       <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-
-      {errorMessage && (
-                <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-                  {errorMessage}
-                </p>
-              )}
+        {errorMessage && (
+          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+            {errorMessage}
+          </p>
+        )}
 
         {isLoading ? (
           <div className="">
@@ -79,7 +77,7 @@ function Homepage() {
         ) : posts.length === 0 ? (
           <p>No listings available</p>
         ) : (
-          console.log("all listing posts: ", posts),
+          (console.log("all listing posts: ", posts),
           posts.map((post) => (
             <ListingCard
               key={post.id}
@@ -95,7 +93,7 @@ function Homepage() {
               userId={post.userId}
               onClick={() => handleCardClick(post)}
             />
-          ))
+          )))
         )}
         {isModalOpen && (
           <ListingModal

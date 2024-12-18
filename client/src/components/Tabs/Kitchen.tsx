@@ -73,16 +73,16 @@ export default function Kitchen () {
   
   return (
     <div className="flex flex-row">
-      <FilterBar 
-        title="Kitchen" 
-        filters={clothesFilters} 
+      <FilterBar
+        title="Kitchen"
+        filters={clothesFilters}
         conditionFilters={conditionFilters}
         onFiltersChange={handleFiltersChange}
-        onConditionsChange={handleConditionsChange} />
+        onConditionsChange={handleConditionsChange}
+      />
 
       {/* Render posts based on filters */}
       <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-
         {/* Display error message */}
         {errorMessage && (
           <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
@@ -92,39 +92,47 @@ export default function Kitchen () {
 
         {isLoading ? (
           <div className="align-center">
-          <img
-            className="w-14 h-12"
-            src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-            alt="Loading Image"
-          />
+            <img
+              className="w-14 h-12"
+              src="src/assets/Spin@1x-1.0s-200px-200px.gif"
+              alt="Loading Image"
+            />
           </div>
-          ) : posts.length === 0 ? (
-            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">No kitchen listings available</p>
-          ) : (
-            posts.map((post) => ( // posts should reflect 
-            <ListingCard
-              key={post.id}
-              imageUrl={post.imageUrl} 
-              title={post.title}
-              price={post.price}
-              username={post.username}
-              description={post.description}
-              condition={post.condition}
-              category={post.category}
-              tags={post.tags}
-              onClick={() => handleCardClick(post)}
+        ) : posts.length === 0 ? (
+          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+            No kitchen listings available
+          </p>
+        ) : (
+          posts.map(
+            (
+              post // posts should reflect
+            ) => (
+              <ListingCard
+                key={post.id}
+                listingId={post.id}
+                userId={post.userId}
+                imageUrl={post.imageUrl}
+                title={post.title}
+                price={post.price}
+                username={post.username}
+                description={post.description}
+                condition={post.condition}
+                category={post.category}
+                tags={post.tags}
+                onClick={() => handleCardClick(post)}
               />
-            ))
-          )}
+            )
+          )
+        )}
 
-          {isModalOpen && (
-              <ListingModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                listing={selectedListing}
-              />
-            )}
-          </div>
+        {isModalOpen && (
+          <ListingModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            listing={selectedListing}
+          />
+        )}
+      </div>
     </div>
   );
 }

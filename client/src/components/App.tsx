@@ -16,6 +16,7 @@ import UserMessages from "./UserPages/UserMessages";
 import UserSettings from "./UserPages/UserSettings";
 import SignInPage from "./SignInPage";
 import ListingForm from "./ListingForm";
+import EditingForm from "./EditingForm"
 import {
   SignedIn,
   SignedOut,
@@ -212,6 +213,10 @@ function App() {
               <Route
                 path="/listing-form"
                 element={<ListingForm uid={uid} username={username} />}
+              />
+              <Route
+                path="/editing-form"
+                element={<EditingForm uid={uid}/>}
               />
               <Route path="/clothes" element={<Clothes />} />
               <Route path="/tech" element={<Tech />} />

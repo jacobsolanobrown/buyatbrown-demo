@@ -11,10 +11,11 @@ export const SearchBar: React.FC<{ onSearchSubmit: (term: string) => void }> = (
   };
 
   return (
-      <form onSubmit={handleSubmit} className="relative">
+    // EDIT HERE FOR SEARCH LENGTH 
+      <form onSubmit={handleSubmit} className="relative w-full">
           <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search for items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="min-w-full px-4 py-2 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"

@@ -90,7 +90,9 @@ export default function UserListings({ username }: { username: string }) {
             ) : posts.length === 0 ? (
               <p>No listings available</p>
             ) : (
-              posts.map((post) => (
+              (console.log("all user posts", posts)),
+              (posts.map((post) => (
+
                 <ListingCard
                   key={post.id}
                   imageUrl={post.imageUrl}
@@ -106,7 +108,7 @@ export default function UserListings({ username }: { username: string }) {
                   onClick={() => handleCardClick(post)}
                 />
               ))
-            )}
+            ))}
             {isModalOpen && (
               <EditListingModal
                 isOpen={isModalOpen}

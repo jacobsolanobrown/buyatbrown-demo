@@ -50,6 +50,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
             const favoriteListings = data.listings;
             console.log("favorite listings", favoriteListings);
             console.log("listing id", listing.listingId);
+            // test here
             const isFavorite = favoriteListings.some(
               (fav: any) => fav.listingId === listing.listingId
             );
@@ -150,7 +151,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
         <div className="flex flex-col text-left space-y-6">
           <div>
             <h2 className="text-3xl font-bold">{listing.title}</h2>
-            <h3 className="text-gray-500 text-xl">{listing.condition}</h3>
+            <h3 className="text-blue-500 text-xl">{listing.condition}</h3>
           </div>
           <h2 className="text-2xl text-gray-600">${listing.price}</h2>
           <img

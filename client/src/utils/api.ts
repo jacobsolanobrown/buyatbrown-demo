@@ -76,9 +76,9 @@ export async function removeFromFavorites(uid: string, listingID: string) {
   });
 }
 
-export async function deleteListing(uid: string, listingID: string) {
+export async function deleteListing(uid: string, listingId: string) {
   return await queryAPI("delete-listings", {
     uid: uid,
-    listingID: listingID,
+    listingId: listingId,
   });
 }

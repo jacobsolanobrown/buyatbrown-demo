@@ -105,6 +105,8 @@ export default function Clothes () {
             posts.map((post) => ( 
             <ListingCard
               key={post.id}
+              listingId={post.id}
+              userId={post.userId}
               imageUrl={post.imageUrl} 
               title={post.title}
               price={post.price}
