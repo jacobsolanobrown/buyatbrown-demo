@@ -33,17 +33,13 @@ public class ListListingsHandler implements Route {
       System.out.println("listing listings for user: " + uid);
 
       // get all the listings for the user
-      List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "listings");
+      List<Map<String, Object>> listings = this.storageHandler.getUserListings(uid);
 
       // convert the key,value map to just a list of the listings.
-      System.out.println("all listings for users/vals:" + vals);
-      // THIS IS WHAT I COMMENTED OUT TO FIX THE ERROR
-      //      List<String> listings = vals.stream().map(Object::toString).toList();
-      //      System.out.println("user listings: " + listings);
-      //      System.out.println(vals.stream().map(listing -> listing.get("item")));
+      System.out.println("all listings for users/vals:" + listings);
 
       responseMap.put("response_type", "success");
-      responseMap.put("listings", vals);
+      responseMap.put("listings", listings);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

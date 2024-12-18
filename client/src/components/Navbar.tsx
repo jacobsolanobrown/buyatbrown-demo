@@ -4,6 +4,7 @@ import { IoSearch } from "react-icons/io5";
 import { useRef, useState } from "react";
 import { SearchBar } from "./Search/SearchBar";
 import { filterListings } from "../utils/api";
+import { PulseLoader } from "react-spinners";
 
 export default function Navbar({ username }: { username: string }) {
   const navScrollRef = useRef<HTMLDivElement | null>(null);
@@ -30,16 +31,22 @@ export default function Navbar({ username }: { username: string }) {
   const navigate = useNavigate();
 
   const handleSearchSubmit = (term: string) => {
-      setLoading(true);
-      filterListings(term, "ignore", "ignore", "ignore")
-          .then((data) => {
-              setResults(data.filtered_listings || []);
-              navigate('/search-results', { state: { searchTerm: term, filteredPosts: data.filtered_listings || []} });
-          })
-          .catch(console.error)
-          .finally(() => setLoading(false));
+    setLoading(true);
+    filterListings(term, "ignore", "ignore", "ignore")
+      .then((data) => {
+        setResults(data.filtered_listings || []);
+        navigate("/search-results", {
+          state: {
+            searchTerm: term,
+            filteredPosts: data.filtered_listings || [],
+          },
+        });
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   };
 
+  const [showSearch, setShowSearch] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-red-600 shadow-md">
@@ -63,23 +70,51 @@ export default function Navbar({ username }: { username: string }) {
         </div>
       </div>
 
+      {/* Search Bar and navigation */}
       <div className="flex items-center justify-between px-6 py-2 pb-4">
-        {/* Search Bar */}
-        <div className="md:hidden"> 
-          <IoSearch />
+        {/* Search Bar for small screens*/}
+        <div className="md:hidden">
+          {!showSearch ? (
+            <button onClick={() => setShowSearch(true)}>
+              <IoSearch size={20} />
+            </button>
+          ) : (
+            <div className="flex flex-grow items-center">
+              <SearchBar onSearchSubmit={handleSearchSubmit} />
+              <button
+                onClick={() => setShowSearch(false)}
+                className="ml-2 text-red-500 font-bold"
+              >
+                X
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Search Bar for large screens*/}
         <div className="hidden md:flex md:flex-grow">
-          <SearchBar onSearchSubmit={handleSearchSubmit} />
-          {loading && <p>Loading...</p>}
+          <div className="relative ">
+            <SearchBar onSearchSubmit={handleSearchSubmit} />
+          </div>
+
+          {loading && (
+            <div className="flex items-center justify-center ml-4">
+              <PulseLoader
+                color="#FFFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </div>
+          )}
         </div>
 
         {/* Nav Links with Buttons */}
-        <div className="relative flex items-center w-full sm:w-auto">
+        <div className="relative flex items-center sm:w-auto">
           {/* Left Scroll Button */}
           <button
             onClick={() => scrollNav("left")}
-            className="sm:hidden absolute left-0 top-1/2 transform -translate-y-1/2  text-black bg-white rounded-full p-2 shadow-md z-10"
+            className="md:hidden absolute left-0 top-1/2 transform -translate-y-1/2  text-white p-2 z-10"
           >
             &lt;
           </button>
@@ -136,7 +171,7 @@ export default function Navbar({ username }: { username: string }) {
           {/* Right Scroll Button */}
           <button
             onClick={() => scrollNav("right")}
-            className="sm:hidden absolute right-0 top-1/2 transform -translate-y-1/2 bg-white text-black rounded-full p-2 shadow-md z-10"
+            className="md:hidden absolute right-0 top-1/2 transform -translate-y-1/2 text-white p-2"
           >
             &gt;
           </button>

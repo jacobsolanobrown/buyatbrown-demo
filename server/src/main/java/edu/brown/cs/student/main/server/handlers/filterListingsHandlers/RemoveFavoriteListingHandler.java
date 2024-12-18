@@ -3,29 +3,21 @@ package edu.brown.cs.student.main.server.handlers.filterListingsHandlers;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class LikeListingHandler implements Route {
+public class RemoveFavoriteListingHandler implements Route {
 
   private final StorageInterface storageHandler;
 
-  public LikeListingHandler(StorageInterface storageHandler) {
+  public RemoveFavoriteListingHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
-  /**
-   * Handles the request to like a listing and store it under the user's liked listings.
-   *
-   * @param request The HTTP request object
-   * @param response The HTTP response object
-   * @return A JSON response indicating success or failure
-   */
   @Override
-  public Object handle(Request request, Response response) {
+  public Object handle(Request request, Response response) throws Exception {
     Map<String, Object> responseMap = new HashMap<>();
     try {
       // Collect parameters from the request
@@ -37,23 +29,15 @@ public class LikeListingHandler implements Route {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
 
-      // Fetch all listings
-      List<Map<String, Object>> allListings = this.storageHandler.getAllUsersListings();
-
-      // Find the specific listing by listingId
-      Map<String, Object> targetListing =
-          allListings.stream()
-              .filter(listing -> listingId.equals(listing.get("listingId")))
-              .findFirst()
-              .orElseThrow(
-                  () -> new IllegalArgumentException("Listing not found for the given listingId."));
-
-      // Add the listing to the user's liked listings
+      // The document ID in the liked_listings collection follows the same pattern as in
+      // LikeListingHandler
       String likedListingId = "liked-" + listingId;
-      this.storageHandler.addDocument(uid, "liked_listings", likedListingId, targetListing);
+
+      // Remove the listing from the user's liked listings
+      this.storageHandler.removeDocument(uid, "liked_listings", likedListingId);
 
       // Log the operation
-      System.out.println("User " + uid + " liked listing: " + listingId);
+      System.out.println("User " + uid + " unliked listing: " + listingId);
 
       // Prepare success response
       responseMap.put("response_type", "success");

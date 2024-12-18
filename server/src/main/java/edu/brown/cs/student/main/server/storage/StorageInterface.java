@@ -20,6 +20,9 @@ public interface StorageInterface {
   Map<String, Object> getListingForUser(String uid, String listingId)
       throws InterruptedException, ExecutionException;
 
+  List<Map<String, Object>> getUserListings(String uid)
+      throws ExecutionException, InterruptedException;
+
   void clearUser(String uid) throws InterruptedException, ExecutionException;
 
   List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException;
@@ -32,4 +35,12 @@ public interface StorageInterface {
       throws IllegalArgumentException, ExecutionException, InterruptedException;
 
   void deleteImageFromStorage(String existingImageUrl);
+
+  List<Map<String, List<String>>> getAllUserFavoritesIds()
+      throws ExecutionException, InterruptedException;
+
+  List<String> getAllUsersIds() throws ExecutionException, InterruptedException;
+
+  List<String> getCollectionDocumentIds(String uid, String collection_id)
+      throws InterruptedException, ExecutionException;
 }

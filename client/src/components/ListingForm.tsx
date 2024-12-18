@@ -14,17 +14,17 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    uid: "",
+    uid: uid || "", // Initialize with passed uid
     title: "",
     price: "",
-    username: "", // pass in the username (no need for user to type it in)
+    username: username || "", // Initialize with passed username
     description: "",
     condition: "",
     category: "",
     tags: "",
     imageFile: null,
-    // imageFile: null,
   });
+  // setFormData({ ...formData, uid: uid, username: username });
 
   // Handle form input changes
   const handleChange = (
@@ -180,69 +180,28 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   };
 
   return (
-    <div className="flex flex-col align-center min-h-screen bg-gradient-to-r from-blue-100 to-pink-100">
-      <div className="min-w-2xl mx-12 my-14 p-8 rounded-3xl shadow-lg  bg-white/50 ">
-        <button className="py-4 px-2 rounded-md underline" onClick={goBack}>
-          Back to Listings
+    <div className="flex flex-col align-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-pink-100">
+      <div className="w-3/4 mx-12 my-14 p-8 rounded-3xl shadow-lg  bg-white/50 ">
+        <button className="py-4 px-2 underline" onClick={goBack}>
+          Cancel
         </button>
-        <h1 className="text-3xl font-bold mb-6">Post a New Listing</h1>
-        <h1>{uid}</h1>
-        <h1>{username}</h1>
+        <h1 className="text-3xl font-bold mb-6 ml-2">Post a New Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Input for UID: REMOVE LATER */}
-          <div>
-            <label
-              htmlFor="uid"
-              className="block text-sm font-medium text-gray-700"
-            >
-              UID:
-            </label>
-            <input
-              type="uid"
-              id="price"
-              name="uid"
-              placeholder="Enter your uid"
-              value={formData.uid}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
-          </div>
-          {/* Input for USERNAME: REMOVE LATER */}
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Username:
-            </label>
-            <input
-              type="username"
-              id="price"
-              name="username"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
-          </div>
-          {/* Input for a listing Title */}
           <div>
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Title:
+              Listing Title
             </label>
             <input
               type="text"
-              id="title"
+              id="Listing Title"
               name="title"
               placeholder="Choose a listing title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -250,9 +209,9 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           <div>
             <label
               htmlFor="price"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Price:
+              Price
             </label>
             <input
               type="text"
@@ -261,7 +220,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a price"
               value={formData.price}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -269,9 +228,9 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           <div>
             <label
               htmlFor="imageUrl"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Photo:
+              Photo
             </label>
             <input
               type="file"
@@ -280,7 +239,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               name="imageUrl"
               placeholder="Upload an image (png or jpeg)"
               onChange={handleImageChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border-gray-300  px-2 py-2 rounded-full"
               required
             />
           </div>
@@ -288,25 +247,27 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
-              Description:
+              Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              placeholder="Describe your listing"
-              value={formData.description}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
+            <div>
+              <textarea
+                id="description"
+                name="description"
+                placeholder="Describe your listing"
+                value={formData.description}
+                onChange={handleChange}
+                className=" block w-full border border-gray-300 rounded-xl shadow-sm px-6  py-4"
+                required
+              />
+            </div>
           </div>
           {/* Dropdown menu to choose item condition */}
           <div>
             <label
               htmlFor="condition"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
               Condition
             </label>
@@ -317,7 +278,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a condition"
               value={formData.condition}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
@@ -325,7 +286,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           <div>
             <label
               htmlFor="category"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
               Category
             </label>
@@ -336,7 +297,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Choose a category"
               value={formData.category}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4 "
               required
             />
           </div>
@@ -344,7 +305,7 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           <div>
             <label
               htmlFor="tags"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-xl font-medium text-gray-700 ml-3"
             >
               Tags
             </label>
@@ -355,14 +316,14 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               placeholder="Add tags"
               value={formData.tags}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
               required
             />
           </div>
           {/* Submit the listing (Call the Create Listing API endpoint) */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
           >
             Post Listing
           </button>

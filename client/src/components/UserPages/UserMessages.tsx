@@ -24,7 +24,7 @@ export default function UserMessages({ username }: { username: string }) {
         <div className="flex flex-col items-center sm:block">
           <div className="bg-red-600 w-96 text-white py-4 px-6 rounded-xl shadow-md mb-6">
             <h1 className="text-lg font-semibold text-center">
-              Hey, {username}!hrjhrh
+              Hey, {username}!
             </h1>
           </div>
         </div>

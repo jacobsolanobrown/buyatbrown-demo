@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { useState } from "react";
+import { deleteListing } from "../utils/api";
+import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+import { PulseLoader } from "react-spinners";
 
 interface ModalCardProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface ModalCardProps {
     condition: string;
     category: string;
     tags: string;
+    listingId: string;
   };
 }
 
@@ -25,10 +28,34 @@ const ListingModal: React.FC<ModalCardProps> = ({
 }) => {
   if (!isOpen || !listing) return null;
 
-  const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
 
-  const handleEmailSellerClick = () => {
-    setShowEmailPopup(true);
+  const handleDeleteListingClick = () => {
+    if (user) {
+      setDeleteLoading(true);
+      deleteListing(user.id, listing.listingId)
+        .then((data) => {
+          if (data.response_type === "success") {
+            window.location.reload();
+          } else {
+            console.error("Error deleting listing: ", data);
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting listing: ", err);
+          ``;
+        })
+        .finally(() => {
+          setDeleteLoading(false);
+          onClose();
+        });
+    }
+  };
+
+  const handleEditListingClick = () => {
+    navigate("/editing-form", { state: { listing } });
   };
 
   // Close the modal if the user clicks outside of it
@@ -37,6 +64,10 @@ const ListingModal: React.FC<ModalCardProps> = ({
       onClose();
     }
   };
+
+  useEffect(() => {
+    console.log();
+  }, []);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -55,7 +86,6 @@ const ListingModal: React.FC<ModalCardProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      {/* //TODO: ASK WETHER TO KEEP LARGE WIDE CARDS OR SKINNY ONES  */}
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto space-y-6">
         <button
           onClick={onClose}
@@ -82,12 +112,31 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <h3 className="text-gray-500 text-md">
             Tags: {listing.category}, {listing.tags}
           </h3>
-          <button className="rounded-xl text-white bg-red-600 text-lg p-4">
+          <button
+            className="rounded-xl text-white bg-red-600 text-lg p-4 hover:bg-white hover:text-red-600 border-red-600 border-2 "
+            onClick={handleEditListingClick}
+          >
             Edit Listing
           </button>
-          <button className="rounded-xl text-white bg-yellow-500 text-lg p-4">
-            Delete Listing
-          </button>
+          {deleteLoading ? (
+            <button
+              className="rounded-xl text-white bg-amber-950 p-4"
+            >
+              <PulseLoader
+                color="#FFFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </button>
+          ) : (
+            <button
+              className="rounded-xl text-white bg-amber-950 text-lg p-4 hover:bg-white hover:text-amber-950 hover:border-2 border-amber-950  "
+              onClick={handleDeleteListingClick}
+            >
+              Delete Listing
+            </button>
+          )}
         </div>
       </div>
     </div>

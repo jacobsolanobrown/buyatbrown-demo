@@ -9,6 +9,9 @@ interface CardProps {
   condition: string;
   category: string;
   tags: string;
+  listingId: string;
+  userId: string;
+  email: string;
   onClick: () => void;
 }
 
@@ -25,7 +28,7 @@ const ListingCard: React.FC<CardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer w-64 bg-white shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
+      className="cursor-pointer w-64 bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
     >
       <div className="relative w-full h-48 bg-gray-100">
         <img
@@ -34,10 +37,10 @@ const ListingCard: React.FC<CardProps> = ({
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-4 text-center">
-        <h2 className="text-lg font-bold text-gray-800 truncate">{title}</h2>
+      <div className="p-4 text-left">
+        <h2 className="text-xl font-bold text-gray-800 truncate">{title}</h2>
         <p className="text-gray-600 font-medium">${price}</p>
-        <p className="text-sm text-gray-500">by {username}</p>
+        <p className="text-sm font-light text-blue-800">by {username}</p>
       </div>
     </div>
   );

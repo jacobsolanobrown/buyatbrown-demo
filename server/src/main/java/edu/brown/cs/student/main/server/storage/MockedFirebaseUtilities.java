@@ -143,6 +143,12 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   @Override
+  public List<Map<String, Object>> getUserListings(String uid)
+      throws ExecutionException, InterruptedException {
+    return List.of();
+  }
+
+  @Override
   public void clearUser(String uid) {
     if (uid == null) {
       throw new IllegalArgumentException("clearUser: uid cannot be null");
@@ -260,4 +266,21 @@ public class MockedFirebaseUtilities implements StorageInterface {
 
   @Override
   public void deleteImageFromStorage(String existingImageUrl) {}
+
+  @Override
+  public List<Map<String, List<String>>> getAllUserFavoritesIds()
+      throws ExecutionException, InterruptedException {
+    return List.of();
+  }
+
+  @Override
+  public List<String> getAllUsersIds() throws ExecutionException, InterruptedException {
+    return List.of();
+  }
+
+  @Override
+  public List<String> getCollectionDocumentIds(String uid, String collection_id)
+      throws InterruptedException, ExecutionException {
+    return List.of();
+  }
 }

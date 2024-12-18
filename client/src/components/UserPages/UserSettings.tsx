@@ -4,12 +4,13 @@ import NavUser from "./NavUser";
 import DropdownNavUser from "./DropdownNavUser";
 import { useUser } from "@clerk/clerk-react";
 import { createUser, clearUser } from "../../utils/api";
+import PulseLoader from "react-spinners/PulseLoader";
 
 export default function UserSettings({ username }: { username: string }) {
   const [newUsername, setUsername] = React.useState("");
   const [usernameLoading, setUsernameLoading] = React.useState(false);
   const [usernameMessage, setUsernameMessage] = React.useState("");
-  const [deleteLoading, setDeleteLoading] = React.useState(false);
+  const [deleteLoading, setDeleteLoading] = React.useState(true);
   const [deleteMessage, setDeleteMessage] = React.useState("");
   const { user } = useUser();
 
@@ -117,7 +118,10 @@ export default function UserSettings({ username }: { username: string }) {
         <div className="bg-white/50 p-6 rounded-xl shadow-md border">
           <h2 className="text-2xl font-bold mb-5">Settings</h2>
 
-          <form onSubmit={handleChangeUsername}>
+
+          {/* This form is commented out as editing username do not change post usernames associated with that account */}
+
+          {/* <form onSubmit={handleChangeUsername}>
             <div className="flex flex-col">
               <label className="block mb-5 text-lg font-medium text-gray-900 ">
                 Change Username:
@@ -136,12 +140,14 @@ export default function UserSettings({ username }: { username: string }) {
                   required
                 />
                 {usernameLoading ? (
-                  // loading screen
-                  <img
-                    className="w-14 block h-12"
-                    src="src/assets/Spin@1x-1.0s-200px-200px.gif"
-                    alt="Loading Image"
-                  />
+                  <div className="flex items-center justify-center">
+                    <PulseLoader
+                      color="#ED1C24"
+                      margin={4}
+                      size={16}
+                      speedMultiplier={0.7}
+                    />
+                  </div>
                 ) : (
                   <button
                     type="submit"
@@ -163,24 +169,30 @@ export default function UserSettings({ username }: { username: string }) {
                 )}
               </div>
             </div>
-          </form>
+          </form> */}
 
           <div>
-            <h2 className="block mt-5 mb-5 text-lg font-medium text-gray-900 ">
+            <h2 className="block mt-3 mb-5 text-lg font-medium text-gray-900 ">
               Delete Account:
             </h2>
-            {/* // TODO: are we sure we want to delete the account? */}
-
+            <p className="text-sm text-red-600 mt-2 mb-3 ml-3">
+              Warning: This action is irreversible.
+            </p>
             <button
-              className="bg-yellow-500 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-yellow-500 hover:border-yellow-500"
+              className="bg-amber-950 w-80 rounded-full text-white font-ibm-plex-sans  font-bold p-2.5 text-center hover:bg-white border hover:text-amber-950 hover:border-amber-950"
               onClick={handleDeleteAccount}
             >
               Yes, Delete My Account
             </button>
             {deleteMessage && deleteLoading ? (
-              <p className="py-4 font-ibm-plex-sans text-red-600">
-                {deleteMessage}
-              </p>
+              <div className="mt-4 flex ml-32">
+                <PulseLoader
+                  color="#ED1C24"
+                  margin={4}
+                  size={10}
+                  speedMultiplier={0.7}
+                />
+              </div>
             ) : (
               <p className="py-4 font-ibm-plex-sans text-red-600">
                 {deleteMessage}

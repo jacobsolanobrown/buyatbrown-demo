@@ -1,6 +1,14 @@
 import React, { useEffect } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useState } from "react";
+import { PulseLoader } from "react-spinners";
+import {
+  addToFavorites,
+  getUser,
+  getUserFavorites,
+  removeFromFavorites,
+} from "../utils/api";
+import { useUser } from "@clerk/clerk-react";
 
 interface ModalCardProps {
   isOpen: boolean;
@@ -14,6 +22,8 @@ interface ModalCardProps {
     condition: string;
     category: string;
     tags: string;
+    listingId: string;
+    email: string;
   };
 }
 
@@ -25,20 +35,100 @@ const ListingModal: React.FC<ModalCardProps> = ({
 }) => {
   if (!isOpen || !listing) return null;
 
+  const { user } = useUser();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const [showFavoriteMessage, setShowFavoriteMessage] = useState(false);
+  const [showRemovedMessage, setShowRemovedMessage] = useState(false);
+  const [favoritingLoading, setFavoritingLoading] = useState(false);
 
-  // will need to check if the listing is already favorited
+  // Check if the listing is already in the user's favorites
   useEffect(() => {
-    setIsFavorited(true);
-  }, []);
+    const fetchFavoriteStatus = async () => {
+      if (user) {
+        getUserFavorites(user.id).then((data) => {
+          if (
+            data.response_type === "success" &&
+            Array.isArray(data.listings)
+          ) {
+            const favoriteListings = data.listings;
+            console.log("favorite listings", favoriteListings);
+            console.log("listing id", listing.listingId);
+            // test here
+            const isFavorite = favoriteListings.some(
+              (fav: any) => fav.listingId === listing.listingId
+            );
 
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
+            if (isFavorite) {
+              console.log("SHOULD BE FAVORITED");
+              setIsFavorited(true);
+            }
+            console.log("favorite status", isFavorited);
+          }
+        });
+      }
+    };
+    fetchFavoriteStatus();
+  }, [listing.listingId]);
+
+  // Handle favorite toggle
+  const handleFavoriteClick = async () => {
+    const newFavoriteStatus = !isFavorited;
+    setIsFavorited(newFavoriteStatus);
+    if (user) {
+      setFavoritingLoading(true);
+      if (isFavorited) {
+        // Remove from favorites
+        removeFromFavorites(user.id, listing.listingId)
+          .then((data) => {
+            if (data.response_type === "success") {
+              setIsFavorited(false);
+              setShowRemovedMessage(true);
+              setTimeout(() => {
+                // show temporary message for 3 seconds
+                setShowRemovedMessage(false);
+              }, 3000);
+            } else {
+              setIsFavorited(true);
+              setShowFavoriteMessage(true);
+              setTimeout(() => {
+                // show temporary message for 3 seconds
+                setShowFavoriteMessage(false);
+              }, 3000);
+            }
+          })
+          .catch((error) => {
+            console.error("Error removing from favorites: ", error);
+          })
+          .finally(() => {
+            setFavoritingLoading(false);
+          });
+      } else {
+        addToFavorites(user.id, listing.listingId)
+          .then((data) => {
+            if (data.response_type === "success") {
+              setIsFavorited(true);
+              setShowFavoriteMessage(true);
+              setTimeout(() => {
+                // show temporary message for 5 seconds
+                setShowFavoriteMessage(false);
+              }, 3000);
+            } else {
+              console.error("Failed to add to favorites: ", data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error adding to favorites: ", error);
+          })
+          .finally(() => {
+            setFavoritingLoading(false);
+          });
+      }
+    }
   };
 
   const handleEmailSellerClick = () => {
-    setShowEmailPopup(true);
+    setShowEmailPopup(!showEmailPopup);
   };
 
   // Close the modal if the user clicks outside of it
@@ -65,7 +155,6 @@ const ListingModal: React.FC<ModalCardProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      {/* //TODO: ASK WETHER TO KEEP LARGE WIDE CARDS OR SKINNY ONES  */}
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto space-y-6">
         <button
           onClick={onClose}
@@ -77,7 +166,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
         <div className="flex flex-col text-left space-y-6">
           <div>
             <h2 className="text-3xl font-bold">{listing.title}</h2>
-            <h3 className="text-gray-500 text-xl">{listing.condition}</h3>
+            <h3 className="text-blue-500 text-xl">{listing.condition}</h3>
           </div>
           <h2 className="text-2xl text-gray-600">${listing.price}</h2>
           <img
@@ -92,26 +181,51 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <h3 className="text-gray-500 text-md">
             Tags: {listing.category}, {listing.tags}
           </h3>
-          {isFavorited ? (
-            <p className="text-red-600">Added to Favorites!</p>
-          ) : null}
-          {showEmailPopup ? (
+          {showFavoriteMessage && !favoritingLoading && (
             <div>
-              <p>
-                {/* USER INFO */}
-                Email {listing.username} at  to purchase this item.
+              <p className="text-red-600 ml-1">Added to favorites!</p>
+            </div>
+          )}
+          {showRemovedMessage && !favoritingLoading && (
+            <div>
+              <p className="text-red-600 ml-1">Removed from favorites!</p>
+            </div>
+          )}
+          {showEmailPopup && (
+            <div className="bg-red-600 py-4 rounded-xl p-8">
+              <p className="text-lg text-white">
+                Email {""}
+                <a
+                  href={`mailto:${listing.email}`}
+                  className="text-white underline"
+                >
+                  {listing.email}{" "}
+                </a>
+                to purchase this item.
               </p>
             </div>
-          ) : null}
+          )}
+
           <div className="flex flex-row space-x-4 w-full">
+            {favoritingLoading ? (
+              <button className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center">
+                <PulseLoader
+                  color="#FFFFFF"
+                  margin={4}
+                  size={10}
+                  speedMultiplier={0.7}
+                />
+              </button>
+            ) : (
+              <button
+                className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center hover:bg-white hover:text-black border-rose-200 border-2"
+                onClick={handleFavoriteClick}
+              >
+                {isFavorited ? <FaHeart color="black" /> : <FaRegHeart color="black" />}
+              </button>
+            )}
             <button
-              className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center"
-              onClick={handleFavoriteClick}
-            >
-              {isFavorited ? <FaHeart /> : <FaRegHeart />}
-            </button>
-            <button
-              className="bg-teal-200 text-lg p-4 rounded-xl w-5/6"
+              className="bg-teal-200 text-lg p-4 rounded-xl w-5/6 hover:bg-white hover:text-black border-teal-200 border-2 "
               onClick={handleEmailSellerClick}
             >
               Message Seller: {listing.username}

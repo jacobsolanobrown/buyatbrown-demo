@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server.handlers.listingHandlers;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -35,18 +36,38 @@ public class DeleteListingHandler implements Route {
         throw new IllegalArgumentException("Both 'uid' and 'listingId' are required.");
       }
 
+      List<Map<String, List<String>>> allUsers = this.storageHandler.getAllUserFavoritesIds();
+      System.out.println("All users: " + allUsers);
+      System.out.println("size, " + allUsers.size());
+
       // Retrieve the user's listings from the database
       // Retrieve the listing for the user from the database
       Map<String, Object> listing = this.storageHandler.getListingForUser(uid, listingId);
       System.out.println("Retrieved listing: " + listing);
 
-      //// Check if the listing exists
+      // Check if the listing exists
       if (listing == null) {
         throw new IllegalArgumentException("Listing with ID " + listingId + " does not exist.");
       }
 
       // Remove the listing from the database
       this.storageHandler.removeDocument(uid, "listings", listingId);
+
+      // Remove the listing from the user's favorites as well if it exists there
+
+      // For each user in the database
+      for (Map<String, List<String>> user : allUsers) {
+        for (Map.Entry<String, List<String>> entry : user.entrySet()) {
+          String userId = entry.getKey();
+          System.out.println("key: " + userId);
+          List<String> favorites = entry.getValue();
+          System.out.println("value: " + favorites);
+          if (favorites.contains("liked-" + listingId)) {
+            System.out.println("found listing in favorites");
+            this.storageHandler.removeDocument(userId, "liked_listings", "liked-" + listingId);
+          }
+        }
+      }
 
       // Log success
       System.out.println("Deleted listing with ID: " + listingId + " for user: " + uid);
