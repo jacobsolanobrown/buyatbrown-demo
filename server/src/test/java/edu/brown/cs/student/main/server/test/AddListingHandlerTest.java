@@ -50,15 +50,16 @@ public class AddListingHandlerTest {
   // Mocked test: testing adding listing successfully to database
   @Test
   void testHandle_ValidInput() throws ExecutionException, InterruptedException {
-    // Prepare base64 encoded image
-    String base64Image = "base64encodedImageString";
+    // Prepare base64 encoded image - use a valid base64 string
+    String base64Image =
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
     Map<String, String> queryParams =
         Map.of(
             "uid", "user123",
             "username", "testuser",
             "title", "Cool Item",
-            "tags", "tagitems",
+            "tags", "tag1,tag2", // Changed to valid tag format
             "price", "10.99",
             "category", "Electronics",
             "condition", "new",
@@ -67,19 +68,24 @@ public class AddListingHandlerTest {
     Request mockRequest = createMockRequest(queryParams, base64Image);
     Response mockResponse = createMockResponse();
 
-    // AddListingHandler to add a listing
+    // Execute handler
     String addListingResult = (String) addListingHandler.handle(mockRequest, mockResponse);
 
+    // Parse and verify response
     Map<String, Object> resultMap = new Gson().fromJson(addListingResult, Map.class);
     assertEquals("success", resultMap.get("response_type"));
 
-    // Retrieve the added listing from mocked storage
+    // Verify the listing ID was generated
+    assertNotNull(resultMap.get("listingId"));
+    assertTrue(((String) resultMap.get("listingId")).startsWith("listing-"));
+
+    // Retrieve and verify the stored listing
     Collection<Map<String, Object>> listings = mockedstorage.getCollection("user123", "listings");
     assertFalse(listings.isEmpty(), "Listings collection should not be empty");
 
-    // most recently added listing
     Map<String, Object> listing = listings.stream().reduce((first, second) -> second).orElseThrow();
 
+    // Verify all fields
     assertNotNull(listing, "Listing should not be null");
     assertEquals("Cool Item", listing.get("title"), "Title does not match expected value");
     assertEquals("10.99", listing.get("price"), "Price does not match expected value");
@@ -88,6 +94,17 @@ public class AddListingHandlerTest {
         listing.get("description"),
         "Description does not match expected value");
     assertEquals("new", listing.get("condition"), "Condition does not match expected value");
+    assertEquals("tag1,tag2", listing.get("tags"), "Tags do not match expected value");
+    assertEquals("Electronics", listing.get("category"), "Category does not match expected value");
+    assertEquals("testuser", listing.get("username"), "Username does not match expected value");
+    assertEquals("user123", listing.get("uid"), "UID does not match expected value");
+
+    // Verify image URL
+    String imageUrl = (String) listing.get("imageUrl");
+    assertNotNull(imageUrl, "Image URL should not be null");
+    assertTrue(
+        imageUrl.startsWith("https://mocked-storage/"),
+        "Image URL should start with mocked storage URL");
   }
 
   // Mocked test: testing missing params edge case
