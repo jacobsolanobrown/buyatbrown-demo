@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { editListing } from "../utils/api";
+import { PulseLoader } from "react-spinners";
 
 interface EditingPageProps {
   uid: string;
@@ -60,79 +62,50 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
 
   // TODO: add a success screen for posting and allow the user to navigate to their listings
 
-  useEffect(() => {
-    // Fetch existing listing details
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get("uid") || "";
-    const listingId = params.get("listingId") || "";
+  // Editing a listing does not edit the listing in the favorites as they are saved seperately 
 
-    setFormData((prevData) => ({
-      ...prevData,
-      uid,
-      listingId,
-    }));
-
-    if (uid && listingId) {
-      axios
-        .get(`http://localhost:3232/get-listing`, {
-          params: { uid, listingId },
-        })
-        .then((response) => {
-          console.log("response does it go in here");
-          const data = response.data;
-          setFormData((prevData) => ({
-            ...prevData,
-            title: data.title || "",
-            price: data.price || "",
-            description: data.description || "",
-            condition: data.condition || "",
-            category: data.category || "",
-            tags: data.tags || "",
-          }));
-        })
-        .catch((error) => {
-          console.error("Error fetching listing details:", error);
-          setResponseMessage("Error fetching listing details.");
-        });
-    }
-  }, []);
+  // Bug with description - if not editing the description it will set the description as empty after saving changes
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsSubmitting(true);
-    setResponseMessage("");
-
-    axios
-      .post(
-        `http://localhost:3232/update-listings`,
-        {},
-        {
-          params: {
-            uid: formData.uid,
-            listingId: formData.listingId,
-            title: formData.title,
-            price: formData.price,
-            description: formData.description,
-            condition: formData.condition,
-            category: formData.category,
-            tags: formData.tags,
-          },
+    editListing(
+      uid,
+      listing.listingId,
+      formData.title,
+      formData.price,
+      formData.description,
+      // formData.imageUrl,
+      formData.category,
+      formData.condition,
+      formData.tags
+    )
+      .then((data) => {
+        if (data.response_type === "success") {
+          setResponseMessage("Listing updated successfully");
+        } else {
+          setResponseMessage("Error updating listing");
         }
-      )
-      .then((response) => {
-        setResponseMessage(
-          response.data.response_type === "success"
-            ? "Listing updated successfully!"
-            : `Error: ${response.data.error}`
-        );
       })
       .catch((error) => {
-        console.error("Error updating listing:", error);
-        setResponseMessage("An error occurred while updating the listing.");
+        console.error("Error updating listing: ", error);
+        setResponseMessage("Error updating listing");
       })
       .finally(() => {
         setIsSubmitting(false);
+        setFormData({
+          uid: uid || "",
+          title: "",
+          price: "",
+          username: "",
+          description: "",
+          condition: "",
+          category: "",
+          tags: "",
+          imageFile: null,
+          listingId: "",
+        });
+        navigate("/yourlistings");
       });
   };
 
@@ -140,10 +113,9 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
     navigate("/yourlistings");
   };
 
+  // TODO: add that at least one of them is required in order to submit the listing 
   return (
     <div className="flex flex-col align-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-pink-100">
-      <p>{uid}</p>
-
       <div className="w-3/4 mx-12 my-14 p-8 rounded-3xl shadow-lg  bg-white/50 ">
         <button className="py-4 px-2 underline" onClick={goBack}>
           Cancel
@@ -183,6 +155,7 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
               value={formData.price}
               onChange={handleChange}
               className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
+              
             />
           </div>
           {/* Input for imageUrl */}
@@ -277,12 +250,23 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
             />
           </div>
           {/* Submit the listing (Call the Create Listing API endpoint) */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
-          >
-            Update Listing
-          </button>
+          {isSubmitting ? (
+            <button className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold">
+              <PulseLoader
+                color="#FFFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
+            >
+              Update Listing
+            </button>
+          )}
         </form>
       </div>
     </div>

@@ -82,3 +82,28 @@ export async function deleteListing(uid: string, listingId: string) {
     listingId: listingId,
   });
 }
+
+
+export async function editListing(
+  uid: string,
+  listingId: string,
+  title?: string,
+  price?: string,
+  description?: string,
+  imageUrl?: string,
+  category?: string,
+  condition?: string,
+  tags?: string
+
+) {
+  const params: Record<string, string> = { uid, listingId };
+  if (title) params.title = title;
+  if (price ) params.price = price;
+  if (description) params.description = description;
+  if (imageUrl) params.imageUrl = imageUrl;
+  if (category) params.category = category;
+  if (condition) params.condition = condition;
+  if (tags) params.tags = tags;
+
+  return await queryAPI("update-listings", params);
+}
