@@ -42,7 +42,7 @@ export default function SearchResultsPage () {
 
   // Search Term and Results passed from parent:
   const location = useLocation();
-  const { searchTerm, filteredPosts } = location.state || {}; // Retrieve passed data
+  const { searchTerm, filteredPosts} = location.state || {}; // Retrieve passed data
 
   // Array to store relevant results: 
   const [posts, setPosts] = useState(filteredPosts || []); // initialized to search results
@@ -50,8 +50,8 @@ export default function SearchResultsPage () {
   useEffect(() => {
     // only able to filter by condition within search results page
     const conditionsString = selectedConditions.length == 0 ? "ignore" : selectedConditions.join(",");
-
-    filterListings(searchTerm, "ignore", "ignore", conditionsString) // no filtering by title
+    setIsLoading(true);
+    filterListings(searchTerm, "ignore", "ignore", conditionsString) 
         .then((data) => {
           console.log("API Response:", data);
           if (data.response_type === "success" && Array.isArray(data.filtered_listings)) {
@@ -65,46 +65,51 @@ export default function SearchResultsPage () {
           console.error("Error fetching clothes listings", err);
         })
         .finally(() => setIsLoading(false));
-    }, [selectedConditions, searchTerm]); // call server when conditions or searchTerm changes
+    }, [selectedConditions, filteredPosts]); // call server when conditions or searchTerm changes
 
   return (
     <div className="flex">
       {/* Filter by Condition */}
-      <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5">
-        <h2 className="text-xl font-bold mb-4 text-center ">
-          {" "}
-          Search Results for: {searchTerm}{" "}
-        </h2>
+      <div>
+        <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5">
+          <h2 className="text-xl font-bold mb-4 text-center ">
+            {" "}
+            Search Results for: {searchTerm}{" "}
+          </h2>
 
-        <div className="content-center">
-          <h3 className="font-semibold mb-2">Condition Filters</h3>
-          {conditionFilters.map((condition, index) => (
-            <button
-              key={index}
-              onClick={() => toggleCondition(condition)}
-              className={`block py-2 px-4 rounded-3xl mb-2 w-full text-left ${
-                selectedConditions.includes(condition)
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-black"
-              }`}
-            >
-              {condition}
-            </button>
-          ))}
+          <div aria-label="filter" className="content-center">
+            <h3 className="font-semibold mb-2">Condition Filters</h3>
+            {conditionFilters.map((condition, index) => (
+              <button
+                aria-label="condition"
+                key={index}
+                onClick={() => toggleCondition(condition)}
+                className={`block py-2 px-4 rounded-3xl mb-2 w-full text-left ${
+                  selectedConditions.includes(condition)
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {condition}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Render posts based on filters */}
-      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+      <div aria-label="results" className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         {/* Display error message */}
         {errorMessage && (
-          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-            {errorMessage}
-          </p>
+          <div className="flex justify-center items-center min-w-full h-dvh p-5">
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {errorMessage}
+            </p>
+          </div>
         )}
 
         {isLoading ? (
-          <div>
+          <div aria-label="loading" className="flex justify-center items-center min-w-full h-dvh p-5">
             <PulseLoader
               color="#ED1C24"
               margin={4}
@@ -113,10 +118,12 @@ export default function SearchResultsPage () {
             />
           </div>
         ) : posts.length === 0 ? (
-          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-            {" "}
-            No listings matched search term: {searchTerm}
-          </p>
+          <div aria-label="message" className="flex justify-center min-w-full h-dvh p-5">
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {" "}
+              No listings matched search term: {searchTerm}
+            </p>
+          </div>
         ) : (
           posts.map((post: any) => (
             <ListingCard
