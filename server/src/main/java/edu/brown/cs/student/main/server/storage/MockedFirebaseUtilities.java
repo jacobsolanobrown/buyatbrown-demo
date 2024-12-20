@@ -145,7 +145,27 @@ public class MockedFirebaseUtilities implements StorageInterface {
   @Override
   public List<Map<String, Object>> getUserListings(String uid)
       throws ExecutionException, InterruptedException {
-    return List.of();
+    if (uid == null) {
+      throw new IllegalArgumentException("getUserListings: uid cannot be null");
+    }
+
+    // Get the user's data
+    Map<String, Map<String, Map<String, Object>>> userCollections =
+        database.getOrDefault(uid, new HashMap<>());
+
+    // Get the listings collection
+    Map<String, Map<String, Object>> listingsCollection =
+        userCollections.getOrDefault("listings", new HashMap<>());
+
+    // Convert the map of listings to a list
+    List<Map<String, Object>> result = new ArrayList<>();
+    for (Map.Entry<String, Map<String, Object>> entry : listingsCollection.entrySet()) {
+      Map<String, Object> listingWithId = new HashMap<>(entry.getValue());
+      listingWithId.put("doc_id", entry.getKey());
+      result.add(listingWithId);
+    }
+
+    return result;
   }
 
   @Override

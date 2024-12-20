@@ -49,7 +49,7 @@ export default function Navbar({ username }: { username: string }) {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-red-600 shadow-md">
+    <header aria-label="navbar" className="sticky top-0 z-50 bg-red-600 shadow-md">
       {/* App name and sign out */}
       <div className="flex justify-between items-center px-6 py-3">
         <Link
@@ -73,7 +73,7 @@ export default function Navbar({ username }: { username: string }) {
       {/* Search Bar and navigation */}
       <div className="flex items-center justify-between px-6 py-2 pb-4">
         {/* Search Bar for small screens*/}
-        <div className="md:hidden">
+        <div aria-label="search" className="md:hidden">
           {!showSearch ? (
             <button onClick={() => setShowSearch(true)}>
               <IoSearch size={20} />
@@ -92,7 +92,7 @@ export default function Navbar({ username }: { username: string }) {
         </div>
 
         {/* Search Bar for large screens*/}
-        <div className="hidden md:flex md:flex-grow">
+        <div aria-label="search" className="hidden md:flex md:flex-grow">
           <div className="relative ">
             <SearchBar onSearchSubmit={handleSearchSubmit} />
           </div>
@@ -113,6 +113,7 @@ export default function Navbar({ username }: { username: string }) {
         <div className="relative flex items-center sm:w-auto">
           {/* Left Scroll Button */}
           <button
+            aria-label="left"
             onClick={() => scrollNav("left")}
             className="md:hidden absolute left-0 top-1/2 transform -translate-y-1/2  text-white p-2 z-10"
           >
@@ -170,6 +171,7 @@ export default function Navbar({ username }: { username: string }) {
 
           {/* Right Scroll Button */}
           <button
+            aria-label="right"
             onClick={() => scrollNav("right")}
             className="md:hidden absolute right-0 top-1/2 transform -translate-y-1/2 text-white p-2"
           >

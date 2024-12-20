@@ -233,7 +233,7 @@ public class ServerTests {
     String userlistings1 = sendGetRequest("/list-listings?uid=bibif&listing-id=listing-0");
     System.out.println(userlistings1);
     assertTrue(userlistings1.contains("\"response_type\":\"success\""));
-    assertTrue(userlistings1.contains("condition=new, price=49.99"));
+    assertTrue(userlistings1.contains("\"condition\":\"new\""), "\"price\":\"49.99\"");
   }
 
   // Testing the interactions for like listings and add-listing
@@ -241,9 +241,9 @@ public class ServerTests {
   void testLikeListings() throws IOException {
     String likelisting1 =
         sendGetRequest(
-            "/like-listings?uid=bibif&listingId=listing-0db416c0-1c3c-43dd-a601-f0a4026aa6f4");
+            "/like-listings?uid=bibif&listingId=listing-372d56cf-ed6a-401f-9177-e4915af4e68c");
     assertTrue(likelisting1.contains("\"response_type\":\"success\""));
-    assertTrue(likelisting1.contains("listing-0db416c0-1c3c-43dd-a601-f0a4026aa6f4"));
+    assertTrue(likelisting1.contains("listing-372d56cf-ed6a-401f-9177-e4915af4e68c"));
 
     //
   }

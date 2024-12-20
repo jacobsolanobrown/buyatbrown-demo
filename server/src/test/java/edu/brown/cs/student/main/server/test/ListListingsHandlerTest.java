@@ -50,7 +50,7 @@ public class ListListingsHandlerTest {
     Map<String, Object> listing = new HashMap<>();
     listing.put("uid", uid);
     listing.put("listingId", listingId);
-    listing.put("title", "Test Listing");
+    listing.put("title", "Test Listing 3");
     return listing;
   }
 
@@ -63,74 +63,121 @@ public class ListListingsHandlerTest {
     mockedStorageHandler.addListing(listing);
   }
 
-  // Mocked test: testing success in user listing
+  // Mocked Test Success Case
   @Test
   public void testSuccessfulListingsRetrieval() throws Exception {
     // Arrange
     String testUid = "user123";
 
-    // Prepare mock listing using addListing method
-    Map<String, Object> listing = createMockListing(testUid, "listing1");
+    // Add test listings
+    Map<String, Object> listing1 = new HashMap<>();
+    listing1.put("title", "Test Listing 1");
+    listing1.put("description", "Description 1");
+    listing1.put("price", 100);
 
-    // Detailed debugging
-    System.out.println("Listing to be added: " + listing);
+    Map<String, Object> listing2 = new HashMap<>();
+    listing2.put("title", "Test Listing 2");
+    listing2.put("description", "Description 2");
+    listing2.put("price", 200);
 
-    // Add listing
-    //    mockedStorageHandler.addListing(listing);
-    mockedStorageHandler.addListing(
-        testUid, "listings", listing.get("listingId").toString(), listing);
+    mockedStorageHandler.addListing(testUid, "listings", "listing1", listing1);
+    mockedStorageHandler.addListing(testUid, "listings", "listing2", listing2);
 
-    // Debug: Inspect internal database structure
-    printDatabaseStructure(mockedStorageHandler);
-    // Prepare mock request
-    Map<String, String> params = Map.of("uid", testUid);
-    Request mockRequest = createMockRequest(params);
+    // Create mock request with required parameters
+    Request mockRequest = createMockRequest(Map.of("uid", testUid));
     Response mockResponse = createMockResponse();
 
     // Act
-    Object result = handler.handle(mockRequest, mockResponse);
+    String result = (String) handler.handle(mockRequest, mockResponse);
 
     // Assert
     assertNotNull(result);
-    assertTrue(result instanceof String);
-    String jsonResult = (String) result;
+    Map<String, Object> responseMap = parseJsonResponse(result);
 
-    System.out.println("JSON Result: " + jsonResult);
+    assertEquals("success", responseMap.get("response_type"));
+    List<Map<String, Object>> listings = (List<Map<String, Object>>) responseMap.get("listings");
 
+    assertEquals(2, listings.size());
     assertTrue(
-        jsonResult.contains("\"response_type\":\"success\""), "Response should indicate success");
-    assertTrue(jsonResult.contains("\"listings\":["), "Should have a listings array");
-    assertTrue(jsonResult.contains("Test Listing"), "Should contain the test listing title");
+        listings.stream().anyMatch(listing -> "Test Listing 1".equals(listing.get("title"))));
+    assertTrue(
+        listings.stream().anyMatch(listing -> "Test Listing 2".equals(listing.get("title"))));
   }
 
-  //    // Retrieve listings for specific user
-  //    List<Map<String, Object>> userListings = mockedStorageHandler.getCollection(testUid,
-  // "listing");
-  //    System.out.println("User Listings after retrieval: " + userListings);
-  //
-  //    // Get all users' listings
-  //    List<Map<String, Object>> allListings = mockedStorageHandler.getAllUsersListings();
-  //    System.out.println("All Users Listings: " + allListings);
-  //
-  //    Map<String, String> params = new HashMap<>();
-  //    params.put("uid", testUid);
-  //    Request mockRequest = createMockRequest(params);
-  //    Response mockResponse = createMockResponse();
-  //
-  //    // Act
-  //    Object result = handler.handle(mockRequest, mockResponse);
-  //
-  //    // Assert
-  //    assertNotNull(result);
-  //    assertTrue(result instanceof String);
-  //    String jsonResult = (String) result;
-  //    System.out.println("JSON Result: " + jsonResult);
-  //
-  //    assertTrue(jsonResult.contains("\"response_type\":\"success\""), "Response should indicate
-  // success");
-  //    assertTrue(jsonResult.contains("\"listings\":["), "Should have a listings array");
-  //    assertTrue(jsonResult.contains("Test Listing"), "Should contain the test listing title");
-  //  }
+  // Mocked Test Success Case but empty
+  @Test
+  public void testUserWithNoListings() throws Exception {
+    // Arrange
+    String testUid = "user456";
+    Request mockRequest = createMockRequest(Map.of("uid", testUid));
+    Response mockResponse = createMockResponse();
+
+    // Act
+    String result = (String) handler.handle(mockRequest, mockResponse);
+
+    // Assert
+    assertNotNull(result);
+    Map<String, Object> responseMap = parseJsonResponse(result);
+
+    assertEquals("success", responseMap.get("response_type"));
+    List<Map<String, Object>> listings = (List<Map<String, Object>>) responseMap.get("listings");
+    assertTrue(listings.isEmpty());
+  }
+
+  // Mocked Test: edge case error
+  @Test
+  public void testMissingUidParameter() {
+    // Arrange
+    Request mockRequest = createMockRequest(new HashMap<>());
+    Response mockResponse = createMockResponse();
+
+    // Act
+    String result = (String) handler.handle(mockRequest, mockResponse);
+
+    // Assert
+    assertNotNull(result);
+    Map<String, Object> responseMap = parseJsonResponse(result);
+
+    assertEquals("failure", responseMap.get("response_type"));
+    assertNotNull(responseMap.get("error"));
+  }
+
+  // Mocked Test Success Case multiple
+  @Test
+  public void testMultipleListingsRetrieval() throws Exception {
+    // Arrange
+    String testUid = "user789";
+
+    // Add multiple listings
+    for (int i = 1; i <= 5; i++) {
+      Map<String, Object> listing = new HashMap<>();
+      listing.put("title", "Test Listing " + i);
+      listing.put("description", "Description " + i);
+      listing.put("price", i * 100);
+
+      mockedStorageHandler.addListing(testUid, "listings", "listing" + i, listing);
+    }
+
+    // Act
+    Request mockRequest = createMockRequest(Map.of("uid", testUid));
+    Response mockResponse = createMockResponse();
+    String result = (String) handler.handle(mockRequest, mockResponse);
+
+    // Assert
+    assertNotNull(result);
+    Map<String, Object> responseMap = parseJsonResponse(result);
+
+    assertEquals("success", responseMap.get("response_type"));
+    List<Map<String, Object>> listings = (List<Map<String, Object>>) responseMap.get("listings");
+
+    assertEquals(5, listings.size());
+    for (int i = 1; i <= 5; i++) {
+      final int index = i;
+      assertTrue(
+          listings.stream()
+              .anyMatch(listing -> ("Test Listing " + index).equals(listing.get("title"))));
+    }
+  }
 
   // Helper method to print out the internal database structure
   private void printDatabaseStructure(MockedFirebaseUtilities storage) {
@@ -147,83 +194,6 @@ public class ListListingsHandlerTest {
     } catch (Exception e) {
       System.out.println("Could not access database field: " + e.getMessage());
     }
-  }
-
-  // Mocked test: testing no listing but user (edge case)
-  @Test
-  public void testUserWithNoListings() throws Exception {
-    // Arrange
-    String testUid = "user456";
-
-    Map<String, String> params = new HashMap<>();
-    params.put("uid", testUid);
-    Request mockRequest = createMockRequest(params);
-    Response mockResponse = createMockResponse();
-
-    // Act
-    Object result = handler.handle(mockRequest, mockResponse);
-
-    // Assert
-    assertNotNull(result);
-    String jsonResult = (String) result;
-    assertTrue(jsonResult.contains("\"response_type\":\"success\""));
-    assertTrue(jsonResult.contains("\"listings\":[]"));
-  }
-
-  // Mocked test: testing invalid params (edge case)
-  @Test
-  public void testMissingUidParameter() {
-    // Arrange
-    Map<String, String> params = new HashMap<>();
-    Request mockRequest = createMockRequest(params);
-    Response mockResponse = createMockResponse();
-
-    // Act
-    Object result = handler.handle(mockRequest, mockResponse);
-
-    // Assert
-    assertNotNull(result);
-    String jsonResult = (String) result;
-    assertTrue(jsonResult.contains("\"response_type\":\"failure\""));
-    assertTrue(jsonResult.contains("\"error\""));
-  }
-
-  // Mocked test: testing success multiple listings
-  @Test
-  public void testMultipleListingsRetrieval() throws Exception {
-    String testUid = "user789";
-
-    // Add multiple mock listings
-    for (int i = 1; i <= 5; i++) {
-      Map<String, Object> listing = createMockListing(testUid, "listing" + i);
-      listing.put("description", "Listing description " + i);
-      mockedStorageHandler.addListing(testUid, "listings", "listing" + i, listing);
-    }
-
-    // Act
-    Map<String, String> params = Map.of("uid", testUid);
-    Request mockRequest = createMockRequest(params);
-    Response mockResponse = createMockResponse();
-
-    Object result = handler.handle(mockRequest, mockResponse);
-
-    // Assert
-    assertNotNull(result, "Result should not be null");
-    String jsonResult = (String) result;
-
-    // Verify the response
-    Map<String, Object> responseMap = parseJsonResponse(jsonResult);
-    assertEquals("success", responseMap.get("response_type"));
-    List<String> listings = (List<String>) responseMap.get("listings");
-    assertEquals(5, listings.size(), "Should contain 5 listings");
-
-    // Verify each listing contains expected content
-    listings.forEach(
-        listing -> {
-          assertTrue(listing.contains("Test Listing"), "Each listing should contain the title");
-          assertTrue(listing.contains("listing"), "Each listing should have a listingId");
-          assertTrue(listing.contains("doc_id"), "Each listing should have a document ID");
-        });
   }
 
   // Helper method to parse response
