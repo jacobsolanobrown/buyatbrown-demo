@@ -13,6 +13,9 @@ function Homepage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+
+    setIsLoading(true);
+    
     getAllListings()
       .then((data) => {
         if (data.response_type === "success" && Array.isArray(data.listings)) {
@@ -50,6 +53,7 @@ function Homepage() {
       <div className="bg-slate-200 p-4 w-64 rounded-xl max-h-32 ml-5 mt-5 mb-5">
         <h2 className="text-xl font-bold mb-4 text-center">Home</h2>
         <button
+          aria-label="post listing"
           className="bg-red-600 text-white py-2 px-4 rounded-3xl mb-4 w-full"
           onClick={handlePostListingClick}
         >
@@ -58,15 +62,17 @@ function Homepage() {
       </div>
 
       {/* Main content */}
-      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+      <div aria-label="all listings" className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         {errorMessage && (
-          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-            {errorMessage}
-          </p>
+          <div className="flex justify-center min-w-full h-dvh p-5">
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {errorMessage}
+            </p>
+          </div>
         )}
 
         {isLoading ? (
-          <div>
+          <div aria-label="loading" className="flex justify-center items-center min-w-full h-dvh p-5">
             <PulseLoader
               color="#ED1C24"
               margin={4}
@@ -75,7 +81,9 @@ function Homepage() {
             />
           </div>
         ) : posts.length === 0 ? (
-          <p>No listings available</p>
+          <div aria-label="message" className="flex justify-center min-w-full h-dvh p-5">
+            <p>No listings available</p>
+          </div>
         ) : (
           (console.log("all listing posts: ", posts),
           posts.map((post) => (
