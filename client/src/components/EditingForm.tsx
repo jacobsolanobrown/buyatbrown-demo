@@ -60,12 +60,6 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
     setFormData({ ...formData, imageFile: file });
   };
 
-  // TODO: add a success screen for posting and allow the user to navigate to their listings
-
-  // Editing a listing does not edit the listing in the favorites as they are saved seperately 
-
-  // Bug with description - if not editing the description it will set the description as empty after saving changes
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -113,7 +107,7 @@ const EditingPage: React.FC<EditingPageProps> = ({ uid }) => {
     navigate("/yourlistings");
   };
 
-  // TODO: add that at least one of them is required in order to submit the listing 
+
   return (
     <div className="flex flex-col align-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-pink-100">
       <div className="w-3/4 mx-12 my-14 p-8 rounded-3xl shadow-lg  bg-white/50 ">

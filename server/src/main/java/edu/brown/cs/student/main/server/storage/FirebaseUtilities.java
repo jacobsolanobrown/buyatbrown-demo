@@ -403,28 +403,28 @@ public class FirebaseUtilities implements StorageInterface {
     return allUsers;
   }
 
-  /**
-   * This method gets all the user IDs in the database.
-   *
-   * @return
-   * @throws InterruptedException
-   * @throws ExecutionException
-   */
-  @Override
-  public List<String> getAllUsersIds() throws InterruptedException, ExecutionException {
-    // gets all listings for all users
-    Firestore db = FirestoreClient.getFirestore();
-    // 1: Get a ref to the users collection
-    CollectionReference usersRef = db.collection("users");
-    // 2: Create a list to hold all user IDs
-    List<String> allUserIds = new ArrayList<>();
-    // 3: Loop through each document in the users collection and add the user ID to the list
-    for (DocumentReference userDoc : usersRef.listDocuments()) {
-      allUserIds.add(userDoc.getId());
-    }
-    // Return the list of user IDs
-    return allUserIds;
-  }
+  //  /**
+  //   * This method gets all the user IDs in the database. This method is unused.
+  //   *
+  //   * @return
+  //   * @throws InterruptedException
+  //   * @throws ExecutionException
+  //   */
+  //  @Override
+  //  public List<String> getAllUsersIds() throws InterruptedException, ExecutionException {
+  //    // gets all listings for all users
+  //    Firestore db = FirestoreClient.getFirestore();
+  //    // 1: Get a ref to the users collection
+  //    CollectionReference usersRef = db.collection("users");
+  //    // 2: Create a list to hold all user IDs
+  //    List<String> allUserIds = new ArrayList<>();
+  //    // 3: Loop through each document in the users collection and add the user ID to the list
+  //    for (DocumentReference userDoc : usersRef.listDocuments()) {
+  //      allUserIds.add(userDoc.getId());
+  //    }
+  //    // Return the list of user IDs
+  //    return allUserIds;
+  //  }
 
   /**
    * This method will get the all the documents of liked listings for all users. It is primarily
@@ -630,41 +630,44 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  /**
-   * This method returns a list of document IDs for a given collection for a user. Ex: The listing
-   * ids for a user's listings collection. This method is unused but can be used to get a list of
-   * document IDs for a collection.
-   *
-   * @param uid The user's ID
-   * @param collection_id The collection ID
-   * @return A list of document IDs
-   * @throws InterruptedException
-   * @throws ExecutionException
-   */
-  @Override
-  public List<String> getCollectionDocumentIds(String uid, String collection_id)
-      throws InterruptedException, ExecutionException {
-    if (uid == null || collection_id == null) {
-      throw new IllegalArgumentException(
-          "getCollectionDocumentIds: uid and/or collection_id cannot be null");
-    }
-
-    // gets all documents in the collection 'collection_id' for user 'uid'
-
-    Firestore db = FirestoreClient.getFirestore();
-    // 1: Make the data payload to add to your collection
-    CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
-
-    // 2: Get pin documents
-    QuerySnapshot dataQuery = dataRef.get().get();
-
-    // 3: Get data from document queries
-    List<String> data = new ArrayList<>();
-    for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
-      //      System.out.print(doc);
-      data.add(doc.getId());
-    }
-
-    return data;
-  }
+  //  /**
+  //   * This method returns a list of document IDs for a given collection for a user. Ex: The
+  // listing
+  //   * ids for a user's listings collection. This method is unused but can be used to get a list
+  // of
+  //   * document IDs for a collection.
+  //   *
+  //   * @param uid The user's ID
+  //   * @param collection_id The collection ID
+  //   * @return A list of document IDs
+  //   * @throws InterruptedException
+  //   * @throws ExecutionException
+  //   */
+  //  @Override
+  //  public List<String> getCollectionDocumentIds(String uid, String collection_id)
+  //      throws InterruptedException, ExecutionException {
+  //    if (uid == null || collection_id == null) {
+  //      throw new IllegalArgumentException(
+  //          "getCollectionDocumentIds: uid and/or collection_id cannot be null");
+  //    }
+  //
+  //    // gets all documents in the collection 'collection_id' for user 'uid'
+  //
+  //    Firestore db = FirestoreClient.getFirestore();
+  //    // 1: Make the data payload to add to your collection
+  //    CollectionReference dataRef =
+  // db.collection("users").document(uid).collection(collection_id);
+  //
+  //    // 2: Get pin documents
+  //    QuerySnapshot dataQuery = dataRef.get().get();
+  //
+  //    // 3: Get data from document queries
+  //    List<String> data = new ArrayList<>();
+  //    for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
+  //      //      System.out.print(doc);
+  //      data.add(doc.getId());
+  //    }
+  //
+  //    return data;
+  //  }
 }
