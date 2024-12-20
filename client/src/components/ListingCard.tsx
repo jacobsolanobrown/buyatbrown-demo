@@ -31,7 +31,7 @@ const ListingCard: React.FC<CardProps> = ({
       onClick={onClick}
       className="cursor-pointer w-64 bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
     >
-      <div aria-label="photo" className="relative w-full h-48 bg-gray-100">
+      <div aria-label="photo" className="relative w-full h-64 bg-gray-100">
         <img
           src={imageUrl}
           alt={title}
