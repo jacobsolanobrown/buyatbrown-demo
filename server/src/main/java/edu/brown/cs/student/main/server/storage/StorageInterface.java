@@ -38,9 +38,4 @@ public interface StorageInterface {
 
   List<Map<String, List<String>>> getAllUserFavoritesIds()
       throws ExecutionException, InterruptedException;
-
-  List<String> getAllUsersIds() throws ExecutionException, InterruptedException;
-
-  List<String> getCollectionDocumentIds(String uid, String collection_id)
-      throws InterruptedException, ExecutionException;
 }

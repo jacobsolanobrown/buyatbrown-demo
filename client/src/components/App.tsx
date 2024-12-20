@@ -38,19 +38,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-// export default db;
 
 function App() {
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const [uid, setUID] = useState("");
   const [username, setUsername] = useState("");
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [createUsernameLoad, setCreateUsernameLoad] = useState(false);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
   /**
    * This function is used to check if the user has a username set. If the user has a username set, then we set the state to true and set the username.
    * If the user does not have a username set, then we set the state to false, and the user will be redirected to create a username.

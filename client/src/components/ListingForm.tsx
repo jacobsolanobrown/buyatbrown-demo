@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { PulseLoader } from "react-spinners";
 
 interface PostingPageProps {
   uid: string;
@@ -57,62 +58,64 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Must upload an image
-    if (!formData.imageFile) {
-      setResponseMessage("Please upload an image.");
-      return;
-    }
+    // // Must upload an image
+    // if (!formData.imageFile) {
+    //   setResponseMessage("Please upload an image.");
+    //   return;
+    // }
 
-    setIsSubmitting(true);
-    setResponseMessage("");
+    // setIsSubmitting(true);
+    // setResponseMessage("");
 
-    try {
-      // Convert image to Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(formData.imageFile);
-      reader.onload = async () => {
-        // Error check the reader result to prevent null pointer exception
-        const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
+    // try {
+    //   // Convert image to Base64
+    //   const reader = new FileReader();
+    //   reader.readAsDataURL(formData.imageFile);
+    //   reader.onload = async () => {
+    //     // Error check the reader result to prevent null pointer exception
+    //     const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
 
-        // Prepare form data
-        const data = {
-          ...formData,
-          imageUrl: base64Image,
-        };
+    //     // Prepare form data
+    //     const data = {
+    //       ...formData,
+    //       imageUrl: base64Image,
+    //     };
 
-        try {
-          const response = await axios.post(
-            "http://localhost:3232/add-listings",
-            data.imageUrl, // Send the image URL as raw body
-            {
-              headers: { "Content-Type": "text/plain" },
-              params: {
-                username: data.username,
-                price: data.price,
-                title: data.title,
-                category: data.category,
-                tags: data.tags,
-                condition: data.condition,
-                description: data.description,
-              },
-            }
-          );
-          setResponseMessage(
-            response.data.response_type === "success"
-              ? "Listing added successfully!"
-              : `Error: ${response.data.error}`
-          );
-        } catch (error) {
-          console.error("Error uploading listing:", error);
-          setResponseMessage("An error occurred while uploading the listing.");
-        }
-      };
-    } catch (error) {
-      console.error("Error uploading listing:", error);
-      setResponseMessage("An error occurred while uploading the listing.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    //     try {
+    //       const response = await axios.post(
+    //         "http://localhost:3232/add-listings",
+    //         data.imageUrl, // Send the image URL as raw body
+    //         {
+    //           headers: { "Content-Type": "text/plain" },
+    //           params: {
+    //             username: data.username,
+    //             price: data.price,
+    //             title: data.title,
+    //             category: data.category,
+    //             tags: data.tags,
+    //             condition: data.condition,
+    //             description: data.description,
+    //           },
+    //         }
+    //       ) 
+    //       if (response.data.response_type === "success") {
+    //         setResponseMessage("Listing added successfully!");
+    //       } else {
+    //         setResponseMessage(`Error: ${response.data.error}`);
+    //       }
+    //     } catch (error) {
+    //       console.error("Error uploading listing:", error);
+    //       setResponseMessage("An error occurred while uploading the listing.");
+    //     }
+    //   };
+    // } catch (error) {
+    //   console.error("Error uploading listing:", error);
+    //   setResponseMessage("An error occurred while uploading the listing.");
+    // }
+    // } finally {
+    //   setIsSubmitting(false);
+    //   console.log("Form data submitted once:", formData);
+    // }
 
     // Handle form submission logic here
     console.log("Form data submitted:", formData);
@@ -156,22 +159,38 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
               },
             }
           );
-          setResponseMessage(
-            response.data.response_type === "success"
-              ? "Listing added successfully!"
-              : `Error: ${response.data.error}`
-          );
+          if (response.data.response_type === "success") {
+            setResponseMessage("Listing added successfully!");
+            // Reset form data
+            setFormData({
+              uid: uid || "",
+              title: "",
+              price: "",
+              username: username || "",
+              description: "",
+              condition: "",
+              category: "",
+              tags: "",
+              imageFile: null,
+            });
+          } else {
+            setResponseMessage(`Error: ${response.data.error}`);
+          }
         } catch (error) {
           console.error("Error uploading listing:", error);
           setResponseMessage("An error occurred while uploading the listing.");
         }
       };
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error uploading listing:", error);
       setResponseMessage("An error occurred while uploading the listing.");
-    } finally {
+    } 
+    finally {
       setIsSubmitting(false);
+      console.log("Form data submitted twice:", formData);
       navigate("/");
+      
     }
   };
 
@@ -321,12 +340,23 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
             />
           </div>
           {/* Submit the listing (Call the Create Listing API endpoint) */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
-          >
-            Post Listing
-          </button>
+          {isSubmitting ? (
+            <button className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold">
+              <PulseLoader
+                color="#FFFFF"
+                margin={4}
+                size={10}
+                speedMultiplier={0.7}
+              />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-4 px-6  rounded-full hover:bg-blue-700 text-xl font-bold"
+            >
+              Post Listing
+            </button>
+          )}
         </form>
       </div>
     </div>
