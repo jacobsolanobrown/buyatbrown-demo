@@ -70,7 +70,6 @@ public class FirebaseUtilities implements StorageInterface {
 
       System.out.println("Initializing Firebase");
       FirebaseApp.initializeApp(options);
-      System.out.println("ekfrmew Firebase");
     } catch (Exception e) {
       System.err.println("Detailed Error: " + e.getMessage());
       e.printStackTrace();
@@ -491,7 +490,7 @@ public class FirebaseUtilities implements StorageInterface {
         Map<String, Object> userData = nestedUserDoc.getData();
         // with all 3 fields (uid, username, email)
         String userId = nestedUserDoc.getId();
-        // add the marker id to the marker data
+        // add the user id to the user data
         allUsers.add(userData);
       }
     }

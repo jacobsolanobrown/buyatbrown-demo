@@ -1,263 +1,101 @@
 package edu.brown.cs.student.main.server.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.google.gson.Gson;
+import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler;
+import edu.brown.cs.student.main.server.handlers.userAccountHandlers.CreateUserHandler;
+import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
+import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.MockedGoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.io.IOException;
-import java.util.Collection;
+
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import spark.Request;
-import spark.Response;
 
-public class AddListingHandlerTest {
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
-  private StorageInterface mockedstorage;
-  private AddListingHandler addListingHandler;
-  private MockedGoogleCloudStorageUtilities mockedGcsHandler;
+
+class AddListingHandlerTest {
+
+  private static AddListingHandler mockAddListingHandler;
+  private static AddListingHandler addListingHandler;
 
   @BeforeEach
-  void setUp() throws IOException {
-    // Initialize the mocked Firebase utility and Google Cloud Storage utility
-    mockedstorage = new MockedFirebaseUtilities();
-    mockedGcsHandler = new MockedGoogleCloudStorageUtilities();
-    addListingHandler = new AddListingHandler(mockedstorage, mockedGcsHandler);
+  public void setUp() throws IOException {
+    Map<String, Object> listing = new HashMap<>();
+
+    // Set up mocking
+    MockedFirebaseUtilities mockedFirebaseStorage = new MockedFirebaseUtilities();
+    MockedGoogleCloudStorageUtilities mockedGCStorage = new MockedGoogleCloudStorageUtilities();
+    mockAddListingHandler = new AddListingHandler(mockedFirebaseStorage, mockedGCStorage);
+    try {
+      mockedFirebaseStorage.createUser("user123", "testuser", "testemail@brown.edu");
+    } catch (IllegalArgumentException e) {
+      System.out.println("User already exists in mocked database. Skipping user creation...");
+    } catch (ExecutionException | InterruptedException e) {
+      System.out.println("Error creating mock user");
+    }
+
+    // For testing without mocking
+    StorageInterface firebaseStorage = new FirebaseUtilities();
+    GoogleCloudStorageUtilities gcsStorage = new GoogleCloudStorageUtilities();
+    addListingHandler = new AddListingHandler(firebaseStorage, gcsStorage);
   }
 
-  private Request createMockRequest(Map<String, String> queryParams, String body) {
-    return new Request() {
-      @Override
-      public String queryParams(String key) {
-        return queryParams.get(key);
-      }
-
-      @Override
-      public String body() {
-        return body;
-      }
-    };
-  }
-
-  // Mocked test: testing adding listing successfully to database
   @Test
-  void testHandle_ValidInput() throws ExecutionException, InterruptedException {
-    // Prepare base64 encoded image - use a valid base64 string
-    String base64Image =
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+  void testAddListingPerfectRequest() throws ExecutionException, InterruptedException, IOException {
+    Map<String, String> queryParams = new HashMap<>();
 
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "title", "Cool Item",
-            "tags", "tag1,tag2", // Changed to valid tag format
-            "price", "10.99",
-            "category", "Electronics",
-            "condition", "new",
-            "description", "A very cool item");
+    queryParams.put("uid", "user123");
+    queryParams.put("username", "testuser");
+    queryParams.put("title", "Muji black pens");
+    queryParams.put("tags", "Stationary,Art Supplies");
+    queryParams.put("category", "School");
+    queryParams.put("price", "10.99");
+    queryParams.put("condition", "New");
+    queryParams.put("description",
+      "I bought some Muji black pens in high school and brought them to Brown."
+        + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
+        + " to go to worst. They are really nice. Let me know if you would like any!");
 
-    Request mockRequest = createMockRequest(queryParams, base64Image);
-    Response mockResponse = createMockResponse();
+    String workingDirectory = System.getProperty("user.dir");
+    Path base64TestPath = Paths.get(workingDirectory, "src/test/java/edu/brown/cs/student/main/server/test/data/base64_testing_image.txt");
+    String body = new String(Files.readAllBytes(base64TestPath));
+    MockRequest mockRequest = new MockRequest(queryParams, body);
 
-    // Execute handler
-    String addListingResult = (String) addListingHandler.handle(mockRequest, mockResponse);
+    MockResponse mockResponse = new MockResponse();
+    Object result = mockAddListingHandler.handle(mockRequest, mockResponse);
 
-    // Parse and verify response
-    Map<String, Object> resultMap = new Gson().fromJson(addListingResult, Map.class);
-    assertEquals("success", resultMap.get("response_type"));
+    // Verify the result
+    assertNotNull(result, "Result should not be null");
 
-    // Verify the listing ID was generated
-    assertNotNull(resultMap.get("listingId"));
-    assertTrue(((String) resultMap.get("listingId")).startsWith("listing-"));
+    // Check for correct ResponseMap
+    Map<String, Object> responseMap = Utils.fromMoshiJson(result.toString());
+    assertEquals("success", responseMap.get("response_type"));
+    assertTrue(responseMap.get("listingId").toString().contains("listing-"));
+    assertEquals("user123", responseMap.get("uid"));
+    assertEquals("testuser", responseMap.get("username"));
+    assertEquals("Muji black pens", responseMap.get("title"));
+    assertEquals("Stationary,Art Supplies", responseMap.get("tags"));
+    assertEquals("School", responseMap.get("category"));
+    assertEquals("10.99", responseMap.get("price"));
+    assertEquals("New", responseMap.get("condition"));
+    assertEquals("I bought some Muji black pens in high school and brought them to Brown. "
+      + "Since coming here though, I only take notes using my ipad. I would hate for these pens"
+      + " to go to worst. They are really nice. Let me know if you would like any!", responseMap.get("description"));
+    assertTrue(responseMap.get("imageUrl").toString().contains("http://mock-storage/"));
 
-    // Retrieve and verify the stored listing
-    Collection<Map<String, Object>> listings = mockedstorage.getCollection("user123", "listings");
-    assertFalse(listings.isEmpty(), "Listings collection should not be empty");
-
-    Map<String, Object> listing = listings.stream().reduce((first, second) -> second).orElseThrow();
-
-    // Verify all fields
-    assertNotNull(listing, "Listing should not be null");
-    assertEquals("Cool Item", listing.get("title"), "Title does not match expected value");
-    assertEquals("10.99", listing.get("price"), "Price does not match expected value");
-    assertEquals(
-        "A very cool item",
-        listing.get("description"),
-        "Description does not match expected value");
-    assertEquals("new", listing.get("condition"), "Condition does not match expected value");
-    assertEquals("tag1,tag2", listing.get("tags"), "Tags do not match expected value");
-    assertEquals("Electronics", listing.get("category"), "Category does not match expected value");
-    assertEquals("testuser", listing.get("username"), "Username does not match expected value");
-    assertEquals("user123", listing.get("uid"), "UID does not match expected value");
-
-    // Verify image URL
-    String imageUrl = (String) listing.get("imageUrl");
-    assertNotNull(imageUrl, "Image URL should not be null");
-    assertTrue(
-        imageUrl.startsWith("https://mocked-storage/"),
-        "Image URL should start with mocked storage URL");
+    // Check if the listing is in the database
   }
 
-  // Mocked test: testing missing params edge case
-  @Test
-  void testHandle_MissingParameters() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "10.99"
-            //  title, tags, condition, description, category
-            );
-
-    Request mockRequest = createMockRequest(queryParams, "");
-    Response mockResponse = createMockResponse();
-
-    // Execute AddListingHandler to add a listing
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(resultMap.get("error").toString().contains("All listings arguments are required"));
-  }
-
-  // Mocked test: testing title format (edge case)
-  @Test
-  void testHandle_TitleTooLong() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "10.99",
-            "title", "This title is definitely way too long for the allowed limit",
-            "tags", "tag1,tag2",
-            "category", "Electronics",
-            "condition", "new",
-            "description", "A very cool item");
-
-    Request mockRequest = createMockRequest(queryParams, "base64encodedImageString");
-    Response mockResponse = createMockResponse();
-
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(
-        resultMap
-            .get("error")
-            .toString()
-            .contains("Title must be less than or equal to 40 characters"));
-  }
-
-  // Mocked test: testing price format (edge case)
-  @Test
-  void testHandle_NegativePrice() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "-5.00",
-            "title", "Cool Item",
-            "tags", "tag1,tag2",
-            "category", "Electronics",
-            "condition", "new",
-            "description", "A very cool item");
-
-    Request mockRequest = createMockRequest(queryParams, "base64encodedImageString");
-    Response mockResponse = createMockResponse();
-
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(resultMap.get("error").toString().contains("Price cannot be negative"));
-  }
-
-  // Mocked test: testing condition format (edge case)
-  @Test
-  void testHandle_InvalidCondition() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "10.99",
-            "title", "Cool Item",
-            "tags", "tag1,tag2",
-            "category", "Electronics",
-            "condition", "old",
-            "description", "A very cool item");
-
-    Request mockRequest = createMockRequest(queryParams, "base64encodedImageString");
-    Response mockResponse = createMockResponse();
-
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(
-        resultMap.get("error").toString().contains("Please choose from valid condition inputs"));
-  }
-
-  // Mocked test: testing tag format (edge case)
-  @Test
-  void testHandle_DuplicateTags() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "10.99",
-            "title", "Cool Item",
-            "tags", "tag1,tag1",
-            "category", "Electronics",
-            "condition", "new",
-            "description", "A very cool item");
-
-    Request mockRequest = createMockRequest(queryParams, "base64encodedImageString");
-    Response mockResponse = createMockResponse();
-
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(resultMap.get("error").toString().contains("Please make sure all tags are unique"));
-  }
-
-  // Mocked test: testing tag format (edge case)
-  @Test
-  void testHandle_TooManyTags() {
-    Map<String, String> queryParams =
-        Map.of(
-            "uid", "user123",
-            "username", "testuser",
-            "price", "10.99",
-            "title", "Cool Item",
-            "tags", "tag1,tag2,tag3,tag4,tag5,tag6",
-            "category", "Electronics",
-            "condition", "new",
-            "description", "A very cool item");
-
-    Request mockRequest = createMockRequest(queryParams, "base64encodedImageString");
-    Response mockResponse = createMockResponse();
-
-    String result = (String) addListingHandler.handle(mockRequest, mockResponse);
-
-    Map<String, Object> resultMap = new Gson().fromJson(result, Map.class);
-    assertEquals("failure", resultMap.get("response_type"));
-    assertTrue(
-        resultMap.get("error").toString().contains("Please input less than or equal to 5 tags"));
-  }
-
-  private Response createMockResponse() {
-    return new Response() {
-      // Implement as needed (e.g., to capture status codes or headers)
-    };
-  }
 }

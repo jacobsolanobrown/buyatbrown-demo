@@ -61,42 +61,6 @@ public class CreateUserHandler implements Route {
         System.out.println("Username is available.");
       }
 
-      //      boolean userExists = allUsers.stream()
-      //          .anyMatch(userMap -> {
-      //            // Navigate through the nested structure to find our users
-      //            Map<String, Object> collections = (Map<String, Object>)
-      // userMap.get("collections");
-      //            if (collections != null) {
-      //              Map<String, Object> users = (Map<String, Object>) collections.get("users");
-      //              // if there are users in the database
-      //              if (users != null) {
-      //                // get the values from the {user: email, uid, username} values
-      //                return users.values().stream()
-      //                    // check if the username already exists
-      //                    .anyMatch(userDetails -> {
-      //                      // get the username from the userDetails
-      //                      Map<String, Object> userDetailsMap = (Map<String, Object>)
-      // userDetails;
-      //                      System.out.println("Checking user details: " + userDetailsMap);
-      //                      // check if the username is the same as the one we are trying to
-      // create
-      //                      Object existingUsername = userDetailsMap.get("username");
-      //                      return existingUsername != null &&
-      // existingUsername.toString().equalsIgnoreCase(username);
-      //                    });
-      //              }
-      //            }
-      //            return false;
-      //          });
-
-      //      if (userExists) {
-      //        // User already exists, send an error response
-      //        responseMap.put("response_type", "failure");
-      //        responseMap.put("error", "User with the username \"" + username + "\" already
-      // exists.");
-      //        return Utils.toMoshiJson(responseMap);
-      //      }
-
       // Create user data
       Map<String, Object> userData = new HashMap<>();
       userData.put("uid", uid);

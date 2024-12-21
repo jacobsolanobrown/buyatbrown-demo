@@ -136,6 +136,33 @@ public class MockedFirebaseUtilities implements StorageInterface {
         .put(listingId, listing);
   }
 
+  public void createUser(String uid, String username, String email)
+    throws IllegalArgumentException, ExecutionException, InterruptedException {
+    if (uid == null || username == null || email == null) {
+      throw new IllegalArgumentException("Both 'uid', 'username', and 'email' are required.");
+    }
+
+    // Check if the user already exists
+    List<Map<String, Object>> allUsers = getAllUserDataMaps();
+
+    boolean usernameExists = allUsers.stream().anyMatch(user -> user.get("username").equals(username));
+    if (usernameExists) {
+      throw new IllegalArgumentException("User with the username" + username + " already exists.");
+    }
+
+    // Create user data
+    Map<String, Object> userData = new HashMap<>();
+    userData.put("uid", uid);
+    userData.put("username", username);
+    userData.put("email", email);
+
+    // Store the new user in the database
+    addDocument(uid, "users", uid, userData);
+
+    System.out.println("Created new user: " + username + " (UID: " + uid + ", EMAIL: " + email + ")");
+  }
+
+
   @Override
   public Map<String, Object> getListingForUser(String uid, String listingId)
       throws InterruptedException, ExecutionException {
@@ -179,34 +206,6 @@ public class MockedFirebaseUtilities implements StorageInterface {
 
   @Override
   public List<Map<String, Object>> getAllUsers() throws InterruptedException, ExecutionException {
-    //    List<String> userIds = new ArrayList<>();
-    //    List<String> collectionIds = new ArrayList<>();
-    //    List<String> documentIds = new ArrayList<>();
-    //    List<String> dataKeys = new ArrayList<>();
-    //
-    //    for (String userId : database.keySet()) {
-    //      userIds.add(userId);
-    //      Map<String, Map<String, Map<String, Object>>> collections = database.get(userId);
-    //
-    //      for (String collectionId : collections.keySet()) {
-    //        collectionIds.add(collectionId);
-    //        Map<String, Map<String, Object>> documents = collections.get(collectionId);
-    //
-    //        for (String documentId : documents.keySet()) {
-    //          documentIds.add(documentId);
-    //          Map<String, Object> documentData = documents.get(documentId);
-    //
-    //          dataKeys.addAll(documentData.keySet());
-    //        }
-    //      }
-    //    }
-
-    //    // Print or return the lists as needed
-    //    System.out.println("User IDs: " + userIds);
-    //    System.out.println("Collection IDs: " + collectionIds);
-    //    System.out.println("Document IDs: " + documentIds);
-    //    System.out.println("Data Keys: " + dataKeys);
-    //  return List.of("User IDs", userIds);
     List<Map<String, Object>> userIdList = new ArrayList<>();
 
     for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> userEntry :
@@ -222,6 +221,25 @@ public class MockedFirebaseUtilities implements StorageInterface {
     }
 
     return userIdList;
+  }
+
+  /**
+   * Adds a new user to the mock database.
+   *
+   * @param uid The unique user ID.
+   * @throws IllegalArgumentException if the uid is null or already exists.
+   */
+  public void addUser(String uid) {
+    if (uid == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+    if (database.containsKey(uid)) {
+      System.out.println("User with ID " + uid + " already exists");
+      return;
+    }
+    // Add the user to the database with an empty collection map
+    database.put(uid, new HashMap<>());
+    System.out.println("User with ID " + uid + " has been added.");
   }
 
   /**

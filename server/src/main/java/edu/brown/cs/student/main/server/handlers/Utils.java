@@ -15,4 +15,17 @@ public class Utils {
 
     return adapter.toJson(map);
   }
+
+  public static Map<String, Object> fromMoshiJson(String json) {
+    Moshi moshi = new Moshi.Builder().build();
+    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, String.class);
+    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+
+    try {
+      return adapter.fromJson(json);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Failed to parse JSON to Map: " + e.getMessage(), e);
+    }
+  }
 }
