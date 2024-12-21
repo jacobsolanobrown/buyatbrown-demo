@@ -1,10 +1,8 @@
 package edu.brown.cs.student.main.server.storage;
 
 import com.google.cloud.storage.Storage;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Base64;
 
 // Mock class
 public class MockedGoogleCloudStorageUtilities implements GoogleCloudStorageInterface {
@@ -42,7 +40,8 @@ public class MockedGoogleCloudStorageUtilities implements GoogleCloudStorageInte
   public String getImage(String imageName) {
     // Retrieve image bytes from mock storage
     if (!storage.containsKey(imageName)) {
-      throw new IllegalArgumentException("Image with name " + imageName + " does not exist in mock storage.");
+      throw new IllegalArgumentException(
+          "Image with name " + imageName + " does not exist in mock storage.");
     }
     return storage.get(imageName);
   }
@@ -50,7 +49,8 @@ public class MockedGoogleCloudStorageUtilities implements GoogleCloudStorageInte
   public String getImageUrl(String imageName) {
     // Retrieve fake image URL
     if (!imageUrls.containsKey(imageName)) {
-      throw new IllegalArgumentException("Image URL for " + imageName + " does not exist in mock storage.");
+      throw new IllegalArgumentException(
+          "Image URL for " + imageName + " does not exist in mock storage.");
     }
     return imageUrls.get(imageName);
   }

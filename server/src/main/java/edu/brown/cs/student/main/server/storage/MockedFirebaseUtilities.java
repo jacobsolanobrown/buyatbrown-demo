@@ -137,7 +137,7 @@ public class MockedFirebaseUtilities implements StorageInterface {
   }
 
   public void createUser(String uid, String username, String email)
-    throws IllegalArgumentException, ExecutionException, InterruptedException {
+      throws IllegalArgumentException, ExecutionException, InterruptedException {
     if (uid == null || username == null || email == null) {
       throw new IllegalArgumentException("Both 'uid', 'username', and 'email' are required.");
     }
@@ -145,7 +145,8 @@ public class MockedFirebaseUtilities implements StorageInterface {
     // Check if the user already exists
     List<Map<String, Object>> allUsers = getAllUserDataMaps();
 
-    boolean usernameExists = allUsers.stream().anyMatch(user -> user.get("username").equals(username));
+    boolean usernameExists =
+        allUsers.stream().anyMatch(user -> user.get("username").equals(username));
     if (usernameExists) {
       throw new IllegalArgumentException("User with the username" + username + " already exists.");
     }
@@ -159,9 +160,9 @@ public class MockedFirebaseUtilities implements StorageInterface {
     // Store the new user in the database
     addDocument(uid, "users", uid, userData);
 
-    System.out.println("Created new user: " + username + " (UID: " + uid + ", EMAIL: " + email + ")");
+    System.out.println(
+        "Created new user: " + username + " (UID: " + uid + ", EMAIL: " + email + ")");
   }
-
 
   @Override
   public Map<String, Object> getListingForUser(String uid, String listingId)
