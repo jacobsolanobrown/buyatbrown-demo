@@ -94,7 +94,7 @@ export default function Furniture() {
 
   return (
     <div className="flex flex-row">
-      <div>
+      <div className="flex">
       <FilterBar
         title="Furniture"
         filters={clothesFilters}
@@ -116,7 +116,7 @@ export default function Furniture() {
         )}
 
         {isLoading ? (
-          <div aria-label="loading" className="flex justify-center items-center min-w-full h-dvh p-5">
+          <div aria-label="loading" className="flex justify-center items-center min-w-screen h-dvh p-5">
             <PulseLoader
               color="#ED1C24"
               margin={4}

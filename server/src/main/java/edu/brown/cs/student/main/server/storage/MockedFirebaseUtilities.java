@@ -292,4 +292,9 @@ public class MockedFirebaseUtilities implements StorageInterface {
       throws ExecutionException, InterruptedException {
     return List.of();
   }
+
+  @Override
+  public List<String> getAllUsersIds() throws ExecutionException, InterruptedException {
+    return List.of();
+  }
 }

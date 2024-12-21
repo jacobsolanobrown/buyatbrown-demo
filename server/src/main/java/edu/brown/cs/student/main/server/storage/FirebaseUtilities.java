@@ -460,6 +460,11 @@ public class FirebaseUtilities implements StorageInterface {
     return allUsers;
   }
 
+  @Override
+  public List<String> getAllUsersIds() throws ExecutionException, InterruptedException {
+    return List.of();
+  }
+
   /**
    * This gets the account details for all users in the database.
    *

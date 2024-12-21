@@ -38,4 +38,6 @@ public interface StorageInterface {
 
   List<Map<String, List<String>>> getAllUserFavoritesIds()
       throws ExecutionException, InterruptedException;
+
+  List<String> getAllUsersIds() throws ExecutionException, InterruptedException;
 }
