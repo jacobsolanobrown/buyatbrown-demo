@@ -26,18 +26,19 @@ const ListingCard: React.FC<CardProps> = ({
   onClick,
 }) => {
   return (
-    <div
+    <div 
+      aria-label="post"
       onClick={onClick}
       className="cursor-pointer w-64 bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
     >
-      <div className="relative w-full h-48 bg-gray-100">
+      <div aria-label="photo" className="relative w-full h-64 bg-gray-100">
         <img
           src={imageUrl}
           alt={title}
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-4 text-left">
+      <div aria-label="post details" className="p-4 text-left">
         <h2 className="text-xl font-bold text-gray-800 truncate">{title}</h2>
         <p className="text-gray-600 font-medium">${price}</p>
         <p className="text-sm font-light text-blue-800">by {username}</p>

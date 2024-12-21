@@ -11,8 +11,9 @@ export default function DropdownNavUser() {
   return (
     <div>
       {/* Dropdown for smaller screens */}
-      <div className="min-[860px]:hidden p-4 flex flex-col items-center">
+      <div aria-label="dropdown" className="min-[860px]:hidden p-4 flex flex-col items-center">
         <button
+          aria-label="Profile dropdown"
           onClick={toggleDropdown}
           className="w-80 bg-white text-black py-2 px-4 rounded-3xl hover:bg-blue-800 focus:ring-4 focus:outline-none 
           focus:ring-blue-300 font-medium text-sm text-center mb-2"

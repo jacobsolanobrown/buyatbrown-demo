@@ -44,18 +44,23 @@ const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   return (
-    <div className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5">
+    <div
+      aria-label="filter"
+      className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5 min-h-96"
+    >
       <h2 className="text-xl font-bold mb-4 text-center ">{title}</h2>
       <button
-        className="bg-red-500 text-white py-2 px-4 rounded-3xl mb-4 w-full"
+        aria-label="post listing"
+        className="bg-red-600 text-white py-2 px-4 rounded-3xl mb-4 w-full"
         onClick={handlePostListingClick}
       >
         Post Listing
       </button>
-      <div className="mb-4">
+      <div aria-label="tag filters" className="mb-4">
         <h3 className="font-semibold mb-2">Filters</h3>
         {filters.map((filter, index) => (
           <button
+            aria-label="tag"
             key={index}
             onClick={() => toggleFilter(filter)}
             className={`block py-2 px-4 rounded-3xl mb-4 w-full text-left ${
@@ -69,10 +74,11 @@ const FilterBar: React.FC<FilterBarProps> = ({
         ))}
       </div>
 
-      <div>
+      <div aria-label="condition filters">
         <h3 className="font-semibold mb-2">Condition Filters</h3>
         {conditionFilters.map((condition, index) => (
           <button
+            aria-label="condition"
             key={index}
             onClick={() => toggleCondition(condition)}
             className={`block py-2 px-4 rounded-3xl mb-2 w-full text-left ${

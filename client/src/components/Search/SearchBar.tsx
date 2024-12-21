@@ -12,7 +12,7 @@ export const SearchBar: React.FC<{ onSearchSubmit: (term: string) => void }> = (
 
   return (
     // EDIT HERE FOR SEARCH LENGTH 
-      <form onSubmit={handleSubmit} className="relative w-full">
+      <form aria-label="search" onSubmit={handleSubmit} className="relative w-full">
           <input
               type="text"
               placeholder="Search for items..."
@@ -22,6 +22,7 @@ export const SearchBar: React.FC<{ onSearchSubmit: (term: string) => void }> = (
           />  
           {/* Submit Button */}
           <button
+            aria-label="search"
             type="submit"
             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 hover:bg-gray-700 focus:ring-2 focus:ring-blue-400"
           >

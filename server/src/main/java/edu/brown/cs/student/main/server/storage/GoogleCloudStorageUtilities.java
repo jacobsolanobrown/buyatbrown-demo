@@ -31,7 +31,7 @@ public class GoogleCloudStorageUtilities implements GoogleCloudStorageInterface{
   public Storage makeStorage() throws IOException {
     String workingDirectory = System.getProperty("user.dir");
     Path googleCredentialsPath =
-        Paths.get(workingDirectory, "server/resources", "google_cred.json");
+        Paths.get(workingDirectory, "/resources", "google_cred.json");
     // Initialize the Storage client with credentials
     return StorageOptions.newBuilder()
         .setCredentials(

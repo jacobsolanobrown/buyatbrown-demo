@@ -4,6 +4,7 @@ import FilterBar from "../FilterBar"; // Adjust the import path as needed
 import ListingCard from "../ListingCard";
 import ListingModal from "../ListingModal";
 import { PulseLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 export default function Misc() {
   // ********* Bigger card with more information on click: *********
@@ -46,8 +47,24 @@ export default function Misc() {
     setSelectedConditions(newConditions);
   };
 
+  // keep track of what conditions are clicked:
+  const toggleCondition = (condition: string) => {
+    const newConditions = selectedConditions.includes(condition)
+      ? selectedConditions.filter((c) => c !== condition) // Remove condition
+      : [...selectedConditions, condition]; // Add condition
+    setSelectedConditions(newConditions);
+  };
+
+  const navigate = useNavigate();
+
+  const handlePostListingClick = () => {
+    navigate("/listing-form");
+  };
+
   // Fetch data from the api:
   useEffect(() => {
+    setIsLoading(true);
+
     // format tag and condition filters for server
     const tagsString =
       selectedFilters.length == 0 ? "ignore" : selectedFilters.join(",");
@@ -76,25 +93,57 @@ export default function Misc() {
 
   return (
     <div className="flex flex-row">
-      <FilterBar
-        title="Misc"
-        filters={clothesFilters}
-        conditionFilters={conditionFilters}
-        onFiltersChange={handleFiltersChange}
-        onConditionsChange={handleConditionsChange}
-      />
+      <div>
+        {/* Display Filter Bar */}
+        <div
+          aria-label="filter"
+          className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5 min-h-96"
+        >
+          <h2 className="text-xl font-bold mb-4 text-center ">Misc</h2>
+          <button
+            aria-label="post listing"
+            className="bg-red-600 text-white py-2 px-4 rounded-3xl mb-4 w-full"
+            onClick={handlePostListingClick}
+          >
+            Post Listing
+          </button>
+
+          <div aria-label="condition filters">
+            <h3 className="font-semibold mb-2">Condition Filters</h3>
+            {conditionFilters.map((condition, index) => (
+              <button
+                aria-label="condition"
+                key={index}
+                onClick={() => toggleCondition(condition)}
+                className={`block py-2 px-4 rounded-3xl mb-2 w-full text-left ${
+                  selectedConditions.includes(condition)
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {condition}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Render posts based on filters */}
-      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+      <div className="w-full h-full p-5 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 mx-auto">
         {/* Display error message */}
         {errorMessage && (
-          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-            {errorMessage}
-          </p>
+          <div className="flex justify-center min-w-full h-dvh p-5">
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              {errorMessage}
+            </p>
+          </div>
         )}
 
         {isLoading ? (
-          <div>
+          <div
+            aria-label="loading"
+            className="flex justify-center items-center min-w-full h-dvh p-5"
+          >
             <PulseLoader
               color="#ED1C24"
               margin={4}
@@ -102,32 +151,46 @@ export default function Misc() {
               speedMultiplier={0.7}
             />
           </div>
+        ) : posts.length === 0 &&
+          (selectedFilters.length > 0 || selectedConditions.length > 0) ? (
+          <div
+            aria-label="message"
+            className="flex justify-center min-w-full h-dvh p-5"
+          >
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              No misc listings available with filters:{" "}
+              {selectedFilters.join(", ") +
+                ", " +
+                selectedConditions.join(", ")}
+            </p>
+          </div>
         ) : posts.length === 0 ? (
-          <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
-            No misc listings available
-          </p>
+          <div
+            aria-label="message"
+            className="flex justify-center min-w-full h-dvh p-5"
+          >
+            <p className="p-4 text-3xl font-ibm-plex-sans text-center text-red-600">
+              No misc listings available.
+            </p>
+          </div>
         ) : (
-          posts.map(
-            (
-              post // posts should reflect
-            ) => (
-              <ListingCard
-                key={post.id}
-                listingId={post.listingId}
-                userId={post.userId}
-                imageUrl={post.imageUrl}
-                title={post.title}
-                price={post.price}
-                username={post.username}
-                description={post.description}
-                condition={post.condition}
-                category={post.category}
-                tags={post.tags}
-                email={post.email}
-                onClick={() => handleCardClick(post)}
-              />
-            )
-          )
+          posts.map((post) => (
+            <ListingCard
+              key={post.id}
+              listingId={post.id}
+              userId={post.userId}
+              imageUrl={post.imageUrl}
+              title={post.title}
+              price={post.price}
+              username={post.username}
+              description={post.description}
+              condition={post.condition}
+              category={post.category}
+              tags={post.tags}
+              email={post.email}
+              onClick={() => handleCardClick(post)}
+            />
+          ))
         )}
 
         {isModalOpen && (
