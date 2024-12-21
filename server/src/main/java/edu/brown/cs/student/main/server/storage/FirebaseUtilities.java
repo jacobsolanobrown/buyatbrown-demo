@@ -45,10 +45,10 @@ public class FirebaseUtilities implements StorageInterface {
       if (!Files.exists(firebaseConfigPath)) {
         // Try alternative paths
         Path[] alternativePaths = {
-          Paths.get(workingDirectory, "resources", "firebase_config.json"),
-          Paths.get(workingDirectory, "firebase_config.json"),
-          Paths.get("firebase_config.json"),
-          Paths.get(System.getProperty("user.home"), "firebase_config.json")
+            Paths.get(workingDirectory, "resources", "firebase_config.json"),
+            Paths.get(workingDirectory, "firebase_config.json"),
+            Paths.get("firebase_config.json"),
+            Paths.get(System.getProperty("user.home"), "firebase_config.json")
         };
 
         for (Path altPath : alternativePaths) {
@@ -458,11 +458,6 @@ public class FirebaseUtilities implements StorageInterface {
       allUsers.add(userLikedListings);
     }
     return allUsers;
-  }
-
-  @Override
-  public List<String> getAllUsersIds() throws ExecutionException, InterruptedException {
-    return List.of();
   }
 
   /**

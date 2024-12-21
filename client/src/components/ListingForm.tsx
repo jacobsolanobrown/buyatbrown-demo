@@ -29,7 +29,9 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
 
   // Handle form input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,7 +42,9 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
 
   // Handle form image changes
   const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const file = e.target.files[0];
     setFormData({ ...formData, imageFile: file });
@@ -57,65 +61,6 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
  */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // // Must upload an image
-    // if (!formData.imageFile) {
-    //   setResponseMessage("Please upload an image.");
-    //   return;
-    // }
-
-    // setIsSubmitting(true);
-    // setResponseMessage("");
-
-    // try {
-    //   // Convert image to Base64
-    //   const reader = new FileReader();
-    //   reader.readAsDataURL(formData.imageFile);
-    //   reader.onload = async () => {
-    //     // Error check the reader result to prevent null pointer exception
-    //     const base64Image = reader.result ? reader.result.split(",")[1] : ""; // Strip out metadata
-
-    //     // Prepare form data
-    //     const data = {
-    //       ...formData,
-    //       imageUrl: base64Image,
-    //     };
-
-    //     try {
-    //       const response = await axios.post(
-    //         "http://localhost:3232/add-listings",
-    //         data.imageUrl, // Send the image URL as raw body
-    //         {
-    //           headers: { "Content-Type": "text/plain" },
-    //           params: {
-    //             username: data.username,
-    //             price: data.price,
-    //             title: data.title,
-    //             category: data.category,
-    //             tags: data.tags,
-    //             condition: data.condition,
-    //             description: data.description,
-    //           },
-    //         }
-    //       ) 
-    //       if (response.data.response_type === "success") {
-    //         setResponseMessage("Listing added successfully!");
-    //       } else {
-    //         setResponseMessage(`Error: ${response.data.error}`);
-    //       }
-    //     } catch (error) {
-    //       console.error("Error uploading listing:", error);
-    //       setResponseMessage("An error occurred while uploading the listing.");
-    //     }
-    //   };
-    // } catch (error) {
-    //   console.error("Error uploading listing:", error);
-    //   setResponseMessage("An error occurred while uploading the listing.");
-    // }
-    // } finally {
-    //   setIsSubmitting(false);
-    //   console.log("Form data submitted once:", formData);
-    // }
 
     // Handle form submission logic here
     console.log("Form data submitted:", formData);
@@ -181,16 +126,13 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
           setResponseMessage("An error occurred while uploading the listing.");
         }
       };
-    } 
-    catch (error) {
+    } catch (error) {
       console.error("Error uploading listing:", error);
       setResponseMessage("An error occurred while uploading the listing.");
-    } 
-    finally {
+    } finally {
       setIsSubmitting(false);
       console.log("Form data submitted twice:", formData);
       navigate("/");
-      
     }
   };
 
@@ -290,16 +232,21 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
             >
               Condition
             </label>
-            <input
-              type="text"
+            <select
               id="condition"
               name="condition"
-              placeholder="Choose a condition"
               value={formData.condition}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4"
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm pl-6 pr-6 py-4 bg-white"
               required
-            />
+            >
+              <option value="" className="text-gray-400" disabled>
+                Select a condition
+              </option>
+              <option value="New">New</option>
+              <option value="Like New">Like New</option>
+              <option value="Used">Used</option>
+            </select>
           </div>
           {/* Dropdown menu to choose item category */}
           <div>
@@ -309,16 +256,25 @@ const PostingPage: React.FC<PostingPageProps> = ({ uid, username }) => {
             >
               Category
             </label>
-            <input
-              type="text"
+            <select
               id="category"
               name="category"
-              placeholder="Choose a category"
               value={formData.category}
               onChange={handleChange}
-              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm px-6  py-4 "
+              className="mt-2 block w-full border border-gray-300 rounded-full shadow-sm pl-6 pr-6 py-4 bg-white"
               required
-            />
+            >
+              <option value="" className="text-gray-400 " disabled>
+                Select a category
+              </option>
+              <option value="Clothes">Clothes</option>
+              <option value="Tech">Tech</option>
+              <option value="School">School</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Kitchen">Kitchen</option>
+              <option value="Bathroom">Bathroom</option>
+              <option value="Misc">Miscellaneous</option>
+            </select>
           </div>
           {/* Add tags */}
           <div>
