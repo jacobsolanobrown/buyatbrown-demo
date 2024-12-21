@@ -146,9 +146,9 @@ public class AddListingHandler implements Route {
     }
 
     // each tag should be less than or equal to 2 words
-    if (countWordsBetweenCommas(tags) > 2) {
-      System.out.println("Each tag should be less than or equal to 2 words.");
-      throw new IllegalArgumentException("Each tag should be less than or equal to 2 words.");
+    if (countWordsBetweenCommas(tags) > 3) {
+      System.out.println("Each tag should be less than or equal to 3 words.");
+      throw new IllegalArgumentException("Each tag should be less than or equal to 3 words.");
     }
 
     // tags are in the form "tag1,tag2,tag3, two wordtag"
