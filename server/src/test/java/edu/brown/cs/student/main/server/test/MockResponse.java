@@ -1,7 +1,5 @@
 package edu.brown.cs.student.main.server.test;
 
-import java.util.Map;
-import spark.Request;
 import spark.Response;
 
 public class MockResponse extends Response {

@@ -1,17 +1,10 @@
 package edu.brown.cs.student.main.server.handlers.listingHandlers;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.storage.GoogleCloudStorageInterface;
-import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.lang.reflect.Array;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import javax.sound.midi.SysexMessage;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -81,8 +72,8 @@ public class AddListingHandler implements Route {
    * @param username A String input of the username
    */
   public void validateUser(String uid, String username)
-    throws ExecutionException, InterruptedException {
-    if (uid == null || uid.isBlank()  || username == null || username.isBlank()) {
+      throws ExecutionException, InterruptedException {
+    if (uid == null || uid.isBlank() || username == null || username.isBlank()) {
       System.out.println("Please specify user. Input both the UID and Username.");
       throw new IllegalArgumentException("Please specify user. Input both the UID and Username.");
     }
@@ -111,11 +102,12 @@ public class AddListingHandler implements Route {
    */
   public void validateImage(String base64Image) {
     if (base64Image == null || base64Image.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
   }
 
@@ -126,11 +118,12 @@ public class AddListingHandler implements Route {
    */
   public static void validateTags(String tags) {
     if (tags == null || tags.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
 
     tags = tags.trim();
@@ -152,7 +145,8 @@ public class AddListingHandler implements Route {
     }
 
     // tags are in the form "tag1,tag2,tag3, two wordtag"
-    if (tags.length() - tags.replace(",  ,", "").replace(",,", "").replace(", ,", "").length() > 0) {
+    if (tags.length() - tags.replace(",  ,", "").replace(",,", "").replace(", ,", "").length()
+        > 0) {
       System.out.println("Each tag should have a value.");
       throw new IllegalArgumentException("Each tag should have a value.");
     }
@@ -178,11 +172,12 @@ public class AddListingHandler implements Route {
    */
   public static void validatePrice(String price) {
     if (price == null || price.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
     double value = 0;
     // check if price is a number
@@ -216,11 +211,12 @@ public class AddListingHandler implements Route {
    */
   public static void validateTitle(String title) {
     if (title == null || title.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
 
     title = title.trim();
@@ -238,20 +234,21 @@ public class AddListingHandler implements Route {
    */
   public static void validateCondition(String condition) {
     if (condition == null || condition.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
 
     // check if condition option is one of the valid options
     condition = condition.trim().toLowerCase();
     if (!(condition.equals("new") || condition.equals("like new") || condition.equals("used"))) {
       System.out.println(
-        "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
+          "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
       throw new IllegalArgumentException(
-        "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
+          "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
     }
   }
 
@@ -262,37 +259,40 @@ public class AddListingHandler implements Route {
    */
   public static void validateCategory(String category) {
     if (category == null || category.isBlank()) {
-      System.out.println("All listings arguments are required (title, tags, price, "
-        + "image, category, condition, description)");
+      System.out.println(
+          "All listings arguments are required (title, tags, price, "
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
-        "All listings arguments are required "
-          + "(title, tags, price, image, category, condition, description)");
+          "All listings arguments are required "
+              + "(title, tags, price, image, category, condition, description)");
     }
-
 
     if (category.contains(",")) {
       System.out.println("Category can only have one value (i.e.value must not contain commas).");
       throw new IllegalArgumentException(
-        "Category can only have one value (i.e.value must not contain commas).");
+          "Category can only have one value (i.e.value must not contain commas).");
     }
 
     // check if category option is one of the valid options
     category = category.trim().toLowerCase();
     List<String> categoryList = new ArrayList<String>();
     // check if its in list
-//    categoryList.add("clothes").add("tech"), "school", "furniture", "kitchen", "bathroom");
-    if (!(category.equals("clothes") || category.equals("tech") || category.equals("school") ||
-      category.equals("furniture") || category.equals("kitchen") || category.equals("bathroom") ||
-      category.equals("misc"))) {
+    //    categoryList.add("clothes").add("tech"), "school", "furniture", "kitchen", "bathroom");
+    if (!(category.equals("clothes")
+        || category.equals("tech")
+        || category.equals("school")
+        || category.equals("furniture")
+        || category.equals("kitchen")
+        || category.equals("bathroom")
+        || category.equals("misc"))) {
       System.out.println(
-        "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
-          + "or Bathroom).");
+          "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
+              + "or Bathroom).");
       throw new IllegalArgumentException(
-        "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
-          + "or Bathroom).");
+          "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
+              + "or Bathroom).");
     }
   }
-
 
   /**
    * Invoked when a request is made on this route's corresponding path e.g. '/hello'

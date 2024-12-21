@@ -1,19 +1,19 @@
-//package edu.brown.cs.student.main.server.handlers.listingHandlers;
+// package edu.brown.cs.student.main.server.handlers.listingHandlers;
 //
-//import com.google.cloud.storage.Storage;
-//import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
-//import edu.brown.cs.student.main.server.storage.StorageInterface;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import spark.Request;
-//import spark.Response;
+// import com.google.cloud.storage.Storage;
+// import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
+// import edu.brown.cs.student.main.server.storage.StorageInterface;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.mockito.Mock;
+// import org.mockito.MockitoAnnotations;
+// import spark.Request;
+// import spark.Response;
 //
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
+// import static org.junit.jupiter.api.Assertions.*;
+// import static org.mockito.Mockito.*;
 //
-//class MockAddListingHandlerTest {
+// class MockAddListingHandlerTest {
 //
 //  @Mock private StorageInterface mockStorageHandler;
 //  @Mock private GoogleCloudStorageUtilities mockGcsHandler;
@@ -39,7 +39,8 @@
 //  void testValidateTags_InvalidInput() {
 //    String invalidTags = "tag1,tag2,tag1";
 //    Exception exception =
-//      assertThrows(IllegalArgumentException.class, () -> AddListingHandler.validateTags(invalidTags));
+//      assertThrows(IllegalArgumentException.class, () ->
+// AddListingHandler.validateTags(invalidTags));
 //    assertEquals("Please make sure all tags are unique", exception.getMessage());
 //  }
 //
@@ -53,7 +54,8 @@
 //  void testValidatePrice_InvalidInput() {
 //    String invalidPrice = "-10";
 //    Exception exception =
-//      assertThrows(IllegalArgumentException.class, () -> AddListingHandler.validatePrice(invalidPrice));
+//      assertThrows(IllegalArgumentException.class, () ->
+// AddListingHandler.validatePrice(invalidPrice));
 //    assertEquals("Price cannot be negative or larger than 999999999.", exception.getMessage());
 //  }
 //
@@ -96,21 +98,22 @@
 //    when(mockRequest.queryParams("price")).thenReturn("-10");
 //
 //    Exception exception =
-//      assertThrows(IllegalArgumentException.class, () -> handler.handle(mockRequest, mockResponse));
+//      assertThrows(IllegalArgumentException.class, () -> handler.handle(mockRequest,
+// mockResponse));
 //    assertTrue(exception.getMessage().contains("All listings arguments are required"));
 //  }
-//}
+// }
 //
 //
-//import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.jupiter.api.Assertions.*;
 //  import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
 //
-//import java.util.HashMap;
-//import java.util.Map;
+// import java.util.HashMap;
+// import java.util.Map;
 //
-//public class AddListingHandlerTest {
+// public class AddListingHandlerTest {
 //
 //  private AddListingHandler addListingHandler;
 //
@@ -136,5 +139,5 @@
 //    assertNotNull(result);
 //    assertEquals("Success: Listing added", result); // Replace with actual expected value
 //  }
-//}
+// }
 //

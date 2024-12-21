@@ -6,7 +6,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -14,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-public class GoogleCloudStorageUtilities implements GoogleCloudStorageInterface{
+public class GoogleCloudStorageUtilities implements GoogleCloudStorageInterface {
 
   public String bucketName;
 
@@ -30,8 +29,7 @@ public class GoogleCloudStorageUtilities implements GoogleCloudStorageInterface{
   @Override
   public Storage makeStorage() throws IOException {
     String workingDirectory = System.getProperty("user.dir");
-    Path googleCredentialsPath =
-        Paths.get(workingDirectory, "/resources", "google_cred.json");
+    Path googleCredentialsPath = Paths.get(workingDirectory, "/resources", "google_cred.json");
     // Initialize the Storage client with credentials
     return StorageOptions.newBuilder()
         .setCredentials(
@@ -63,8 +61,7 @@ public class GoogleCloudStorageUtilities implements GoogleCloudStorageInterface{
     System.out.println("Image uploaded successfully!");
 
     URL signedUrl =
-      gcsStorage.signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature());
+        gcsStorage.signUrl(blobInfo, 365, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature());
     return signedUrl.toString();
   }
-
 }
