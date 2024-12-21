@@ -49,7 +49,10 @@ export default function Navbar({ username }: { username: string }) {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <header aria-label="navbar" className="sticky top-0 z-50 bg-red-600 shadow-md">
+    <header
+      aria-label="navbar"
+      className="sticky top-0 z-50 bg-red-600 shadow-md"
+    >
       {/* App name and sign out */}
       <div className="flex justify-between items-center px-6 py-3">
         <Link
@@ -83,7 +86,7 @@ export default function Navbar({ username }: { username: string }) {
               <SearchBar onSearchSubmit={handleSearchSubmit} />
               <button
                 onClick={() => setShowSearch(false)}
-                className="ml-2 text-red-500 font-bold"
+                className="ml-2 text-red-600 font-bold"
               >
                 X
               </button>

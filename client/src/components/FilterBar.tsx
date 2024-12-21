@@ -44,11 +44,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   return (
-    <div aria-label="filter" className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5 min-h-96">
+    <div
+      aria-label="filter"
+      className="bg-gray-200 p-4 w-64 rounded-xl ml-5 mr-5 mt-5 min-h-96"
+    >
       <h2 className="text-xl font-bold mb-4 text-center ">{title}</h2>
       <button
         aria-label="post listing"
-        className="bg-red-500 text-white py-2 px-4 rounded-3xl mb-4 w-full"
+        className="bg-red-600 text-white py-2 px-4 rounded-3xl mb-4 w-full"
         onClick={handlePostListingClick}
       >
         Post Listing

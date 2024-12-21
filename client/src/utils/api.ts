@@ -90,7 +90,7 @@ export async function editListing(
   title?: string,
   price?: string,
   description?: string,
-  imageUrl?: string,
+  // imageUrl?: string,
   category?: string,
   condition?: string,
   tags?: string
@@ -100,7 +100,7 @@ export async function editListing(
   if (title) params.title = title;
   if (price ) params.price = price;
   if (description) params.description = description;
-  if (imageUrl) params.imageUrl = imageUrl;
+  // if (imageUrl) params.imageUrl = imageUrl;
   if (category) params.category = category;
   if (condition) params.condition = condition;
   if (tags) params.tags = tags;

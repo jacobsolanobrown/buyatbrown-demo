@@ -118,7 +118,6 @@ export default function UserSettings({ username }: { username: string }) {
         <div className="bg-white/50 p-6 rounded-xl shadow-md border">
           <h2 className="text-2xl font-bold mb-5">Settings</h2>
 
-
           {/* This form is commented out as editing username do not change post usernames associated with that account */}
 
           {/* <form onSubmit={handleChangeUsername}>
@@ -133,9 +132,9 @@ export default function UserSettings({ username }: { username: string }) {
                   value={newUsername}
                   onChange={(e) => setUsername(e.target.value)}
                   className="
-                  text-md rounded-full focus:ring-red-500 focus:border-red-500 
+                  text-md rounded-full focus:ring-red-600 focus:border-red-600 
                    p-3 w-80 h-12 dark:bg-gray-200 dark:border-gray-600
-                  dark:placeholder-gray-400 dark:focus:ring-red-500 dark:focus:border-red-500 text-center"
+                  dark:placeholder-gray-400 dark:focus:ring-red-600 dark:focus:border-red-600 text-center"
                   placeholder="Enter new username"
                   required
                 />
@@ -151,7 +150,7 @@ export default function UserSettings({ username }: { username: string }) {
                 ) : (
                   <button
                     type="submit"
-                    className="text-sm rounded-full block p-3 w-40 text-center bg-red-600 hover:text-red-500 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
+                    className="text-sm rounded-full block p-3 w-40 text-center bg-red-600 hover:text-red-600 hover:bg-white border border-red-600 text-white font-ibm-plex-sans font-bold"
                   >
                     Submit
                   </button>
