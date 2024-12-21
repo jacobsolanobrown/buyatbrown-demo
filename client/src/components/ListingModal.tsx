@@ -183,12 +183,12 @@ const ListingModal: React.FC<ModalCardProps> = ({
           </h3>
           {showFavoriteMessage && !favoritingLoading && (
             <div>
-              <p className="text-red-600 ml-1">Added to favorites!</p>
+              <p aria-label="favorited message" className="text-red-600 ml-1">Added to favorites!</p>
             </div>
           )}
           {showRemovedMessage && !favoritingLoading && (
             <div>
-              <p className="text-red-600 ml-1">Removed from favorites!</p>
+              <p aria-label="unfavorited message" className="text-red-600 ml-1">Removed from favorites!</p>
             </div>
           )}
           {showEmailPopup && (
@@ -220,6 +220,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
               <button
                 className="flex bg-rose-200 text-lg p-4 rounded-xl w-1/6 justify-center items-center hover:bg-white hover:text-black border-rose-200 border-2"
                 onClick={handleFavoriteClick}
+                aria-label="Favorite"
               >
                 {isFavorited ? <FaHeart color="black" /> : <FaRegHeart color="black" />}
               </button>
@@ -227,6 +228,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
             <button
               className="bg-teal-200 text-lg p-4 rounded-xl w-5/6 hover:bg-white hover:text-black border-teal-200 border-2 "
               onClick={handleEmailSellerClick}
+              aria-label="Email Seller"
             >
               Message Seller: {listing.username}
             </button>

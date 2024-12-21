@@ -115,6 +115,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
           <button
             className="rounded-xl text-white bg-red-600 text-lg p-4 hover:bg-white hover:text-red-600 border-red-600 border-2 "
             onClick={handleEditListingClick}
+            aria-label="Edit Listing Button"
           >
             Edit Listing
           </button>
@@ -133,6 +134,7 @@ const ListingModal: React.FC<ModalCardProps> = ({
             <button
               className="rounded-xl text-white bg-amber-950 text-lg p-4 hover:bg-white hover:text-amber-950 hover:border-2 border-amber-950  "
               onClick={handleDeleteListingClick}
+              aria-label="Delete Listing Button"
             >
               Delete Listing
             </button>

@@ -73,7 +73,6 @@ public class AddListingHandler implements Route {
    */
   public void validateUser(String uid, String username)
       throws ExecutionException, InterruptedException {
-    System.out.println(uid);
     if (uid == null || uid.isBlank() || username == null || username.isBlank()) {
       System.out.println("Please specify user. Input both the UID and Username.");
       throw new IllegalArgumentException("Please specify user. Input both the UID and Username.");
@@ -104,8 +103,9 @@ public class AddListingHandler implements Route {
   public void validateImage(String base64Image) {
     if (base64Image == null || base64Image.isBlank()) {
       System.out.println(
+          
           "All listings arguments are required (title, tags, price, "
-              + "image, category, condition, description)");
+                    + "image, category, condition, description)");
       throw new IllegalArgumentException(
           "All listings arguments are required "
               + "(title, tags, price, image, category, condition, description)");
@@ -120,8 +120,9 @@ public class AddListingHandler implements Route {
   public static void validateTags(String tags) {
     if (tags == null || tags.isBlank()) {
       System.out.println(
+          
           "All listings arguments are required (title, tags, price, "
-              + "image, category, condition, description)");
+                    + "image, category, condition, description)");
       throw new IllegalArgumentException(
           "All listings arguments are required "
               + "(title, tags, price, image, category, condition, description)");
@@ -147,6 +148,7 @@ public class AddListingHandler implements Route {
 
     // tags are in the form "tag1,tag2,tag3, two wordtag"
     if (tags.length() - tags.replace(",  ,", "").replace(",,", "").replace(", ,", "").length()
+       
         > 0) {
       System.out.println("Each tag should have a value.");
       throw new IllegalArgumentException("Each tag should have a value.");
