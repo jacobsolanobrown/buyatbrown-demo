@@ -94,3 +94,41 @@ test.describe("Create a username", () => {
 
   });
 });
+
+test.describe("Create a username", () => {
+  test.beforeEach(async ({ page }) => {
+    await setupClerkTestingToken({ page });
+    await page.goto(url);
+    await clerk.loaded({ page });
+
+    await clerk.signIn({
+      page,
+      signInParams: {
+        strategy: "password",
+        password: process.env.E2E_CLERK_USER1_PASSWORD!,
+        identifier: process.env.E2E_CLERK_USER1_USERNAME!,
+      },
+    });
+
+    // Ensure the username page renders correctly
+    await expect(
+      page.locator(
+        "text=Create a username to start selling now!(Other users will see this username on listings)"
+      )
+    ).toBeVisible();
+
+    // Ensure the input field is visible
+    await expect(
+      page.locator('input[placeholder="Enter your username"]')
+    ).toBeVisible();
+
+    // Cancel button is visible
+    const cancelButton = page.getByRole("button", { name: "Cancel" }).nth(0); // First button
+    await expect(cancelButton).toBeVisible();
+
+    // Submit button is visible
+    const submitButton = page.getByRole("button", { name: "Submit" }).nth(1); // First button
+    await expect(submitButton).toBeVisible();
+
+  });
+});
