@@ -249,7 +249,7 @@ public class AddListingHandler implements Route {
     condition = condition.trim().toLowerCase();
     if (!(condition.equals("new") || condition.equals("like new") || condition.equals("used"))) {
       System.out.println(
-        "Please choose from valid condition inputs (i.e. new, like new, or Used).");
+        "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
       throw new IllegalArgumentException(
         "Please choose from valid condition inputs (i.e. New, Like New, or Used).");
     }
@@ -285,10 +285,10 @@ public class AddListingHandler implements Route {
       category.equals("furniture") || category.equals("kitchen") || category.equals("bathroom") ||
       category.equals("misc"))) {
       System.out.println(
-        "Please choose from valid condition inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
+        "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
           + "or Bathroom).");
       throw new IllegalArgumentException(
-        "Please choose from valid condition inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
+        "Please choose from valid category inputs (i.e. Clothes, Tech, School, Furniture, Kitchen, "
           + "or Bathroom).");
     }
   }
