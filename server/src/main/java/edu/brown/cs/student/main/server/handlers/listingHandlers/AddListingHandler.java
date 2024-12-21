@@ -78,21 +78,21 @@ public class AddListingHandler implements Route {
       throw new IllegalArgumentException("Please specify user. Input both the UID and Username.");
     }
 
-    uid = uid.trim();
-    username = username.trim();
-    List<Map<String, Object>> userDatamaps = storageHandler.getAllUserDataMaps();
-    for (Map<String, Object> datamap : userDatamaps) {
-      if (datamap.get("uid") == uid) {
-        if (datamap.get("username") != username) {
-          System.out.println("Error validating user. Username does not match UID.");
-          throw new IllegalArgumentException("Error validating user. Username does not match UID.");
-        }
-        return;
-      }
-    }
+    // uid = uid.trim();
+    // username = username.trim();
+    // List<Map<String, Object>> userDatamaps = storageHandler.getAllUserDataMaps();
+    // for (Map<String, Object> datamap : userDatamaps) {
+    //   if (datamap.get("uid") == uid) {
+    //     if (datamap.get("username") != username) {
+    //       System.out.println("Error validating user. Username does not match UID.");
+    //       throw new IllegalArgumentException("Error validating user. Username does not match UID.");
+    //     }
+    //     return;
+    //   }
+    // }
 
-    System.out.println("Error validating user. UID and user are not in database");
-    throw new IllegalArgumentException("Error validating user. UID and user are not in database.");
+    // System.out.println("Error validating user. UID and user are not in database");
+    // throw new IllegalArgumentException("Error validating user. UID and user are not in database.");
   }
 
   /**
@@ -103,9 +103,8 @@ public class AddListingHandler implements Route {
   public void validateImage(String base64Image) {
     if (base64Image == null || base64Image.isBlank()) {
       System.out.println(
-          
           "All listings arguments are required (title, tags, price, "
-                    + "image, category, condition, description)");
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
           "All listings arguments are required "
               + "(title, tags, price, image, category, condition, description)");
@@ -120,9 +119,8 @@ public class AddListingHandler implements Route {
   public static void validateTags(String tags) {
     if (tags == null || tags.isBlank()) {
       System.out.println(
-          
           "All listings arguments are required (title, tags, price, "
-                    + "image, category, condition, description)");
+              + "image, category, condition, description)");
       throw new IllegalArgumentException(
           "All listings arguments are required "
               + "(title, tags, price, image, category, condition, description)");
@@ -148,7 +146,6 @@ public class AddListingHandler implements Route {
 
     // tags are in the form "tag1,tag2,tag3, two wordtag"
     if (tags.length() - tags.replace(",  ,", "").replace(",,", "").replace(", ,", "").length()
-       
         > 0) {
       System.out.println("Each tag should have a value.");
       throw new IllegalArgumentException("Each tag should have a value.");
@@ -320,7 +317,6 @@ public class AddListingHandler implements Route {
       String tags = request.queryParams("tags");
       String condition = request.queryParams("condition");
       String description = request.queryParams("description");
-
 
       // create new listing with collected parameters
       // Listing listing = new Listing(username, title, imageUrl, price, description);
