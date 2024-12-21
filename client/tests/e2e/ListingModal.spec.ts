@@ -35,8 +35,8 @@
 //     // Navigate to the page containing the modal card
 //     await page.goto(url);
 
-//     // Click on a listing card to open the modal
-//     await page.getByRole("button", { name: "Open Listing Modal" }).click();
+    // Click on a listing card to open the modal
+    await page.getByText("Cool Shirt").click();
 
 //     // Verify that the modal card is visible
 //     await expect(page.getByRole("dialog")).toBeVisible();
@@ -46,42 +46,65 @@
 //     // Navigate to the page containing the modal card
 //     await page.goto(url);
 
-//     // Click on a listing card to open the modal
-//     await page.getByRole("button", { name: "Open Listing Modal" }).click();
+    // Click on a listing card to open the modal
+    await page.getByText("Cool Shirt").click();
 
-//     // Verify that the modal card displays the correct information
-//     await expect(
-//       page.getByRole("heading", { name: "Listing Title" })
-//     ).toBeVisible();
-//     await expect(page.getByText("Listing Description")).toBeVisible();
-//     await expect(page.getByText("$100")).toBeVisible();
-//   });
+    // Verify that the modal card displays the correct information
+    const dialogHeading = page
+      .getByRole("dialog")
+      .getByRole("heading", { name: "Cool Shirt" });
+    await expect(dialogHeading).toBeVisible();
 
-//   test("Verify Modal Card Close Button", async ({ page }) => {
-//     // Navigate to the page containing the modal card
-//     await page.goto(url);
+    await expect(
+      page.getByText("This is a really cool shirt...")
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "$5" })).toBeVisible();
+  });
 
-//     // Click on a listing card to open the modal
-//     await page.getByRole("button", { name: "Open Listing Modal" }).click();
+  test("Verify Modal Card Close Button", async ({ page }) => {
+    // Navigate to the page containing the modal card
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await page.getByLabel("Close Modal").click();
+    // Verify that the modal card is not visible
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
 
-//     // Click the close button
-//     await page.getByRole("button", { name: "Close modal" }).click();
+  test("Verify Modal Card Outside Click", async ({ page }) => {
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await page.mouse.click(0, 0);
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
 
-//     // Verify that the modal card is not visible
-//     await expect(page.getByRole("dialog")).not.toBeVisible();
-//   });
+  test("Verify Modal Card Escape Key", async ({ page }) => {
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
 
-//   test("Verify Modal Card Outside Click", async ({ page }) => {
-//     // Navigate to the page containing the modal card
-//     await page.goto(url);
+  test("Verify Favorite Button", async ({ page }) => {
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await expect(page.getByLabel("Favorite")).toBeVisible();
+  });
 
-//     // Click on a listing card to open the modal
-//     await page.getByRole("button", { name: "Open Listing Modal" }).click();
+  test("Verify Message Button", async ({ page }) => {
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await page.getByLabel("Email Seller").click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+  });
 
-//     // Click outside the modal
-//     await page.mouse.click(0, 0);
+  test("Verify Clicking Favorite Button", async ({ page }) => {
+    await page.goto(url);
+    await page.getByText("Cool Shirt").click();
+    await page.getByLabel("Favorite").click();
+    await expect(page.getByLabel("favorited message")).toBeVisible();
+    // click again to unfavorite
+    await page.getByLabel("Favorite", { exact: true }).click();
 
-//     // Verify that the modal card is not visible
-//     await expect(page.getByRole("dialog")).not.toBeVisible();
-//   });
-// });
+    await expect(page.getByLabel("unfavorited message")).toBeVisible();
+  });
+});

@@ -64,7 +64,7 @@ export default function UserFavorites({ username }: { username: string }) {
         <DropdownNavUser></DropdownNavUser>
 
         <div className="bg-white/50 p-6 rounded-lg shadow-md border">
-          <h2 className="text-2xl font-bold mb-2">Favorites</h2>
+          <h2 className="text-2xl font-bold mb-2">Your Favorites</h2>
           <p className="text-sm text-gray-600 mb-6">
             View, buy, or unfavorite your favorite listings.
           </p>
