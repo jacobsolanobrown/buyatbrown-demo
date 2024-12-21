@@ -78,21 +78,21 @@ public class AddListingHandler implements Route {
       throw new IllegalArgumentException("Please specify user. Input both the UID and Username.");
     }
 
-    uid = uid.trim();
-    username = username.trim();
-    List<Map<String, Object>> userDatamaps = storageHandler.getAllUserDataMaps();
-    for (Map<String, Object> datamap : userDatamaps) {
-      if (datamap.get("uid") == uid) {
-        if (datamap.get("username") != username) {
-          System.out.println("Error validating user. Username does not match UID.");
-          throw new IllegalArgumentException("Error validating user. Username does not match UID.");
-        }
-        return;
-      }
-    }
+    // uid = uid.trim();
+    // username = username.trim();
+    // List<Map<String, Object>> userDatamaps = storageHandler.getAllUserDataMaps();
+    // for (Map<String, Object> datamap : userDatamaps) {
+    //   if (datamap.get("uid") == uid) {
+    //     if (datamap.get("username") != username) {
+    //       System.out.println("Error validating user. Username does not match UID.");
+    //       throw new IllegalArgumentException("Error validating user. Username does not match UID.");
+    //     }
+    //     return;
+    //   }
+    // }
 
-    System.out.println("Error validating user. UID and user are not in database");
-    throw new IllegalArgumentException("Error validating user. UID and user are not in database.");
+    // System.out.println("Error validating user. UID and user are not in database");
+    // throw new IllegalArgumentException("Error validating user. UID and user are not in database.");
   }
 
   /**

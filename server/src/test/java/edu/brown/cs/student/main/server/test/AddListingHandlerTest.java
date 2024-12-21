@@ -1,16 +1,17 @@
 package edu.brown.cs.student.main.server.test;
 
 import static edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler.countWordsBetweenCommas;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.handlers.listingHandlers.AddListingHandler;
-import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
-import edu.brown.cs.student.main.server.storage.GoogleCloudStorageUtilities;
 import edu.brown.cs.student.main.server.storage.MockedFirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.MockedGoogleCloudStorageUtilities;
-import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,11 +41,24 @@ class AddListingHandlerTest {
     } catch (ExecutionException | InterruptedException e) {
       System.out.println("Error creating mock user");
     }
+  }
 
-    // For testing without mocking
-    StorageInterface firebaseStorage = new FirebaseUtilities();
-    GoogleCloudStorageUtilities gcsStorage = new GoogleCloudStorageUtilities();
-    addListingHandler = new AddListingHandler(firebaseStorage, gcsStorage);
+  /**
+   * Sends a POST request to the add-listing endpoint.
+   *
+   * @param payload JSON payload to send with the request
+   * @return HttpURLConnection to validate the response
+   * @throws IOException if the connection fails
+   */
+  private static HttpURLConnection sendPostRequest(String url, String payload) throws IOException {
+    URL urlUrl = new URL(url);
+    HttpURLConnection connection = (HttpURLConnection) urlUrl.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setDoOutput(true);
+    connection.setRequestProperty("Content-Type", "application/json");
+    connection.getOutputStream().write(payload.getBytes());
+    connection.connect();
+    return connection;
   }
 
   @Test
@@ -62,7 +76,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -92,7 +106,7 @@ class AddListingHandlerTest {
     assertEquals(
         "I bought some Muji black pens in high school and brought them to Brown. "
             + "Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!",
+            + " to go to waste. They are really nice. Let me know if you would like any!",
         responseMap.get("description"));
     assertTrue(responseMap.get("imageUrl").toString().contains("http://mock-storage/"));
   }
@@ -141,6 +155,7 @@ class AddListingHandlerTest {
     assertEquals("999999999.0", responseMap.get("price"));
     assertEquals("like new", responseMap.get("condition"));
     assertEquals("A really cool table.", responseMap.get("description"));
+    assertEquals("A really cool table.", responseMap.get("description"));
     assertTrue(responseMap.get("imageUrl").toString().contains("http://mock-storage/"));
   }
 
@@ -155,6 +170,7 @@ class AddListingHandlerTest {
     Map<String, String> queryParams = new HashMap<>();
 
     // ################### Test for null tags ###################
+    // ################### Test for null tags ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
     queryParams.put("title", "Muji black pens");
@@ -166,7 +182,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -186,6 +202,7 @@ class AddListingHandlerTest {
         nullTagResponseMap.get("error"));
 
     // ################### Check for Blank Tag ###################
+    // ################### Check for Blank Tag ###################
     queryParams.put("tags", "");
     MockRequest emptyTagMockRequest = new MockRequest(queryParams, body);
     Object emptyTagResult = mockAddListingHandler.handle(emptyTagMockRequest, mockResponse);
@@ -197,6 +214,7 @@ class AddListingHandlerTest {
         emptyTagResponseMap.get("error"));
 
     // ################### Check for Empty Tag ###################
+    // ################### Check for Empty Tag ###################
     queryParams.put("tags", "   ");
     MockRequest blankTagMockRequest = new MockRequest(queryParams, body);
     Object blankTagResult = mockAddListingHandler.handle(blankTagMockRequest, mockResponse);
@@ -207,6 +225,7 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         blankTagResponseMap.get("error"));
 
+    // ################### Check for ill-formed Tag field ###################
     // ################### Check for ill-formed Tag field ###################
     // spaces between commas
     queryParams.put("tags", "tag1, tag2");
@@ -299,6 +318,7 @@ class AddListingHandlerTest {
     Map<String, String> queryParams = new HashMap<>();
 
     // ################### Test for null titles ###################
+    // ################### Test for null titles ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
     queryParams.put("title", null);
@@ -310,7 +330,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -330,6 +350,7 @@ class AddListingHandlerTest {
         nullTitleResponseMap.get("error"));
 
     // ################### Check for Blank Title ###################
+    // ################### Check for Blank Title ###################
     queryParams.put("title", "");
     MockRequest blankTitleMockRequest = new MockRequest(queryParams, body);
     Object blankTitleResult = mockAddListingHandler.handle(blankTitleMockRequest, mockResponse);
@@ -341,6 +362,7 @@ class AddListingHandlerTest {
         blankTitleResponseMap.get("error"));
 
     // ################### Check for Empty Title ###################
+    // ################### Check for Empty Title ###################
     queryParams.put("title", "    ");
     MockRequest emptyTitleMockRequest = new MockRequest(queryParams, body);
     Object emptyTitleResult = mockAddListingHandler.handle(emptyTitleMockRequest, mockResponse);
@@ -351,6 +373,7 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         emptyTitleResponseMap.get("error"));
 
+    // ################### Check for Title field being too long###################
     // ################### Check for Title field being too long###################
     queryParams.put("title", "wayyyyyyyyyyyyyyyyyyyyyyyyy too long of a title!");
     MockRequest tooLongTitleMockRequest = new MockRequest(queryParams, body);
@@ -366,6 +389,7 @@ class AddListingHandlerTest {
   void testInvalidPrice() throws IOException {
     Map<String, String> queryParams = new HashMap<>();
     // ################### Test for null price ###################
+    // ################### Test for null price ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
     queryParams.put("title", "Muji black pens");
@@ -377,7 +401,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -397,6 +421,7 @@ class AddListingHandlerTest {
         nullResponseMap.get("error"));
 
     // ################### Check for Blank Price ###################
+    // ################### Check for Blank Price ###################
     queryParams.put("price", "");
     MockRequest blankMockRequest = new MockRequest(queryParams, body);
     Object blankResult = mockAddListingHandler.handle(blankMockRequest, mockResponse);
@@ -407,6 +432,7 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         blankResponseMap.get("error"));
 
+    // ################### Check for Empty Price ###################
     // ################### Check for Empty Price ###################
     queryParams.put("price", "    ");
     MockRequest emptyMockRequest = new MockRequest(queryParams, body);
@@ -419,17 +445,23 @@ class AddListingHandlerTest {
         emptyResponseMap.get("error"));
 
     // ################### Check for Invalid Prices###################
+    // ################### Check for Invalid Prices###################
     // CHECK FOR NOT A NUMBER
     queryParams.put("price", "not a number");
     MockRequest notNumberMockRequest = new MockRequest(queryParams, body);
     Object notNumberResult = mockAddListingHandler.handle(notNumberMockRequest, mockResponse);
     Map<String, Object> notNumberResponseMap = Utils.fromMoshiJson(notNumberResult.toString());
+    Object notNumberResult = mockAddListingHandler.handle(notNumberMockRequest, mockResponse);
+    Map<String, Object> notNumberResponseMap = Utils.fromMoshiJson(notNumberResult.toString());
     assertEquals("failure", notNumberResponseMap.get("response_type"));
+    assertEquals("Invalid value for price: not a number", notNumberResponseMap.get("error"));
     assertEquals("Invalid value for price: not a number", notNumberResponseMap.get("error"));
 
     // CHECK FOR NEGATIVE NUMBER
     queryParams.put("price", "-1.00");
     MockRequest negNumberMockRequest = new MockRequest(queryParams, body);
+    Object negNumberResult = mockAddListingHandler.handle(negNumberMockRequest, mockResponse);
+    Map<String, Object> negNumberResponseMap = Utils.fromMoshiJson(negNumberResult.toString());
     Object negNumberResult = mockAddListingHandler.handle(negNumberMockRequest, mockResponse);
     Map<String, Object> negNumberResponseMap = Utils.fromMoshiJson(negNumberResult.toString());
     assertEquals("failure", negNumberResponseMap.get("response_type"));
@@ -439,6 +471,8 @@ class AddListingHandlerTest {
     // CHECK FOR TOO LARGE OF A NUMBER
     queryParams.put("price", "1000000000");
     MockRequest largeNumberMockRequest = new MockRequest(queryParams, body);
+    Object largeNumberResult = mockAddListingHandler.handle(largeNumberMockRequest, mockResponse);
+    Map<String, Object> largeNumberResponseMap = Utils.fromMoshiJson(largeNumberResult.toString());
     Object largeNumberResult = mockAddListingHandler.handle(largeNumberMockRequest, mockResponse);
     Map<String, Object> largeNumberResponseMap = Utils.fromMoshiJson(largeNumberResult.toString());
     assertEquals("failure", largeNumberResponseMap.get("response_type"));
@@ -454,12 +488,14 @@ class AddListingHandlerTest {
         Utils.fromMoshiJson(decimalNumberResult.toString());
     assertEquals("failure", decimalNumberResponseMap.get("response_type"));
     assertEquals("Price has more than two decimal points.", decimalNumberResponseMap.get("error"));
+    assertEquals("Price has more than two decimal points.", decimalNumberResponseMap.get("error"));
   }
 
   @Test
   void testInvalidCondition() throws IOException {
     Map<String, String> queryParams = new HashMap<>();
 
+    // ################### Test for null condition ###################
     // ################### Test for null condition ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
@@ -472,7 +508,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -492,6 +528,7 @@ class AddListingHandlerTest {
         nullResponseMap.get("error"));
 
     // ################### Check for Blank Conditions ###################
+    // ################### Check for Blank Conditions ###################
     queryParams.put("condition", "");
     MockRequest blankMockRequest = new MockRequest(queryParams, body);
     Object blankResult = mockAddListingHandler.handle(blankMockRequest, mockResponse);
@@ -503,6 +540,7 @@ class AddListingHandlerTest {
         blankResponseMap.get("error"));
 
     // ################### Check for Empty Condition ###################
+    // ################### Check for Empty Condition ###################
     queryParams.put("condition", "    ");
     MockRequest emptyMockRequest = new MockRequest(queryParams, body);
     Object emptyResult = mockAddListingHandler.handle(emptyMockRequest, mockResponse);
@@ -513,6 +551,8 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         emptyResponseMap.get("error"));
 
+    // ################### Check for Condition not being one of the permitted
+    // entries###################
     // ################### Check for Condition not being one of the permitted
     // entries###################
     queryParams.put("condition", "good");
@@ -532,6 +572,7 @@ class AddListingHandlerTest {
     Map<String, String> queryParams = new HashMap<>();
 
     // ################### Test for null condition ###################
+    // ################### Test for null condition ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
     queryParams.put("title", "Muji black pens");
@@ -543,7 +584,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String workingDirectory = System.getProperty("user.dir");
     Path base64TestPath =
@@ -563,6 +604,7 @@ class AddListingHandlerTest {
         nullResponseMap.get("error"));
 
     // ################### Check for Blank Conditions ###################
+    // ################### Check for Blank Conditions ###################
     queryParams.put("category", "");
     MockRequest blankMockRequest = new MockRequest(queryParams, body);
     Object blankResult = mockAddListingHandler.handle(blankMockRequest, mockResponse);
@@ -574,6 +616,7 @@ class AddListingHandlerTest {
         blankResponseMap.get("error"));
 
     // ################### Check for Empty Condition ###################
+    // ################### Check for Empty Condition ###################
     queryParams.put("category", "    ");
     MockRequest emptyMockRequest = new MockRequest(queryParams, body);
     Object emptyResult = mockAddListingHandler.handle(emptyMockRequest, mockResponse);
@@ -584,6 +627,8 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         emptyResponseMap.get("error"));
 
+    // ################### Check for Condition not being one of the permitted
+    // entries###################
     // ################### Check for Condition not being one of the permitted
     // entries###################
     queryParams.put("category", "idk");
@@ -604,6 +649,7 @@ class AddListingHandlerTest {
     Map<String, String> queryParams = new HashMap<>();
 
     // ################### Test for null condition ###################
+    // ################### Test for null condition ###################
     queryParams.put("uid", "user123");
     queryParams.put("username", "testuser");
     queryParams.put("title", "Muji black pens");
@@ -615,7 +661,7 @@ class AddListingHandlerTest {
         "description",
         "I bought some Muji black pens in high school and brought them to Brown."
             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-            + " to go to worst. They are really nice. Let me know if you would like any!");
+            + " to go to waste. They are really nice. Let me know if you would like any!");
 
     String body = null;
     MockRequest nullMockRequest = new MockRequest(queryParams, body);
@@ -651,4 +697,189 @@ class AddListingHandlerTest {
             + "image, category, condition, description)",
         emptyResponseMap.get("error"));
   }
+
+//   @Test
+//   void testInvalidUser() throws IOException {
+//     Map<String, String> queryParams = new HashMap<>();
+
+//     // ################### Test for null condition ###################
+//     queryParams.put("uid", null);
+//     queryParams.put("username", "testuser");
+//     queryParams.put("title", "Muji black pens");
+//     queryParams.put("tags", "Stationary,Art Supplies");
+//     queryParams.put("category", "School");
+//     queryParams.put("price", "10.99");
+//     queryParams.put("condition", "new");
+//     queryParams.put(
+//         "description",
+//         "I bought some Muji black pens in high school and brought them to Brown."
+//             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
+//             + " to go to waste. They are really nice. Let me know if you would like any!");
+
+//     String workingDirectory = System.getProperty("user.dir");
+//     Path base64TestPath =
+//         Paths.get(
+//             workingDirectory,
+//             "src/test/java/edu/brown/cs/student/main/server/test/data/base64_testing_image.txt");
+//     String body = new String(Files.readAllBytes(base64TestPath));
+//     MockRequest nullUIDMockRequest = new MockRequest(queryParams, body);
+
+//     MockResponse mockResponse = new MockResponse();
+//     Object nullUIDResult = mockAddListingHandler.handle(nullUIDMockRequest, mockResponse);
+//     Map<String, Object> nullUIDResponseMap = Utils.fromMoshiJson(nullUIDResult.toString());
+//     assertEquals("failure", nullUIDResponseMap.get("response_type"));
+//     assertEquals(
+//         "Please specify user. Input both the UID and Username.", nullUIDResponseMap.get("error"));
+
+//     // ################### Check for Blank Conditions ###################
+//     queryParams.put("uid", "");
+//     MockRequest blankUIDMockRequest = new MockRequest(queryParams, body);
+//     Object blankUIDResult = mockAddListingHandler.handle(blankUIDMockRequest, mockResponse);
+//     Map<String, Object> blankUIDResponseMap = Utils.fromMoshiJson(blankUIDResult.toString());
+//     assertEquals("failure", blankUIDResponseMap.get("response_type"));
+//     assertEquals(
+//         "Please specify user. Input both the UID and Username.", blankUIDResponseMap.get("error"));
+
+//     // ################### Check for Empty Condition ###################
+//     queryParams.put("uid", "    ");
+//     MockRequest emptyUIDMockRequest = new MockRequest(queryParams, body);
+//     Object emptyUIDResult = mockAddListingHandler.handle(emptyUIDMockRequest, mockResponse);
+//     Map<String, Object> emptyUIDResponseMap = Utils.fromMoshiJson(emptyUIDResult.toString());
+//     assertEquals("failure", emptyUIDResponseMap.get("response_type"));
+//     assertEquals(
+//         "Please specify user. Input both the UID and Username.", emptyUIDResponseMap.get("error"));
+
+//     queryParams.put("uid", "notuser123");
+
+//     MockRequest wrongUserMockResult = new MockRequest(queryParams, body);
+//     Object wrongUserResult = mockAddListingHandler.handle(wrongUserMockResult, mockResponse);
+//     Map<String, Object> wrongUserResponseMap = Utils.fromMoshiJson(wrongUserResult.toString());
+//     assertEquals("failure", wrongUserResponseMap.get("response_type"));
+//     assertEquals(
+//         "Error validating user. UID and user are not in database.",
+//         wrongUserResponseMap.get("error"));
+
+//     queryParams.put("uid", "user123");
+//     queryParams.put("username", "nottestuser");
+
+//     // ################## TEST UID EXISTS BUT NOT USERNAME ######################
+//     MockRequest wrongUsernameMockRequest = new MockRequest(queryParams, body);
+//     Object wrongUsernameResult =
+//         mockAddListingHandler.handle(wrongUsernameMockRequest, mockResponse);
+//     Map<String, Object> wrongUsernameResponseMap =
+//         Utils.fromMoshiJson(wrongUsernameResult.toString());
+//     assertEquals("failure", wrongUsernameResponseMap.get("response_type"));
+//     assertEquals(
+//         "Error validating user. Username does not match UID.",
+//         wrongUsernameResponseMap.get("error"));
+
+//     queryParams.put("username", "");
+
+//     // ################### Check for Blank Conditions ###################
+//     MockRequest blankUsernameMockRequest = new MockRequest(queryParams, body);
+//     Object blankUsernameResult =
+//         mockAddListingHandler.handle(blankUsernameMockRequest, mockResponse);
+//     Map<String, Object> blankUsernameResponseMap =
+//         Utils.fromMoshiJson(blankUsernameResult.toString());
+//     assertEquals("failure", blankUsernameResponseMap.get("response_type"));
+//     assertEquals(
+//         "Please specify user. Input both the UID and Username.",
+//         blankUsernameResponseMap.get("error"));
+
+//     // ################### Check for Empty Condition ###################
+//     queryParams.put("username", "    ");
+//     MockRequest emptyUsernameMockRequest = new MockRequest(queryParams, body);
+//     Object emptyUsernameResult =
+//         mockAddListingHandler.handle(emptyUsernameMockRequest, mockResponse);
+//     Map<String, Object> emptyUsernameResponseMap =
+//         Utils.fromMoshiJson(emptyUsernameResult.toString());
+//     assertEquals("failure", emptyUsernameResponseMap.get("response_type"));
+//     assertEquals(
+//         "Please specify user. Input both the UID and Username.",
+//         emptyUsernameResponseMap.get("error"));
+//   }
+
+  //  @Test
+  //  void testNotMockedValidAddListing()
+  //    throws IOException, ExecutionException, InterruptedException {
+  //    Spark.port(3232);
+  //    FirebaseUtilities firebaseUtils = new FirebaseUtilities();
+  //    GoogleCloudStorageUtilities gcsUtils = new GoogleCloudStorageUtilities();
+  //    Spark.post("/add-listing", new AddListingHandler(firebaseUtils, gcsUtils));
+  //    Spark.init();
+  //    Spark.awaitInitialization();
+  //    String workingDirectory = System.getProperty("user.dir");
+  //    Path base64TestPath = Paths.get(workingDirectory,
+  // "src/test/java/edu/brown/cs/student/main/server/test/data/base64_testing_image.txt");
+  //    String imageBase64 = new String(Files.readAllBytes(base64TestPath));
+  //
+  //    String uid = "user123";
+  //    String username = "testuser";
+  //    String title = "Muji black pens";
+  //    String tags = "Stationary,Art Supplies";
+  //    String category = "School";
+  //    String price = "10.99";
+  //    String condition = "New";
+  //    String description = "I bought some Muji black pens in high school and brought them to
+  // Brown. "
+  //      + "Since coming here though, I only take notes using my ipad. I would hate for these pens
+  // "
+  //      + "to go to waste. They are really nice. Let me know if you would like any!";
+  //
+  //    // Build the request body
+  //    String requestBody = "uid=" + uid
+  //      + "&username=" + username
+  //      + "&title=" + title
+  //      + "&tags=" + tags
+  //      + "&category=" + category
+  //      + "&price=" + price
+  //      + "&condition=" + condition
+  //      + "&description=" + description
+  //      + "&image=" + imageBase64;
+  //
+  //    // Perform the POST request to the 'add-listings' endpoint
+  //    URL url = new URL("http://localhost:3232/add-listings");
+  //    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+  //    connection.setRequestMethod("POST");
+  //    connection.setDoOutput(true);
+  //    connection.setRequestProperty("Content-Type", "Authorization");
+  //
+  //    try (OutputStream os = connection.getOutputStream()) {
+  //      byte[] input = requestBody.getBytes("utf-8");
+  //      os.write(input, 0, input.length);
+  //    }
+  //
+  //    // Get the response and assert conditions
+  //    int statusCode = connection.getResponseCode();
+  //    assertEquals(200, statusCode, "Expected 200 OK response");
+  //
+  //    // Read the response
+  //    System.out.println("here");
+  //    try (BufferedReader br = new BufferedReader(new
+  // InputStreamReader(connection.getInputStream(), "utf-8"))) {
+  //      StringBuilder response = new StringBuilder();
+  //      String responseLine;
+  //      while ((responseLine = br.readLine()) != null) {
+  //        response.append(responseLine.trim());
+  //      }
+  //
+  //      // Convert response to a map or JSON object (e.g., using a JSON library)
+  //      // Assuming a JSON library (like Jackson, Gson, or Moshi) to parse the response
+  //      Map<String, Object> responseMap = Utils.fromMoshiJson(response.toString());
+  //
+  //      // Assertions on the response
+  //      assertNotNull(responseMap, "Response should not be null");
+  //      assertEquals("success", responseMap.get("response_type"));
+  //      assertTrue(responseMap.get("listingId").toString().contains("listing-"));
+  //      assertEquals(uid, responseMap.get("uid"));
+  //      assertEquals(username, responseMap.get("username"));
+  //      assertEquals(title, responseMap.get("title"));
+  //      assertEquals(tags, responseMap.get("tags"));
+  //      assertEquals(category, responseMap.get("category"));
+  //      assertEquals(price, responseMap.get("price"));
+  //      assertEquals(condition, responseMap.get("condition"));
+  //      assertEquals(description, responseMap.get("description"));
+  //      assertTrue(responseMap.get("imageUrl").toString().contains("http://mock-storage/"));
+  //    }
+  //  }
 }
