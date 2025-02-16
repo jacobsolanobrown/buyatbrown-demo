@@ -59,3 +59,11 @@ Setup:
 
 # <div align='center'> Errors/Bugs </div>
 - There are minor bugs in the application that we are currently working on fixing.
+
+# TODO LIST 
+- add my contributions
+- add a gif
+- add more changes (UI wise)
+- experiment with the database more
+  
+
