@@ -1,7 +1,7 @@
 
 # <div align='center'> BUY @ BROWN </div>
 
-[!Alt Text](images/BuyAtBrownLoginScreen.png)
+![Alt Text](images/BuyAtBrownLoginScreen.png)
 
 # <div align='center'> Term Project Details </div>
 
