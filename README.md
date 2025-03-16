@@ -8,12 +8,12 @@ https://github.com/user-attachments/assets/67e52810-144e-4f9e-9037-50819ce4c0c8
 
 # <div align='center'> Term Project Details </div>
 
-## Team Members: 
+## Contributers: 
 Claire Zhang (cyzhang), 
 Bisola Folarin (arfolari), Kayleen Cruz (kcruz10), & Jacob Solano (gsolano)
 
 ## Summary:
-Our project is a web application that allows Brown students to buy and sell items within the Brown community. Users can create an account, post items for sale, and browse items for sale. Users can also search for items by various categories and tags. Users have their own accounts with custom usernames, and they can favorite, list, and edit their own items. Users can contact sellers through the contact information provided in the item listing.
+Our Term Project for Software Engineering Design is a web application that allows Brown students to buy and sell items within the Brown community. Users can create an account, post items for sale, and browse items for sale. Users can also search for items by various categories and tags. Users have their own accounts with custom usernames, and they can favorite, list, and edit their own items. Users can contact sellers through the contact information provided in the item listing.
 
 ## Features:
 - User authentication for account creation with custom usernames and login is only for Brown University students using Clerk. 
@@ -54,18 +54,10 @@ Setup:
 
 # <div align='center'> Tests </div>
 ## Front-end Tests:
-- We will be using Playwright to test the front-end of our application.
+- We will use Playwright to test the front end of our application.
 
 ## Back-end Tests:
-- We use JUnit to test the back-end of our application.
+- We use JUnit to test the back end of our application.
 
 # <div align='center'> Errors/Bugs </div>
-- There are minor bugs in the application that we are currently working on fixing.
-
-# TODO LIST 
-- add my contributions
-- add a gif
-- add more changes (UI wise)
-- experiment with the database more
-  
-
+- There are major bugs in the application at this point.
