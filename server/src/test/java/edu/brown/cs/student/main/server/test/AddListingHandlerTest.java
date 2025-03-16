@@ -698,106 +698,111 @@ class AddListingHandlerTest {
         emptyResponseMap.get("error"));
   }
 
-//   @Test
-//   void testInvalidUser() throws IOException {
-//     Map<String, String> queryParams = new HashMap<>();
+  //   @Test
+  //   void testInvalidUser() throws IOException {
+  //     Map<String, String> queryParams = new HashMap<>();
 
-//     // ################### Test for null condition ###################
-//     queryParams.put("uid", null);
-//     queryParams.put("username", "testuser");
-//     queryParams.put("title", "Muji black pens");
-//     queryParams.put("tags", "Stationary,Art Supplies");
-//     queryParams.put("category", "School");
-//     queryParams.put("price", "10.99");
-//     queryParams.put("condition", "new");
-//     queryParams.put(
-//         "description",
-//         "I bought some Muji black pens in high school and brought them to Brown."
-//             + " Since coming here though, I only take notes using my ipad. I would hate for these pens"
-//             + " to go to waste. They are really nice. Let me know if you would like any!");
+  //     // ################### Test for null condition ###################
+  //     queryParams.put("uid", null);
+  //     queryParams.put("username", "testuser");
+  //     queryParams.put("title", "Muji black pens");
+  //     queryParams.put("tags", "Stationary,Art Supplies");
+  //     queryParams.put("category", "School");
+  //     queryParams.put("price", "10.99");
+  //     queryParams.put("condition", "new");
+  //     queryParams.put(
+  //         "description",
+  //         "I bought some Muji black pens in high school and brought them to Brown."
+  //             + " Since coming here though, I only take notes using my ipad. I would hate for
+  // these pens"
+  //             + " to go to waste. They are really nice. Let me know if you would like any!");
 
-//     String workingDirectory = System.getProperty("user.dir");
-//     Path base64TestPath =
-//         Paths.get(
-//             workingDirectory,
-//             "src/test/java/edu/brown/cs/student/main/server/test/data/base64_testing_image.txt");
-//     String body = new String(Files.readAllBytes(base64TestPath));
-//     MockRequest nullUIDMockRequest = new MockRequest(queryParams, body);
+  //     String workingDirectory = System.getProperty("user.dir");
+  //     Path base64TestPath =
+  //         Paths.get(
+  //             workingDirectory,
+  //
+  // "src/test/java/edu/brown/cs/student/main/server/test/data/base64_testing_image.txt");
+  //     String body = new String(Files.readAllBytes(base64TestPath));
+  //     MockRequest nullUIDMockRequest = new MockRequest(queryParams, body);
 
-//     MockResponse mockResponse = new MockResponse();
-//     Object nullUIDResult = mockAddListingHandler.handle(nullUIDMockRequest, mockResponse);
-//     Map<String, Object> nullUIDResponseMap = Utils.fromMoshiJson(nullUIDResult.toString());
-//     assertEquals("failure", nullUIDResponseMap.get("response_type"));
-//     assertEquals(
-//         "Please specify user. Input both the UID and Username.", nullUIDResponseMap.get("error"));
+  //     MockResponse mockResponse = new MockResponse();
+  //     Object nullUIDResult = mockAddListingHandler.handle(nullUIDMockRequest, mockResponse);
+  //     Map<String, Object> nullUIDResponseMap = Utils.fromMoshiJson(nullUIDResult.toString());
+  //     assertEquals("failure", nullUIDResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Please specify user. Input both the UID and Username.",
+  // nullUIDResponseMap.get("error"));
 
-//     // ################### Check for Blank Conditions ###################
-//     queryParams.put("uid", "");
-//     MockRequest blankUIDMockRequest = new MockRequest(queryParams, body);
-//     Object blankUIDResult = mockAddListingHandler.handle(blankUIDMockRequest, mockResponse);
-//     Map<String, Object> blankUIDResponseMap = Utils.fromMoshiJson(blankUIDResult.toString());
-//     assertEquals("failure", blankUIDResponseMap.get("response_type"));
-//     assertEquals(
-//         "Please specify user. Input both the UID and Username.", blankUIDResponseMap.get("error"));
+  //     // ################### Check for Blank Conditions ###################
+  //     queryParams.put("uid", "");
+  //     MockRequest blankUIDMockRequest = new MockRequest(queryParams, body);
+  //     Object blankUIDResult = mockAddListingHandler.handle(blankUIDMockRequest, mockResponse);
+  //     Map<String, Object> blankUIDResponseMap = Utils.fromMoshiJson(blankUIDResult.toString());
+  //     assertEquals("failure", blankUIDResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Please specify user. Input both the UID and Username.",
+  // blankUIDResponseMap.get("error"));
 
-//     // ################### Check for Empty Condition ###################
-//     queryParams.put("uid", "    ");
-//     MockRequest emptyUIDMockRequest = new MockRequest(queryParams, body);
-//     Object emptyUIDResult = mockAddListingHandler.handle(emptyUIDMockRequest, mockResponse);
-//     Map<String, Object> emptyUIDResponseMap = Utils.fromMoshiJson(emptyUIDResult.toString());
-//     assertEquals("failure", emptyUIDResponseMap.get("response_type"));
-//     assertEquals(
-//         "Please specify user. Input both the UID and Username.", emptyUIDResponseMap.get("error"));
+  //     // ################### Check for Empty Condition ###################
+  //     queryParams.put("uid", "    ");
+  //     MockRequest emptyUIDMockRequest = new MockRequest(queryParams, body);
+  //     Object emptyUIDResult = mockAddListingHandler.handle(emptyUIDMockRequest, mockResponse);
+  //     Map<String, Object> emptyUIDResponseMap = Utils.fromMoshiJson(emptyUIDResult.toString());
+  //     assertEquals("failure", emptyUIDResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Please specify user. Input both the UID and Username.",
+  // emptyUIDResponseMap.get("error"));
 
-//     queryParams.put("uid", "notuser123");
+  //     queryParams.put("uid", "notuser123");
 
-//     MockRequest wrongUserMockResult = new MockRequest(queryParams, body);
-//     Object wrongUserResult = mockAddListingHandler.handle(wrongUserMockResult, mockResponse);
-//     Map<String, Object> wrongUserResponseMap = Utils.fromMoshiJson(wrongUserResult.toString());
-//     assertEquals("failure", wrongUserResponseMap.get("response_type"));
-//     assertEquals(
-//         "Error validating user. UID and user are not in database.",
-//         wrongUserResponseMap.get("error"));
+  //     MockRequest wrongUserMockResult = new MockRequest(queryParams, body);
+  //     Object wrongUserResult = mockAddListingHandler.handle(wrongUserMockResult, mockResponse);
+  //     Map<String, Object> wrongUserResponseMap = Utils.fromMoshiJson(wrongUserResult.toString());
+  //     assertEquals("failure", wrongUserResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Error validating user. UID and user are not in database.",
+  //         wrongUserResponseMap.get("error"));
 
-//     queryParams.put("uid", "user123");
-//     queryParams.put("username", "nottestuser");
+  //     queryParams.put("uid", "user123");
+  //     queryParams.put("username", "nottestuser");
 
-//     // ################## TEST UID EXISTS BUT NOT USERNAME ######################
-//     MockRequest wrongUsernameMockRequest = new MockRequest(queryParams, body);
-//     Object wrongUsernameResult =
-//         mockAddListingHandler.handle(wrongUsernameMockRequest, mockResponse);
-//     Map<String, Object> wrongUsernameResponseMap =
-//         Utils.fromMoshiJson(wrongUsernameResult.toString());
-//     assertEquals("failure", wrongUsernameResponseMap.get("response_type"));
-//     assertEquals(
-//         "Error validating user. Username does not match UID.",
-//         wrongUsernameResponseMap.get("error"));
+  //     // ################## TEST UID EXISTS BUT NOT USERNAME ######################
+  //     MockRequest wrongUsernameMockRequest = new MockRequest(queryParams, body);
+  //     Object wrongUsernameResult =
+  //         mockAddListingHandler.handle(wrongUsernameMockRequest, mockResponse);
+  //     Map<String, Object> wrongUsernameResponseMap =
+  //         Utils.fromMoshiJson(wrongUsernameResult.toString());
+  //     assertEquals("failure", wrongUsernameResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Error validating user. Username does not match UID.",
+  //         wrongUsernameResponseMap.get("error"));
 
-//     queryParams.put("username", "");
+  //     queryParams.put("username", "");
 
-//     // ################### Check for Blank Conditions ###################
-//     MockRequest blankUsernameMockRequest = new MockRequest(queryParams, body);
-//     Object blankUsernameResult =
-//         mockAddListingHandler.handle(blankUsernameMockRequest, mockResponse);
-//     Map<String, Object> blankUsernameResponseMap =
-//         Utils.fromMoshiJson(blankUsernameResult.toString());
-//     assertEquals("failure", blankUsernameResponseMap.get("response_type"));
-//     assertEquals(
-//         "Please specify user. Input both the UID and Username.",
-//         blankUsernameResponseMap.get("error"));
+  //     // ################### Check for Blank Conditions ###################
+  //     MockRequest blankUsernameMockRequest = new MockRequest(queryParams, body);
+  //     Object blankUsernameResult =
+  //         mockAddListingHandler.handle(blankUsernameMockRequest, mockResponse);
+  //     Map<String, Object> blankUsernameResponseMap =
+  //         Utils.fromMoshiJson(blankUsernameResult.toString());
+  //     assertEquals("failure", blankUsernameResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Please specify user. Input both the UID and Username.",
+  //         blankUsernameResponseMap.get("error"));
 
-//     // ################### Check for Empty Condition ###################
-//     queryParams.put("username", "    ");
-//     MockRequest emptyUsernameMockRequest = new MockRequest(queryParams, body);
-//     Object emptyUsernameResult =
-//         mockAddListingHandler.handle(emptyUsernameMockRequest, mockResponse);
-//     Map<String, Object> emptyUsernameResponseMap =
-//         Utils.fromMoshiJson(emptyUsernameResult.toString());
-//     assertEquals("failure", emptyUsernameResponseMap.get("response_type"));
-//     assertEquals(
-//         "Please specify user. Input both the UID and Username.",
-//         emptyUsernameResponseMap.get("error"));
-//   }
+  //     // ################### Check for Empty Condition ###################
+  //     queryParams.put("username", "    ");
+  //     MockRequest emptyUsernameMockRequest = new MockRequest(queryParams, body);
+  //     Object emptyUsernameResult =
+  //         mockAddListingHandler.handle(emptyUsernameMockRequest, mockResponse);
+  //     Map<String, Object> emptyUsernameResponseMap =
+  //         Utils.fromMoshiJson(emptyUsernameResult.toString());
+  //     assertEquals("failure", emptyUsernameResponseMap.get("response_type"));
+  //     assertEquals(
+  //         "Please specify user. Input both the UID and Username.",
+  //         emptyUsernameResponseMap.get("error"));
+  //   }
 
   //  @Test
   //  void testNotMockedValidAddListing()

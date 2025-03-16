@@ -85,14 +85,16 @@ public class AddListingHandler implements Route {
     //   if (datamap.get("uid") == uid) {
     //     if (datamap.get("username") != username) {
     //       System.out.println("Error validating user. Username does not match UID.");
-    //       throw new IllegalArgumentException("Error validating user. Username does not match UID.");
+    //       throw new IllegalArgumentException("Error validating user. Username does not match
+    // UID.");
     //     }
     //     return;
     //   }
     // }
 
     // System.out.println("Error validating user. UID and user are not in database");
-    // throw new IllegalArgumentException("Error validating user. UID and user are not in database.");
+    // throw new IllegalArgumentException("Error validating user. UID and user are not in
+    // database.");
   }
 
   /**
