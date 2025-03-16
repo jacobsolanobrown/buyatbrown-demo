@@ -3,6 +3,8 @@
 
 ![Alt Text](images/BuyAtBrownLoginScreen.png)
 
+![Demo Video](images/BuyAtBrownDemoVideo.mp4)
+
 # <div align='center'> Term Project Details </div>
 
 ## Team Members: 
