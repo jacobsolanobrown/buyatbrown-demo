@@ -3,7 +3,8 @@
 
 ![Alt Text](images/BuyAtBrownLoginScreen.png)
 
-![Demo Video](images/BuyAtBrownDemoVideo.mp4)
+https://github.com/user-attachments/assets/67e52810-144e-4f9e-9037-50819ce4c0c8
+
 
 # <div align='center'> Term Project Details </div>
 
